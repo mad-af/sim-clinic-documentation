@@ -102,7 +102,7 @@ flowchart TD
     
     %% ==================== E. FRONT LINER ====================
     subgraph FrontLiner["E. FRONT LINER"]
-        FL1["Jelaskan Hasil Pemeriksaan"] --> FL2["Ke Kasir"]
+        FL1["Konfirmasi Selesai"] --> FL2["Ke Kasir"]
         FL2 --> P1
     end
     
@@ -189,7 +189,7 @@ flowchart TD
 | **C. Ruang Tunggu** | Pasien menunggu dipanggil dokter |
 | **D. Ruang Dokter** | Pemeriksaan (SOAP) & Resep |
 | **G. Farmasi** | Pengambilan & pengelolaan obat |
-| **E. Front Liner** | Penjelasan hasil pemeriksaan ke pasien |
+| **E. Front Liner** | Konfirmasi selesai sebelum ke kasir |
 | **F. Pembayaran** | Kasir: Tunai, QRIS, atau Transfer |
 
 ### Decision Points
