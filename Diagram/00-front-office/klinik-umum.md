@@ -124,18 +124,11 @@ flowchart TD
     
     %% ==================== ANNOTATIONS ====================
     subgraph EstimasiWalkin["📋 Estimasi Jam Realtime - Walk-In"]
-        EW1["📊 Kalkulasi: Sekarang + (Posisi × 30 menit)"]
-        EW2["📺 Tampilan: Layar monitor di ruang tunggu"]
-        EW3["📱 Update: Realtime setiap giliran berubah"]
+        EW1["📊 Kalkulasi: Sekarang + (Posisi × 30 menit)<br/>📺 Tampilan: Layar monitor<br/>📱 Update: Realtime setiap giliran berubah"]
     end
     
     subgraph KirimPengingat["📱 Kirim Pengingat - Isi WhatsApp"]
-        KP1["📋 Isi Pesan:"]
-        KP2["  • Tanggal & jam booking"]
-        KP3["  • Nama dokter & poli"]
-        KP4["  • Nomor antrian"]
-        KP5["  • Permintaan konfirmasi kehadiran"]
-        KP6["⏰ Kirim saat: Dapat nomor antrian"]
+        KP1["📋 Isi Pesan:<br/>• Tanggal & jam booking<br/>• Nama dokter & poli<br/>• Nomor antrian<br/>• Permintaan konfirmasi kehadiran<br/><br/>⏰ Kirim saat: Dapat nomor antrian"]
     end
     
     %% ==================== STYLES ====================
