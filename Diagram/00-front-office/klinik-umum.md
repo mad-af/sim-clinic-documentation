@@ -13,50 +13,57 @@ flowchart TD
         A3 -.->|"📋 30 menit/pasien<br/>Layar: Klinik"| EstimasiWalkin
         A3 --> A4["Tampilkan di Layar Antrian"]
         A4 --> A5["Menunggu Dipanggil Front Liner"]
-        A5 --> A6{"Baru atau Lama?"}
-        A6 -->|Baru| A7["Verifikasi KTP"]
-        A6 -->|Lama| A8["Scan Member Pasien"]
+        A5 --> A6["Pilih Poli"]
+        A6 --> A7{"Baru atau Lama?"}
         
-        A7 --> A9["Isi Form Digital"]
-        A9 --> A10["Input Keluhan"]
-        A10 --> A11["Upload Foto Before"]
-        A11 --> A12["Buat Member & RM Otomatis"]
+        A7 -->|Baru| A8["Verifikasi KTP"]
+        A7 -->|Lama| A9["Scan Nomor RM"]
         
-        A8 --> A13["Cek Rekam Medis"]
-        A13 --> A14{"RM Ditemukan?"}
-        A14 -->|Tidak| A15["Verifikasi KTP"] --> A9
-        A14 -->|Ya| A16["Tampilkan Data Pasien"]
+        A8 --> A8a["Scan/Foto KTP"]
+        A8a --> A8b["Auto-Fill: Nama, Alamat, NIK, Tgl Lahir"]
+        A8b --> A10["Lengkapi Data (Pekerjaan, Telepon)"]
+        A10 --> A11["Input Keluhan"]
+        A11 --> A12["Registrasi Pasien Baru"]
+        A12 --> A18["Masuk Antrian Dokter"]
         
-        A12 --> A17["Masuk Antrian Dokter"]
-        A16 --> A17
+        A9 --> A13["Cek Data Pasien"]
+        A13 --> A14{"Pasien Ditemukan?"}
+        A14 -->|Tidak| A8["Verifikasi KTP"]
+        A14 -->|Ya| A16["Input Keluhan"]
+        A16 --> A17["Buat Kunjungan Baru"]
+        A17 --> A18["Masuk Antrian Dokter"]
         
-        A17 --> WaitingRoom
+        A18 --> WaitingRoom
     end
     
     %% ==================== BOOKING ONLINE ====================
     subgraph Booking_Online["B. BOOKING ONLINE"]
-        B1["Buka Link / Scan QR Code"] --> B2["Pilih Jenis Layanan"]
-        B2 --> B3["Pilih Poli"]
-        B3 --> B4["Pilih Dokter"]
-        B4 --> B5["Pilih Tanggal & Jam"]
-        B5 --> B6{"Pernah Berobat?"}
+        B1["Buka Link / Scan QR Code"] --> B2["Pilih Poli"]
+        B2 --> B3["Pilih Dokter"]
+        B3 --> B4["Pilih Tanggal & Jam"]
+        B4 --> B5{"Pernah Berobat?"}
         
-        B6 -->|Ya| B7["Input Nomor RM"]
-        B7 --> B8["Cek Data Pasien"]
-        B8 --> B9{"Data Valid?"}
-        B9 -->|Tidak| B10["Registrasi Ulang"]
-        B9 -->|Ya| B11["Input Keluhan & Foto Before"]
+        B5 -->|Ya| B6["Input Nomor RM"]
+        B6 --> B7["Cek Data Pasien"]
+        B7 --> B8{"Data Valid?"}
+        B8 -->|Tidak| B9["Registrasi Ulang"]
+        B8 -->|Ya| B10a["Input Keluhan"]
         
-        B6 -->|Tidak| B12["Upload KTP"]
-        B12 --> B13["Input Data Diri"]
-        B13 --> B11
+        B5 -->|Tidak| B11["Upload KTP"]
+        B11 --> B11a["OCR Auto-Fill: Nama, Alamat, NIK, Tgl Lahir"]
+        B11a --> B12["Lengkapi Data (Pekerjaan, Telepon)"]
+        B12 --> B10b["Input Keluhan"]
         
-        B10 --> B14["Verifikasi KTP"]
-        B14 --> B13
+        B9 --> B13["Verifikasi KTP"]
+        B13 --> B13a["Upload KTP Ulang"] --> B13b["OCR Auto-Fill Ulang"] --> B12
         
-        B11 --> B15["Buat Member & RM Otomatis"]
-        B15 --> B16["Nomor Antrian Otomatis"]
-        B16 --> B17["WhatsApp: Konfirmasi & Estimasi"]
+        B10a --> B14a["Buat Kunjungan Baru"]
+        B10b --> B14["Registrasi Pasien Baru"]
+        B14a --> B15["Masuk Antrian Dokter"]
+        B14 --> B15["Masuk Antrian Dokter"]
+        B15 --> B16["WhatsApp: Kirim Pengingat"]
+        B16 -.->|"📱 Pengingat"| KirimPengingat
+        B16 --> B17["Konfirmasi Kedatangan"]
         B17 --> WaitingRoom
     end
     
@@ -120,6 +127,15 @@ flowchart TD
         EO3["⏰ Trigger: Saat booking + H-1 + 2 jam sebelum"]
     end
     
+    subgraph KirimPengingat["📱 Kirim Pengingat - Isi WhatsApp"]
+        KP1["📋 Isi Pesan:"]
+        KP2["  • Tanggal & jam booking"]
+        KP3["  • Nama dokter & poli"]
+        KP4["  • Nomor antrian"]
+        KP5["  • Permintaan konfirmasi kehadiran"]
+        KP6["⏰ Kirim saat: Dapat nomor antrian"]
+    end
+    
     %% ==================== STYLES ====================
     style Start fill:#E8F5E9,stroke:#4CAF50
     style End fill:#FFEBEE,stroke:#F44336
@@ -131,6 +147,7 @@ flowchart TD
     style Booking_Online fill:#E3F2FD,stroke:#2196F3
     style EstimasiWalkin fill:#FFF9C4,stroke:#FBC02D
     style EstimasiOnline fill:#FFF9C4,stroke:#FBC02D
+    style KirimPengingat fill:#FFF9C4,stroke:#FBC02D
 ```
 
 ---
@@ -242,8 +259,9 @@ Estimasi: 09:00 + (3 × 30 menit) = 09:30 - 10:00
 ---
 
 ## WhatsApp Notification Triggers
-- **📅 Booking Online:** Konfirmasi & Estimasi
-- **⏰ H-1:** Reminder
+- **📱 Kirim Pengingat:** Setelah dapat nomor antrian, minta konfirmasi kehadiran (B16)
+- **✅ Konfirmasi Kedatangan:** Saat pasien scan/cek in di klinik (B17)
+- **📅 H-1:** Reminder
 - **🔔 2 Jam Sebelum:** Pengingat
 - **📋 Giliran Mendekat:** Notifikasi
 - **🧾 Setelah Bayar:** Struk
@@ -271,5 +289,6 @@ Estimasi: 09:00 + (3 × 30 menit) = 09:30 - 10:00
 |-----------|-------|
 | Module | Front Office |
 | Clinic Type | Klinik Umum |
-| Version | 1.1 |
+| Focus | Rawat Jalan |
+| Version | 1.2 |
 | Last Updated | 2026-04-02 |
