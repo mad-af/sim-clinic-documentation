@@ -6,7 +6,7 @@ flowchart TD
     EntryPoint{Pilih Jalur?} -->|Langsung| A1
     EntryPoint{Pilih Jalur?} -->|Online| B1
     
-    %% ==================== PENDAFTARAN LANGSUNG ====================
+    %% ==================== A. PENDAFTARAN LANGSUNG (Walk-In) ====================
     subgraph Pendaftaran_Langsung["A. PENDAFTARAN LANGSUNG (Walk-In)"]
         A1["Pasien Datang ke Klinik"] --> A2["Dapat Nomor Antrian Otomatis"]
         A2 --> A3["Estimasi Jam Realtime"]
@@ -32,11 +32,11 @@ flowchart TD
         A14 -->|Ya| A16["Input Keluhan"]
         A16 --> A17["Buat Kunjungan Baru"]
         A17 --> A18["Masuk Antrian Dokter"]
-        
-        A18 --> WaitingRoom
     end
     
-    %% ==================== BOOKING ONLINE ====================
+    A18 --> WR1
+    
+    %% ==================== B. BOOKING ONLINE ====================
     subgraph Booking_Online["B. BOOKING ONLINE"]
         B1["Buka Link / Scan QR Code"] --> B2["Pilih Poli"]
         B2 --> B3["Pilih Dokter"]
@@ -62,22 +62,23 @@ flowchart TD
         B14a --> B15["Masuk Antrian Dokter"]
         B14 --> B15["Masuk Antrian Dokter"]
         B15 --> B16["WhatsApp: Kirim Pengingat"]
-        B16 -.->|"📱 Pengingat"| KirimPengingat
+        B16 -.->|"📱 B16"| KirimPengingat
         B16 --> B17["Konfirmasi Kedatangan"]
-        B17 --> WaitingRoom
     end
     
-    %% ==================== WAITING ROOM ====================
-    subgraph WaitingRoom["C. RUANG TUNGGU"]
+    B17 --> WR1
+    
+    %% ==================== C. RUANG TUNGGU ====================
+    subgraph Waiting_Room["C. RUANG TUNGGU"]
         WR1{"Antrian Dipanggil?"}
         WR1 -->|Ya| WR2["Pasien Masuk Ruang Dokter"]
         WR1 -->|Belum| WR3["Tunggu & Lihat Estimasi"]
         WR3 --> WR1
         
-        WR2 --> DoctorRoom
+        WR2 --> D1
     end
     
-    %% ==================== RUANG DOKTER ====================
+    %% ==================== D. RUANG DOKTER ====================
     subgraph DoctorRoom["D. RUANG DOKTER"]
         D1["Dokter Input SOAP"] --> D2{"Resep Obat?"}
         D2 -->|Ya| D3["Input Resep → Farmasi"]
@@ -92,13 +93,15 @@ flowchart TD
         D5 -->|Tidak| D4
     end
     
-    %% ==================== FRONT LINER ====================
+    D4 --> FL1
+    
+    %% ==================== E. FRONT LINER ====================
     subgraph FrontLiner["E. FRONT LINER"]
         FL1["Jelaskan Hasil Pemeriksaan"] --> FL2["Ke Kasir"]
-        FL2 --> Payment
+        FL2 --> P1
     end
     
-    %% ==================== KASIR ====================
+    %% ==================== F. KASIR ====================
     subgraph Payment["F. PEMBAYARAN"]
         P1["Kasir Tampilkan Rincian"] --> P2{"Metode Bayar?"}
         P2 -->|Tunai| P3["Bayar Tunai"]
@@ -114,17 +117,11 @@ flowchart TD
     
     End([Selesai])
     
-    %% ==================== ESTIMASI ANNOTATIONS ====================
+    %% ==================== ANNOTATIONS ====================
     subgraph EstimasiWalkin["📋 Estimasi Jam Realtime - Walk-In"]
         EW1["📊 Kalkulasi: Sekarang + (Posisi × 30 menit)"]
         EW2["📺 Tampilan: Layar monitor di ruang tunggu"]
         EW3["📱 Update: Realtime setiap giliran berubah"]
-    end
-    
-    subgraph EstimasiOnline["📋 Estimasi Jam Realtime - Online"]
-        EO1["📊 Kalkulasi: Sekarang + (Posisi × 30 menit)"]
-        EO2["📱 Tampilan: WhatsApp notification"]
-        EO3["⏰ Trigger: Saat booking + H-1 + 2 jam sebelum"]
     end
     
     subgraph KirimPengingat["📱 Kirim Pengingat - Isi WhatsApp"]
@@ -139,14 +136,13 @@ flowchart TD
     %% ==================== STYLES ====================
     style Start fill:#E8F5E9,stroke:#4CAF50
     style End fill:#FFEBEE,stroke:#F44336
-    style WaitingRoom fill:#E3F2FD,stroke:#2196F3
+    style Waiting_Room fill:#E3F2FD,stroke:#2196F3
     style DoctorRoom fill:#FFF3E0,stroke:#FF9800
     style FrontLiner fill:#F3E5F5,stroke:#9C27B0
     style Payment fill:#ECEFF1,stroke:#607D8B
     style Pendaftaran_Langsung fill:#E8F5E9,stroke:#4CAF50
     style Booking_Online fill:#E3F2FD,stroke:#2196F3
     style EstimasiWalkin fill:#FFF9C4,stroke:#FBC02D
-    style EstimasiOnline fill:#FFF9C4,stroke:#FBC02D
     style KirimPengingat fill:#FFF9C4,stroke:#FBC02D
 ```
 
@@ -194,23 +190,13 @@ flowchart TD
 |----------|---------|
 | `Pilih Jalur?` | Langsung / Online |
 | `Baru atau Lama?` | Baru / Lama |
-| `Rekam Medis Ditemukan?` | Ya / Tidak |
+| `Pasien Ditemukan?` | Ya / Tidak |
 | `Pernah Berobat?` | Ya / Tidak |
 | `Data Valid?` | Ya / Tidak |
 | `Antrian Dipanggil?` | Ya / Belum |
 | `Resep Obat?` | Ya / Tidak |
 | `Pasien Perlu Obat?` | Ya / Tidak |
 | `Metode Bayar?` | Tunai / QRIS / Transfer |
-
-### Annotations
-
-| Annotation | Meaning |
-|------------|---------|
-| `📋 30 menit/pasien` | Estimasi waktu per pasien |
-| `📺 Layar: Klinik` | Display di monitor ruang tunggu |
-| `📱 WA: Kirim Estimasi` | Kirim via WhatsApp |
-| `📊 Kalkulasi` | Cara hitung estimasi |
-| `⏰ Trigger` | Kapan notifikasi dikirim |
 
 ---
 
