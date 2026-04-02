@@ -1,0 +1,54 @@
+Mas Alfan
+
+MULTI MEDIKA 2 APR
+TASK
+PAKE CLICK UP
+Front Office:
+Pendaftaran
+Antrian
+Kunjungan
+Dipisah kecantikan, dr gigi, dr umum
+Detail nya ada Di Module
+Modul Awal:
+Ada 5:
+Front Office
+Finance
+HR
+Farmasai
+
+
+Front Office:
+Pendaftaran ada 2:
+Langsung
+Dapat Nomor Antrian
+Di isi sama Pelayan
+Pilih Poli dulu
+Cek Lama atau Baru
+Jenis Kunjungan, ada 3:
+Rawat Jalan:
+Kunjungan Sehat
+Kunjungan Sakit
+Rawat inap (HOLD)
+IGD (HOLD)
+Rekam Medis (Perlu di bedakan. dengan Kecantikan, Dr Gigi, dan dr Umum)
+Resep Obat 
+Tagihan
+Booking Online
+Dapat Link Antrian
+Kedua nya Syncron
+Ada masukan dari dokter/konsultan tapi belum di tindak lanjut.
+Masih 
+Task
+Buatkan Flowchart untuk Umum
+Perbedaan Umum dengan:
+Kecantikan:
+Ada Member, kalau sudah konsultasi dan treatment
+
+
+Akun pada setiap customer hanya ada di kecantikan dan dr gigi
+Ini sudah Running, Masih praktik Mandiri
+di kembangkan ke klinik
+Flow nya masih perlu di kembangkan
+pendaftaran.phc.co.id
+praktik mandiri berbeda sama dengan klinik, 
+
