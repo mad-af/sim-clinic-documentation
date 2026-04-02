@@ -7,7 +7,7 @@ flowchart TD
     EntryPoint{Pilih Jalur?} -->|Online| B1
     
     %% ==================== A. PENDAFTARAN LANGSUNG (Walk-In) ====================
-    subgraph Pendaftaran_Langsung["A. PENDAFTARAN LANGSUNG (Walk-In)"]
+    subgraph A_Pendaftaran_Langsung["A. PENDAFTARAN LANGSUNG (Walk-In)"]
         A1["Pasien Datang ke Klinik"] --> A2["Dapat Nomor Antrian Otomatis"]
         A2 --> A3["Estimasi Jam Realtime"]
         A3 -.->|"📋 30 menit/pasien<br/>Layar: Klinik"| EstimasiWalkin
@@ -24,20 +24,20 @@ flowchart TD
         A8b --> A10["Lengkapi Data (Pekerjaan, Telepon)"]
         A10 --> A11["Input Keluhan"]
         A11 --> A12["Registrasi Pasien Baru"]
-        A12 --> A18["Masuk Antrian Dokter"]
+        A12 --> A17["Masuk Antrian Dokter"]
         
         A9 --> A13["Cek Data Pasien"]
         A13 --> A14{"Pasien Ditemukan?"}
         A14 -->|Tidak| A8["Verifikasi KTP"]
-        A14 -->|Ya| A16["Input Keluhan"]
-        A16 --> A17["Buat Kunjungan Baru"]
-        A17 --> A18["Masuk Antrian Dokter"]
+        A14 -->|Ya| A15["Input Keluhan"]
+        A15 --> A16["Buat Kunjungan Baru"]
+        A16 --> A17["Masuk Antrian Dokter"]
     end
     
-    A18 --> WR1
+    A17 --> C1
     
     %% ==================== B. BOOKING ONLINE ====================
-    subgraph Booking_Online["B. BOOKING ONLINE"]
+    subgraph B_Booking_Online["B. BOOKING ONLINE"]
         B1["Buka Link / Scan QR Code"] --> B2["Pilih Poli"]
         B2 --> B3["Pilih Dokter"]
         B3 --> B4["Pilih Tanggal & Jam"]
@@ -62,25 +62,25 @@ flowchart TD
         B14a --> B15["Masuk Antrian Dokter"]
         B14 --> B15["Masuk Antrian Dokter"]
         B15 --> B16["WhatsApp: Kirim Pengingat"]
-        B16 -.->|"📱 B16"| KirimPengingat
+        B16 -.->|"📱 Pengingat"| KirimPengingat
         B16 --> B17["Konfirmasi Kedatangan"]
     end
     
-    B17 --> WR1
+    B17 --> C1
     
     %% ==================== C. RUANG TUNGGU ====================
-    subgraph Waiting_Room["C. RUANG TUNGGU"]
-        WR1{"Antrian Dipanggil?"}
-        WR1 -->|Ya| WR2["Pasien Masuk Ruang Dokter"]
-        WR1 -->|Belum| WR3["Tunggu & Lihat Estimasi"]
-        WR3 --> WR1
+    subgraph C_Ruang_Tunggu["C. RUANG TUNGGU"]
+        C1{"Antrian Dipanggil?"}
+        C1 -->|Ya| C2["Pasien Masuk Ruang Dokter"]
+        C1 -->|Belum| C3["Tunggu & Lihat Estimasi"]
+        C3 --> C1
         
     end
     
-    WR2 --> D1
+    C2 --> D1
         
     %% ==================== D. RUANG DOKTER ====================
-    subgraph DoctorRoom["D. RUANG DOKTER"]
+    subgraph D_Ruang_Dokter["D. RUANG DOKTER"]
         D1["Dokter Input SOAP"] --> D2{"Resep Obat?"}
         D2 -->|Ya| D3["Input Resep → Farmasi"]
         D2 -->|Tidak| D4["Pasien Kembali ke Front Liner"]
@@ -88,10 +88,10 @@ flowchart TD
         D3 --> G1
     end
     
-    D4 --> FL1
+    D4 --> E1
     
     %% ==================== G. FARMASI ====================
-    subgraph FarmasiRoom["G. FARMASI"]
+    subgraph G_Farmasi["G. FARMASI"]
         G1{"Pasien Perlu Obat?"}
         G1 -->|Ya| G2["Ambil Obat di Farmasi"]
         G1 -->|Tidak| D4
@@ -101,23 +101,23 @@ flowchart TD
     end
     
     %% ==================== E. FRONT LINER ====================
-    subgraph FrontLiner["E. FRONT LINER"]
-        FL1["Konfirmasi Selesai"] --> FL2["Ke Kasir"]
-        FL2 --> P1
+    subgraph E_Front_Liner["E. FRONT LINER"]
+        E1["Konfirmasi Selesai"] --> E2["Ke Kasir"]
+        E2 --> F1
     end
     
     %% ==================== F. KASIR ====================
-    subgraph Payment["F. PEMBAYARAN"]
-        P1["Kasir Tampilkan Rincian"] --> P2{"Metode Bayar?"}
-        P2 -->|Tunai| P3["Bayar Tunai"]
-        P2 -->|QRIS| P4["Scan QRIS"]
-        P2 -->|Transfer| P5["Upload Bukti Transfer"]
+    subgraph F_Kasir["F. PEMBAYARAN"]
+        F1["Kasir Tampilkan Rincian"] --> F2{"Metode Bayar?"}
+        F2 -->|Tunai| F3["Bayar Tunai"]
+        F2 -->|QRIS| F4["Scan QRIS"]
+        F2 -->|Transfer| F5["Upload Bukti Transfer"]
         
-        P3 --> P6["Cetak Struk"]
-        P4 --> P6
-        P5 --> P6
-        P6 --> P7["WhatsApp: Kirim Struk"]
-        P7 --> End
+        F3 --> F6["Cetak Struk"]
+        F4 --> F6
+        F5 --> F6
+        F6 --> F7["WhatsApp: Kirim Struk"]
+        F7 --> End
     end
     
     End([Selesai])
@@ -141,13 +141,13 @@ flowchart TD
     %% ==================== STYLES ====================
     style Start fill:#E8F5E9,stroke:#4CAF50
     style End fill:#FFEBEE,stroke:#F44336
-    style Waiting_Room fill:#E3F2FD,stroke:#2196F3
-    style DoctorRoom fill:#FFF3E0,stroke:#FF9800
-    style FarmasiRoom fill:#B2DFDB,stroke:#00897B
-    style FrontLiner fill:#F3E5F5,stroke:#9C27B0
-    style Payment fill:#ECEFF1,stroke:#607D8B
-    style Pendaftaran_Langsung fill:#E8F5E9,stroke:#4CAF50
-    style Booking_Online fill:#E3F2FD,stroke:#2196F3
+    style A_Pendaftaran_Langsung fill:#E8F5E9,stroke:#4CAF50
+    style B_Booking_Online fill:#E3F2FD,stroke:#2196F3
+    style C_Ruang_Tunggu fill:#E3F2FD,stroke:#2196F3
+    style D_Ruang_Dokter fill:#FFF3E0,stroke:#FF9800
+    style G_Farmasi fill:#B2DFDB,stroke:#00897B
+    style E_Front_Liner fill:#F3E5F5,stroke:#9C27B0
+    style F_Kasir fill:#ECEFF1,stroke:#607D8B
     style EstimasiWalkin fill:#FFF9C4,stroke:#FBC02D
     style KirimPengingat fill:#FFF9C4,stroke:#FBC02D
 ```
