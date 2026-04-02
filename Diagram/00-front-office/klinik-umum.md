@@ -75,25 +75,30 @@ flowchart TD
         WR1 -->|Belum| WR3["Tunggu & Lihat Estimasi"]
         WR3 --> WR1
         
-        WR2 --> D1
     end
     
+    WR2 --> D1
+        
     %% ==================== D. RUANG DOKTER ====================
     subgraph DoctorRoom["D. RUANG DOKTER"]
         D1["Dokter Input SOAP"] --> D2{"Resep Obat?"}
         D2 -->|Ya| D3["Input Resep → Farmasi"]
         D2 -->|Tidak| D4["Pasien Kembali ke Front Liner"]
         
-        D3 --> D5{"Pasien Perlu Obat?"}
-        D5 -->|Ya| D6["Ambil Obat di Farmasi"]
-        D6 --> D7["Stok Deduction"]
-        D7 --> D8["Serahkan Obat"]
-        D8 --> D4
-        
-        D5 -->|Tidak| D4
+        D3 --> G1
     end
     
     D4 --> FL1
+    
+    %% ==================== G. FARMASI ====================
+    subgraph FarmasiRoom["G. FARMASI"]
+        G1{"Pasien Perlu Obat?"}
+        G1 -->|Ya| G2["Ambil Obat di Farmasi"]
+        G1 -->|Tidak| D4
+        G2 --> G3["Stok Deduction"]
+        G3 --> G4["Serahkan Obat"]
+        G4 --> D4
+    end
     
     %% ==================== E. FRONT LINER ====================
     subgraph FrontLiner["E. FRONT LINER"]
@@ -138,6 +143,7 @@ flowchart TD
     style End fill:#FFEBEE,stroke:#F44336
     style Waiting_Room fill:#E3F2FD,stroke:#2196F3
     style DoctorRoom fill:#FFF3E0,stroke:#FF9800
+    style FarmasiRoom fill:#B2DFDB,stroke:#00897B
     style FrontLiner fill:#F3E5F5,stroke:#9C27B0
     style Payment fill:#ECEFF1,stroke:#607D8B
     style Pendaftaran_Langsung fill:#E8F5E9,stroke:#4CAF50
@@ -169,6 +175,7 @@ flowchart TD
 | 🔵 Biru | `#E3F2FD` | B. Booking Online |
 | 🔵 Biru | `#E3F2FD` | C. Ruang Tunggu |
 | 🟠 Orange | `#FFF3E0` | D. Ruang Dokter |
+| 🩵 Soft Teal | `#B2DFDB` | G. Farmasi |
 | 🟣 Ungu | `#F3E5F5` | E. Front Liner |
 | ⬜ Abu | `#ECEFF1` | F. Pembayaran |
 | 🟡 Kuning | `#FFF9C4` | Annotations (Estimasi, WhatsApp) |
@@ -181,6 +188,7 @@ flowchart TD
 | **B. Booking Online** | Online: Booking via link/QR yang disediakan klinik |
 | **C. Ruang Tunggu** | Pasien menunggu dipanggil dokter |
 | **D. Ruang Dokter** | Pemeriksaan (SOAP) & Resep |
+| **G. Farmasi** | Pengambilan & pengelolaan obat |
 | **E. Front Liner** | Penjelasan hasil pemeriksaan ke pasien |
 | **F. Pembayaran** | Kasir: Tunai, QRIS, atau Transfer |
 
