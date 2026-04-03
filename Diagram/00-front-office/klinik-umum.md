@@ -14,24 +14,23 @@ flowchart TD
         A3 --> A4["Tampilkan di Layar Antrian"]
         A4 --> A5["Menunggu Dipanggil Front Liner"]
         A5 --> A6["Pilih Poli"]
-        A6 --> A7{"Baru atau Lama?"}
-        
+        A6 --> A6a["Pilih Dokter"]
+        A6a --> A6b["Pilih Tanggal & Jam"]
+        A6b --> A7{"Pernah Berobat?"}
         A7 -->|Baru| A8["Verifikasi KTP"]
         A7 -->|Lama| A9["Scan Nomor RM"]
         
         A8 --> A8a["Scan/Foto KTP"]
         A8a --> A8b["Auto-Fill: Nama, Alamat, NIK, Tgl Lahir"]
         A8b --> A10["Lengkapi Data (Pekerjaan, Telepon)"]
-        A10 --> A11["Input Keluhan"]
-        A11 --> A12["Registrasi Pasien Baru"]
-        A12 --> A17["Masuk Antrian Dokter"]
+        A10 --> A12["Registrasi Pasien Baru"]
+        A12 --> A12a["Buat Kunjungan Baru"]
+        A12a --> A11["Input Keluhan"]
+        A11 --> A17["Masuk Antrian Dokter"]
         
-        A9 --> A13["Cek Data Pasien"]
-        A13 --> A14{"Pasien Ditemukan?"}
-        A14 -->|Tidak| A8["Verifikasi KTP"]
-        A14 -->|Ya| A15["Input Keluhan"]
-        A15 --> A16["Buat Kunjungan Baru"]
-        A16 --> A17["Masuk Antrian Dokter"]
+        A9 --> A16["Buat Kunjungan Baru"]
+        A16 --> A15["Input Keluhan"]
+        A15 --> A17["Masuk Antrian Dokter"]
     end
     
     A17 --> C1
@@ -44,23 +43,18 @@ flowchart TD
         B4 --> B5{"Pernah Berobat?"}
         
         B5 -->|Ya| B6["Input Nomor RM"]
-        B6 --> B7["Cek Data Pasien"]
-        B7 --> B8{"Data Valid?"}
-        B8 -->|Tidak| B9["Registrasi Ulang"]
-        B8 -->|Ya| B10a["Input Keluhan"]
+        B6 --> B6a["Buat Kunjungan Baru"]
+        B6a --> B10a["Input Keluhan"]
+        B10a --> B15["Masuk Antrian Dokter"]
         
         B5 -->|Tidak| B11["Upload KTP"]
         B11 --> B11a["OCR Auto-Fill: Nama, Alamat, NIK, Tgl Lahir"]
         B11a --> B12["Lengkapi Data (Pekerjaan, Telepon)"]
-        B12 --> B10b["Input Keluhan"]
+        B12 --> B14["Registrasi Pasien Baru"]
+        B14 --> B14a["Buat Kunjungan Baru"]
+        B14a --> B10b["Input Keluhan"]
+        B10b --> B15["Masuk Antrian Dokter"]
         
-        B9 --> B13["Verifikasi KTP"]
-        B13 --> B13a["Upload KTP Ulang"] --> B13b["OCR Auto-Fill Ulang"] --> B12
-        
-        B10a --> B14a["Buat Kunjungan Baru"]
-        B10b --> B14["Registrasi Pasien Baru"]
-        B14a --> B15["Masuk Antrian Dokter"]
-        B14 --> B15["Masuk Antrian Dokter"]
         B15 --> B16["WhatsApp: Kirim Pengingat"]
         B16 -.->|"📱 Pengingat"| KirimPengingat
         B16 --> B17["Konfirmasi Kedatangan"]
@@ -144,138 +138,3 @@ flowchart TD
     style EstimasiWalkin fill:#FFF9C4,stroke:#FBC02D
     style KirimPengingat fill:#FFF9C4,stroke:#FBC02D
 ```
-
----
-
-## Legend
-
-### Flow Symbols (Mermaid)
-
-| Symbol | Syntax | Meaning |
-|--------|--------|---------|
-| `([Shape])` | `([Node])` | Rounded rectangle = Start/End point |
-| `[Shape]` | `[Node]` | Rectangle = Process/Action |
-| `{Shape}` | `{Node}` | Diamond = Decision point |
-| `-->\|Label\|` | `-->\|Yes\|` | Arrow with condition label |
-| `-.->` | `-.->"annotation"` | Dotted arrow = Annotation/Note |
-| `subgraph` | `subgraph NAME["Title"]` | Group of related nodes |
-
-### Color Coding
-
-| Color | Hex | Module |
-|-------|-----|--------|
-| 🟢 Hijau | `#E8F5E9` | A. Pendaftaran Langsung (Walk-In) |
-| 🔵 Biru | `#E3F2FD` | B. Booking Online |
-| 🔵 Biru | `#E3F2FD` | C. Ruang Tunggu |
-| 🟠 Orange | `#FFF3E0` | D. Ruang Dokter |
-| 🩵 Soft Teal | `#B2DFDB` | G. Farmasi |
-| 🟣 Ungu | `#F3E5F5` | E. Front Liner |
-| ⬜ Abu | `#ECEFF1` | F. Pembayaran |
-| 🟡 Kuning | `#FFF9C4` | Annotations (Estimasi, WhatsApp) |
-
-### Main Paths
-
-| Path | Description |
-|------|-------------|
-| **A. Pendaftaran Langsung** | Walk-in: Pasien datang → Langsung dapat nomor antrian |
-| **B. Booking Online** | Online: Booking via link/QR yang disediakan klinik |
-| **C. Ruang Tunggu** | Pasien menunggu dipanggil dokter |
-| **D. Ruang Dokter** | Pemeriksaan (SOAP) & Resep |
-| **G. Farmasi** | Pengambilan & pengelolaan obat |
-| **E. Front Liner** | Konfirmasi selesai sebelum ke kasir |
-| **F. Pembayaran** | Kasir: Tunai, QRIS, atau Transfer |
-
-### Decision Points
-
-| Decision | Options |
-|----------|---------|
-| `Pilih Jalur?` | Langsung / Online |
-| `Baru atau Lama?` | Baru / Lama |
-| `Pasien Ditemukan?` | Ya / Tidak |
-| `Pernah Berobat?` | Ya / Tidak |
-| `Data Valid?` | Ya / Tidak |
-| `Antrian Dipanggil?` | Ya / Belum |
-| `Resep Obat?` | Ya / Tidak |
-| `Pasien Perlu Obat?` | Ya / Tidak |
-| `Metode Bayar?` | Tunai / QRIS / Transfer |
-
----
-
-## Estimasi Jam Realtime
-
-### Apa Itu Estimasi Jam?
-Perkiraan waktu kapan giliran pasien akan dipanggil, berdasarkan posisi antrian dan estimasi waktu per pasien.
-
-### Cara Kalkulasi
-```
-Estimasi = Waktu Sekarang + (Posisi dalam Antrian × 30 menit/pasien)
-```
-
-**Contoh:**
-```
-Jam Sekarang: 09:00
-Nomor Sedang Diproses: #5
-Posisi Pasien #8: #8 - #5 = 3 orang
-Estimasi: 09:00 + (3 × 30 menit) = 09:30 - 10:00
-```
-
-### Dua Metode Estimasi
-
-| Metode | Pendaftaran Langsung (Walk-In) | Booking Online |
-|--------|--------------------------------|----------------|
-| **Tampilan** | 📺 Layar monitor di ruang tunggu klinik | 📱 WhatsApp notification |
-| **Update** | Realtime setiap nomor dipanggil | Saat booking + H-1 + 2 jam sebelum |
-| **Trigger** | Otomatis saat antrian bergerak | Sistem reminder otomatis |
-
-### Spesifikasi Teknis
-- **Waktu per pasien:** 30 menit (bisa dikonfigurasi per poli)
-- **Update trigger:** Setiap pasien dipanggil atau selesai
-- **Display:** Compatible dengan TV monitor biasa (HDMI)
-
----
-
-## Key Differences: Langsung vs Online
-
-| Aspek | Pendaftaran Langsung | Booking Online |
-|-------|----------------------|----------------|
-| **QR Code** | ❌ Tidak ada | ✅ Link booking dijadikan QR |
-| **Nomor Antrian** | Langsung saat datang | Setelah booking confirmed |
-| **Baru/Lama Check** | Saat dipanggil front liner | Saat booking |
-| **Estimasi Jam** | Realtime berdasarkan antrian | Dikirim via WhatsApp |
-
----
-
-## WhatsApp Notification Triggers
-- **📱 Kirim Pengingat:** Setelah dapat nomor antrian, minta konfirmasi kehadiran (B16)
-- **✅ Konfirmasi Kedatangan:** Saat pasien scan/cek in di klinik (B17)
-- **📅 H-1:** Reminder
-- **🔔 2 Jam Sebelum:** Pengingat
-- **📋 Giliran Mendekat:** Notifikasi
-- **🧾 Setelah Bayar:** Struk
-
----
-
-## Status Tracking
-
-| Status | Description |
-|--------|-------------|
-| `walk_in` | Pasien datang, dapat nomor antrian |
-| `waiting` | Di ruang tunggu |
-| `called` | Dipanggil front liner |
-| `registered` | Baru saja registrasi |
-| `at_doctor` | Sedang diperiksa dokter |
-| `pharmacy` | Ambil obat di farmasi |
-| `billing` | Di kasir |
-| `completed` | Selesai |
-
----
-
-## Document Info
-
-| Attribute | Value |
-|-----------|-------|
-| Module | Front Office |
-| Clinic Type | Klinik Umum |
-| Focus | Rawat Jalan |
-| Version | 1.2 |
-| Last Updated | 2026-04-02 |
