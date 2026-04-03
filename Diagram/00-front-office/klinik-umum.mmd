@@ -11,7 +11,7 @@ flowchart TD
         A4 --> A5["Menunggu Dipanggil Front Liner"]
         A5 --> A6["Pilih Poli"]
         A6 --> A6a["Pilih Dokter"]
-        A6a --> A6b["Pilih Tanggal & Jam"]
+        A6a --> A6b["Pilih Tanggal dan Jam"]
         A6b --> A7{"Pernah Berobat?"}
         A7 -->|Baru| A8["Verifikasi KTP"]
         A7 -->|Lama| A9["Scan Nomor RM"]
@@ -35,7 +35,7 @@ flowchart TD
     subgraph B_Booking_Online["B. BOOKING ONLINE"]
         B1["Buka Link / Scan QR Code"] --> B2["Pilih Poli"]
         B2 --> B3["Pilih Dokter"]
-        B3 --> B4["Pilih Tanggal & Jam"]
+        B3 --> B4["Pilih Tanggal dan Jam"]
         B4 --> B5{"Pernah Berobat?"}
         
         B5 -->|Ya| B6["Input Nomor RM"]
@@ -61,7 +61,7 @@ flowchart TD
     subgraph C_Ruang_Tunggu["C. RUANG TUNGGU"]
         C1{"Antrian Dipanggil?"}
         C1 -->|Ya| C2["Pasien Masuk Ruang Dokter"]
-        C1 -->|Belum| C3["Tunggu & Lihat Estimasi"]
+        C1 -->|Belum| C3["Tunggu dan Lihat Estimasi"]
         C3 --> C1
         
     end

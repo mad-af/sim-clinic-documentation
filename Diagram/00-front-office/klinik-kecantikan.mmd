@@ -10,7 +10,7 @@ flowchart TD
         A3 --> A4["Tampilkan di Layar Antrian"]
         A4 --> A5["Menunggu Dipanggil Front Liner"]
         A5 --> A6["Pilih Dokter"]
-        A6 --> A6a["Pilih Tanggal & Jam"]
+        A6 --> A6a["Pilih Tanggal dan Jam"]
         A6a --> A7{"Pernah Berobat?"}
         A7 -->|Baru| A8["Verifikasi KTP"]
         A7 -->|Lama| A9["Scan Nomor RM"]
@@ -37,7 +37,7 @@ flowchart TD
         A9b --> A16["Buat Kunjungan Baru"]
         A16 --> A15["Input Keluhan"]
         A15 --> A17["Masuk Antrian Dokter"]
-        A17 --> A18["📱 WhatsApp: Kirim Konfirmasi & Estimasi"]
+        A17 --> A18["📱 WhatsApp: Kirim Konfirmasi dan Estimasi"]
     end
 
     A18 --> C1
@@ -46,7 +46,7 @@ flowchart TD
     subgraph B_Booking_Online["B. BOOKING ONLINE"]
         B1["Buka Link / Scan QR Code"] --> B2["Pilih Konsultasi atau Treatment"]
         B2 --> B3["Pilih Dokter"]
-        B3 --> B4["Pilih Tanggal & Jam"]
+        B3 --> B4["Pilih Tanggal dan Jam"]
         B4 --> B4a["📅 Sistem atur 30 menit/slot"]
         B4a --> B5{"Pernah Berobat?"}
 
@@ -83,8 +83,8 @@ flowchart TD
     %% ==================== C. RUANG TUNGGU ====================
     subgraph C_Ruang_Tunggu["C. RUANG TUNGGU"]
         C1{"Antrian Dipanggil?"}
-        C1 -->|Ya| D1["Admin/Fron Office: Isi Data Pasien &Terima List Treatment"]
-        C1 -->|Belum| C3["Tunggu & Lihat Estimasi"]
+        C1 -->|Ya| D1["Admin/Front Office: Isi Data Pasien"]
+        C1 -->|Belum| C3["Tunggu dan Lihat Estimasi"]
         C3 --> C1
     end
 
@@ -104,7 +104,8 @@ flowchart TD
 
     %% ==================== E. FRONT LINER ====================
     subgraph E_Front_Liner["E. FRONT LINER"]
-        E1["Front Liner Jelaskan Treatment"] --> E1a["Konfirmasi Treatment"]
+        E1["Front Liner Terima List Treatment"] --> E1b["Front Liner Jelaskan Treatment"]
+        E1b --> E1a["Konfirmasi Treatment"]
         E1a --> E2["Ke Kasir"]
         E2 --> F1
     end
