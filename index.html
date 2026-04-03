@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagram Viewer - Mermaid</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 {
+            margin: 0 0 15px 0;
+            color: #333;
+            font-size: 1.5rem;
+        }
+        .controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .control-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        label {
+            font-weight: 500;
+            color: #333;
+        }
+        select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            min-width: 250px;
+            background: white;
+        }
+        select:focus {
+            outline: none;
+            border-color: #2196F3;
+        }
+        .btn {
+            background: #2196F3;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .btn:hover {
+            background: #1976D2;
+        }
+        .btn-secondary {
+            background: #666;
+        }
+        .btn-secondary:hover {
+            background: #555;
+        }
+        .btn-fullscreen {
+            background: #4CAF50;
+        }
+        .btn-fullscreen:hover {
+            background: #388E3C;
+        }
+        .diagram-info {
+            background: #e3f2fd;
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+            font-size: 13px;
+            color: #1565c0;
+            display: none;
+        }
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+            display: none;
+        }
+        .diagram-wrapper {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+        }
+        .diagram-toolbar {
+            background: #fafafa;
+            padding: 10px 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .zoom-controls {
+            display: flex;
+            gap: 5px;
+        }
+        .zoom-btn {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .diagram-container {
+            padding: 20px;
+            min-height: 500px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            overflow: hidden;
+            cursor: grab;
+        }
+        .diagram-container:active {
+            cursor: grabbing;
+        }
+        .diagram-container svg {
+            max-width: none !important;
+            display: block;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #ddd;
+            border-top-color: #2196F3;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .fullscreen .diagram-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 9999;
+            border-radius: 0;
+        }
+        .fullscreen .diagram-container {
+            min-height: 100vh;
+        }
+        .fullscreen-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+        }
+        .file-count {
+            color: #666;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Diagram Viewer - Mermaid</h1>
+            <div class="controls">
+                <div class="control-group">
+                    <label for="diagramSelect">Pilih Diagram:</label>
+                    <select id="diagramSelect">
+                        <option value="">-- Loading... --</option>
+                    </select>
+                    <span id="fileCount" class="file-count"></span>
+                </div>
+                <button id="refreshBtn" class="btn btn-secondary" title="Refresh list">
+                    ↻ Refresh
+                </button>
+            </div>
+            <div id="diagramInfo" class="diagram-info"></div>
+            <div id="errorMsg" class="error"></div>
+        </div>
+
+        <div class="diagram-wrapper">
+            <div class="diagram-toolbar">
+                <span id="diagramName">Tidak ada diagram</span>
+                <div class="zoom-controls">
+                    <button id="zoomOut" class="btn zoom-btn" title="Zoom Out">−</button>
+                    <button id="zoomReset" class="btn" title="Reset Zoom">100%</button>
+                    <button id="zoomIn" class="btn zoom-btn" title="Zoom In">+</button>
+                </div>
+            </div>
+            <div class="diagram-container" id="diagramContainer">
+                <div id="loadingState" class="loading">
+                    <div class="spinner"></div>
+                    <div>Pilih diagram dari dropdown untuk menampilkan</div>
+                </div>
+                <div id="diagramOutput" class="mermaid hidden"></div>
+            </div>
+        </div>
+
+        <button id="fullscreenBtn" class="btn btn-fullscreen fullscreen-toggle hidden" title="Fullscreen">
+            ⛶
+        </button>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        let panZoomInstance = null;
+        let currentDiagram = null;
+
+        const select = document.getElementById('diagramSelect');
+        const fileCount = document.getElementById('fileCount');
+        const diagramInfo = document.getElementById('diagramInfo');
+        const errorMsg = document.getElementById('errorMsg');
+        const diagramOutput = document.getElementById('diagramOutput');
+        const diagramName = document.getElementById('diagramName');
+        const loadingState = document.getElementById('loadingState');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'default',
+            flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' },
+            securityLevel: 'loose'
+        });
+
+        async function fetchDiagrams() {
+            try {
+                const res = await fetch(`${API_BASE}/diagrams`);
+                if (!res.ok) throw new Error('Failed to fetch diagrams');
+                return await res.json();
+            } catch (err) {
+                showError('Gagal mengambil daftar diagram: ' + err.message);
+                return [];
+            }
+        }
+
+        async function loadDiagram(path) {
+            showError('');
+            diagramInfo.style.display = 'none';
+            loadingState.classList.remove('hidden');
+            diagramOutput.classList.add('hidden');
+
+            if (panZoomInstance) {
+                panZoomInstance.unpan();
+                panZoomInstance.resetZoom();
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/diagram?path=${encodeURIComponent(path)}`);
+                if (!res.ok) throw new Error('Failed to load diagram');
+                const content = await res.text();
+                await renderDiagram(content, path);
+            } catch (err) {
+                showError('Gagal memuat diagram: ' + err.message);
+                loadingState.classList.add('hidden');
+            }
+        }
+
+        async function renderDiagram(mmdContent, path) {
+            diagramOutput.classList.remove('hidden');
+            loadingState.classList.add('hidden');
+            diagramOutput.textContent = mmdContent;
+
+            const diagramId = 'diagram-' + Date.now();
+            diagramOutput.id = diagramId;
+
+            try {
+                await mermaid.run({
+                    nodes: [diagramOutput],
+                    startOnLoad: false
+                });
+
+                currentDiagram = document.querySelector(`#${diagramId} svg`);
+                if (currentDiagram) {
+                    initPanZoom();
+                    fullscreenBtn.classList.remove('hidden');
+                }
+
+                const selectedText = select.options[select.selectedIndex]?.text || path;
+                diagramName.textContent = selectedText;
+                diagramInfo.textContent = `Diagram loaded: ${selectedText}`;
+                diagramInfo.style.display = 'block';
+            } catch (err) {
+                showError('Gagal render diagram: ' + err.message);
+                loadingState.classList.remove('hidden');
+                diagramOutput.classList.add('hidden');
+            }
+        }
+
+        function initPanZoom() {
+            if (panZoomInstance) {
+                panZoomInstance.destroy();
+            }
+
+            panZoomInstance = svgPanZoom(currentDiagram, {
+                zoomEnabled: true,
+                controlIconsEnabled: false,
+                fit: true,
+                center: true,
+                minZoom: 0.1,
+                maxZoom: 10,
+                zoomScaleSensitivity: 0.3
+            });
+        }
+
+        function showError(msg) {
+            if (msg) {
+                errorMsg.textContent = msg;
+                errorMsg.style.display = 'block';
+            } else {
+                errorMsg.style.display = 'none';
+            }
+        }
+
+        async function refreshList() {
+            select.innerHTML = '<option value="">-- Loading... --</option>';
+            fileCount.textContent = '';
+            
+            const diagrams = await fetchDiagrams();
+            
+            select.innerHTML = '<option value="">-- Pilih Diagram --</option>';
+            diagrams.forEach(d => {
+                const option = document.createElement('option');
+                option.value = d.path;
+                option.textContent = d.name;
+                select.appendChild(option);
+            });
+            
+            fileCount.textContent = diagrams.length ? `(${diagrams.length} file)` : '';
+        }
+
+        select.addEventListener('change', (e) => {
+            const path = e.target.value;
+            if (path) {
+                loadDiagram(path);
+            } else {
+                diagramOutput.classList.add('hidden');
+                loadingState.classList.remove('hidden');
+                diagramName.textContent = 'Tidak ada diagram';
+                fullscreenBtn.classList.add('hidden');
+            }
+        });
+
+        document.getElementById('refreshBtn').addEventListener('click', refreshList);
+
+        document.getElementById('zoomIn').addEventListener('click', () => {
+            if (panZoomInstance) panZoomInstance.zoomIn();
+        });
+
+        document.getElementById('zoomOut').addEventListener('click', () => {
+            if (panZoomInstance) panZoomInstance.zoomOut();
+        });
+
+        document.getElementById('zoomReset').addEventListener('click', () => {
+            if (panZoomInstance) {
+                panZoomInstance.resetZoom();
+                panZoomInstance.center();
+            }
+        });
+
+        fullscreenBtn.addEventListener('click', () => {
+            document.body.classList.toggle('fullscreen');
+            fullscreenBtn.textContent = document.body.classList.contains('fullscreen') ? '✕' : '⛶';
+            setTimeout(() => {
+                if (panZoomInstance) {
+                    panZoomInstance.resize();
+                    panZoomInstance.fit();
+                    panZoomInstance.center();
+                }
+            }, 100);
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.body.classList.contains('fullscreen')) {
+                document.body.classList.remove('fullscreen');
+                fullscreenBtn.textContent = '⛶';
+            }
+        });
+
+        refreshList();
+    </script>
+</body>
+</html>
