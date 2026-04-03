@@ -14,8 +14,8 @@ flowchart TD
         A6 --> A6a["Pilih Dokter"]
         A6a --> A6b["Pilih Tanggal & Jam"]
         A6b --> A7{"Pernah Berobat?"}
-        A7 -->|Baru| A8["Verifikasi KTP"]
-        A7 -->|Lama| A9["Scan Nomor RM"]
+        A7 -->|Ya| A8["Verifikasi KTP"]
+        A7 -->|Tidak| A9["Scan Nomor RM"]
         
         A8 --> A8a["Scan/Foto KTP"]
         A8a --> A8b["Auto-Fill: Nama, Alamat, NIK, Tgl Lahir"]
@@ -74,22 +74,23 @@ flowchart TD
     subgraph D_Ruang_Dokter["D. RUANG DOKTER"]
         D1["Dokter Input SOAP"] --> D2{"Resep Obat?"}
         D2 -->|Ya| D3["Input Resep → Farmasi"]
-        D2 -->|Tidak| D4["Pasien Kembali ke Front Liner"]
         
         D3 --> G1
     end
     
+    D2 -->|Tidak| D4["Pasien Kembali ke Front Liner"]
     D4 --> E1
     
     %% ==================== G. FARMASI ====================
     subgraph G_Farmasi["G. FARMASI"]
         G1{"Pasien Perlu Obat?"}
         G1 -->|Ya| G2["Ambil Obat di Farmasi"]
-        G1 -->|Tidak| D4
         G2 --> G3["Stok Deduction"]
         G3 --> G4["Serahkan Obat"]
-        G4 --> D4
     end
+    
+    G1 -->|Tidak| D4
+    G4 --> D4
     
     %% ==================== E. FRONT LINER ====================
     subgraph E_Front_Liner["E. FRONT LINER"]

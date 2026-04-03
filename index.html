@@ -130,6 +130,14 @@
         .zoom-controls {
             display: flex;
             gap: 5px;
+            align-items: center;
+        }
+        .panzoom-info {
+            font-size: 12px;
+            color: #666;
+            margin-right: 15px;
+            min-width: 120px;
+            text-align: right;
         }
         .zoom-btn {
             width: 32px;
@@ -238,6 +246,7 @@
             <div class="diagram-toolbar">
                 <span id="diagramName">Tidak ada diagram</span>
                 <div class="zoom-controls">
+                    <span id="panzoomInfo" class="panzoom-info">-</span>
                     <button id="zoomToggle" class="btn btn-toggle-active" title="Toggle Zoom Mode">🔍 Scroll</button>
                     <button id="zoomOut" class="btn zoom-btn" title="Zoom Out" disabled>−</button>
                     <button id="zoomReset" class="btn" title="Reset Zoom" disabled>100%</button>
@@ -272,6 +281,7 @@
         const diagramName = document.getElementById('diagramName');
         const loadingState = document.getElementById('loadingState');
         const fullscreenBtn = document.getElementById('fullscreenBtn');
+        const panzoomInfo = document.getElementById('panzoomInfo');
 
         mermaid.initialize({
             startOnLoad: false,
@@ -315,16 +325,29 @@
         }
 
         async function renderDiagram(mmdContent, path) {
+            loadingState.classList.remove('hidden');
+            diagramOutput.classList.add('hidden');
+            diagramOutput.innerHTML = '';
             diagramOutput.classList.remove('hidden');
-            loadingState.classList.add('hidden');
             diagramOutput.textContent = mmdContent;
 
             const diagramId = 'diagram-' + Date.now();
-            diagramOutput.id = diagramId;
 
             try {
                 await mermaid.run({
                     nodes: [diagramOutput],
+                    startOnLoad: false
+                });
+
+                const newDiv = document.createElement('div');
+                newDiv.className = 'mermaid';
+                newDiv.id = diagramId;
+                diagramOutput.innerHTML = '';
+                diagramOutput.appendChild(newDiv);
+                newDiv.textContent = mmdContent;
+
+                await mermaid.run({
+                    nodes: [newDiv],
                     startOnLoad: false
                 });
 
@@ -345,6 +368,14 @@
             }
         }
 
+        function updatePanzoomInfo() {
+            if (!panZoomInstance) return;
+            const zoom = panZoomInstance.getZoom();
+            const pan = panZoomInstance.getPan();
+            const zoomPercent = Math.round(zoom * 100);
+            panzoomInfo.textContent = `${zoomPercent}% | X:${Math.round(pan.x)} Y:${Math.round(pan.y)}`;
+        }
+
         function initPanZoom() {
             if (!currentDiagram) return;
 
@@ -363,7 +394,17 @@
                 mouseWheelZoomEnabled: zoomMode
             });
 
-            panZoomInstance.zoom(1.5);
+            panZoomInstance.zoom(0.77);
+            panZoomInstance.pan({ x: 210, y: 38 });
+            updatePanzoomInfo();
+
+            panZoomInstance.setOnZoom(function(level) {
+                updatePanzoomInfo();
+            });
+
+            panZoomInstance.setOnPan(function(point) {
+                updatePanzoomInfo();
+            });
         }
 
         function toggleZoomMode() {
@@ -416,6 +457,12 @@
             });
             
             fileCount.textContent = diagrams.length ? `(${diagrams.length} file)` : '';
+
+            const defaultPath = diagrams.find(d => d.path.includes('klinik-umum'))?.path;
+            if (defaultPath) {
+                select.value = defaultPath;
+                loadDiagram(defaultPath);
+            }
         }
 
         select.addEventListener('change', (e) => {
@@ -427,6 +474,7 @@
                 loadingState.classList.remove('hidden');
                 diagramName.textContent = 'Tidak ada diagram';
                 fullscreenBtn.classList.add('hidden');
+                panzoomInfo.textContent = '-';
                 if (panZoomInstance) {
                     panZoomInstance.destroy();
                     panZoomInstance = null;
@@ -439,17 +487,24 @@
         document.getElementById('zoomToggle').addEventListener('click', toggleZoomMode);
 
         document.getElementById('zoomIn').addEventListener('click', () => {
-            if (panZoomInstance) panZoomInstance.zoomIn();
+            if (panZoomInstance) {
+                panZoomInstance.zoomIn();
+                updatePanzoomInfo();
+            }
         });
 
         document.getElementById('zoomOut').addEventListener('click', () => {
-            if (panZoomInstance) panZoomInstance.zoomOut();
+            if (panZoomInstance) {
+                panZoomInstance.zoomOut();
+                updatePanzoomInfo();
+            }
         });
 
         document.getElementById('zoomReset').addEventListener('click', () => {
             if (panZoomInstance) {
                 panZoomInstance.resetZoom();
                 panZoomInstance.center();
+                updatePanzoomInfo();
             }
         });
 
@@ -461,6 +516,7 @@
                     panZoomInstance.resize();
                     panZoomInstance.fit();
                     panZoomInstance.center();
+                    updatePanzoomInfo();
                 }
             }, 100);
         });
