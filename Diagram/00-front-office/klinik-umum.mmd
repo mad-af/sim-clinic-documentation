@@ -6,16 +6,15 @@ flowchart TD
     %% ==================== A. PENDAFTARAN LANGSUNG (Walk-In) ====================
     subgraph A_Pendaftaran_Langsung["A. PENDAFTARAN LANGSUNG (Walk-In)"]
         A1["Pasien Datang ke Klinik"] --> A2["Dapat Nomor Antrian Otomatis"]
-        A2 --> A3["Estimasi Jam Realtime"]
-        A3 -.->|"📋 30 menit/pasien<br/>Layar: Klinik"| EstimasiWalkin
+        A2 --> A3["📋 Estimasi Jam Realtime"]
         A3 --> A4["Tampilkan di Layar Antrian"]
         A4 --> A5["Menunggu Dipanggil Front Liner"]
         A5 --> A6["Pilih Poli"]
         A6 --> A6a["Pilih Dokter"]
         A6a --> A6b["Pilih Tanggal & Jam"]
         A6b --> A7{"Pernah Berobat?"}
-        A7 -->|Ya| A8["Verifikasi KTP"]
-        A7 -->|Tidak| A9["Scan Nomor RM"]
+        A7 -->|Baru| A8["Verifikasi KTP"]
+        A7 -->|Lama| A9["Scan Nomor RM"]
         
         A8 --> A8a["Scan/Foto KTP"]
         A8a --> A8b["Auto-Fill: Nama, Alamat, NIK, Tgl Lahir"]
@@ -52,8 +51,7 @@ flowchart TD
         B14a --> B10b["Input Keluhan"]
         B10b --> B15["Masuk Antrian Dokter"]
         
-        B15 --> B16["WhatsApp: Kirim Pengingat"]
-        B16 -.->|"📱 Pengingat"| KirimPengingat
+        B15 --> B16["📱 WhatsApp: Kirim Pengingat"]
         B16 --> B17["Konfirmasi Kedatangan"]
     end
     
@@ -115,14 +113,11 @@ flowchart TD
     End([Selesai])
     
     %% ==================== ANNOTATIONS ====================
-    subgraph EstimasiWalkin["📋 Estimasi Jam Realtime - Walk-In"]
-        EW1["📊 Kalkulasi: Sekarang + (Posisi × 30 menit)<br/>📺 Tampilan: Layar monitor<br/>📱 Update: Realtime setiap giliran berubah"]
+    subgraph Annotations["📌 Annotations"]
+        EW1["📋 Estimasi Jam Realtime<br/><br/>📊 Kalkulasi: Sekarang + (Posisi × 30 menit)<br/>📺 Tampilan: Layar monitor<br/>📱 Update: Realtime"]
+        KP1["📱 Kirim Pengingat WA<br/><br/>📋 Isi: Tanggal, dokter, antrian<br/>📋 Poli yang dipilih<br/>⏰ Kirim saat: Dapat nomor antrian"]
     end
-    
-    subgraph KirimPengingat["📱 Kirim Pengingat - Isi WhatsApp"]
-        KP1["📋 Isi Pesan:<br/>• Tanggal & jam booking<br/>• Nama dokter & poli<br/>• Nomor antrian<br/>• Permintaan konfirmasi kehadiran<br/><br/>⏰ Kirim saat: Dapat nomor antrian"]
-    end
-    
+
     %% ==================== STYLES ====================
     style Start fill:#E8F5E9,stroke:#4CAF50
     style End fill:#FFEBEE,stroke:#F44336
@@ -133,6 +128,5 @@ flowchart TD
     style G_Farmasi fill:#B2DFDB,stroke:#00897B
     style E_Front_Liner fill:#F3E5F5,stroke:#9C27B0
     style F_Kasir fill:#ECEFF1,stroke:#607D8B
-    style EstimasiWalkin fill:#FFF9C4,stroke:#FBC02D
-    style KirimPengingat fill:#FFF9C4,stroke:#FBC02D
+    style Annotations fill:#F5F5F5,stroke:#9E9E9E
 
