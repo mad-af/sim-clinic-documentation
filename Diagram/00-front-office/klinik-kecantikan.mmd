@@ -24,7 +24,7 @@ flowchart TD
         A12a --> A12b["Buat Kunjungan Baru"]
         A12b --> A11["Input Keluhan"]
         A11 --> A8d["📸 Upload Foto Before"]
-        A8d --> A17["Masuk Antrian Dokter"]
+        A8d --> A17["Masuk Antrian"]
 
         %% --- Pasien Lama (Walk-In) ---
         A9 --> A9a{"Lebih dari 1 Bulan?"}
@@ -33,10 +33,10 @@ flowchart TD
         A9c --> A9ca["Konsultasi Dokter"]
         A9ca --> A9d["Input Keluhan"]
         A9d --> A9e["📸 Upload Foto Before"]
-        A9e --> A17["Masuk Antrian Dokter"]
+        A9e --> A17["Masuk Antrian"]
         A9b --> A16["Buat Kunjungan Baru"]
         A16 --> A15["Input Keluhan"]
-        A15 --> A17["Masuk Antrian Dokter"]
+        A15 --> A17["Masuk Antrian"]
         A17 --> A18["📱 WhatsApp: Kirim Konfirmasi dan Estimasi"]
     end
 
@@ -58,10 +58,10 @@ flowchart TD
         B6c --> B6ca["Konsultasi Dokter"]
         B6ca --> B10a["Input Keluhan"]
         B10a --> B10b["📸 Upload Foto Before"]
-        B10b --> B15["Masuk Antrian Dokter"]
+        B10b --> B15["Masuk Antrian"]
         B6b --> B6d["Buat Kunjungan Baru"]
         B6d --> B10c["Input Keluhan"]
-        B10c --> B15["Masuk Antrian Dokter"]
+        B10c --> B15["Masuk Antrian"]
 
         %% --- Belum Pernah Berobat (Online) - Baru ---
         B5 -->|Tidak| B11["Upload KTP"]
@@ -72,7 +72,7 @@ flowchart TD
         B14a --> B14b["Buat Kunjungan Baru"]
         B14b --> B10d["Input Keluhan"]
         B10d --> B10e["📸 Upload Foto Before"]
-        B10e --> B15["Masuk Antrian Dokter"]
+        B10e --> B15["Masuk Antrian"]
 
         B15 --> B16["📱 WhatsApp: Kirim Pengingat"]
         B16 --> B17["Konfirmasi Kedatangan"]
