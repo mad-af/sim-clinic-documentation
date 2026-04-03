@@ -262,7 +262,7 @@
         const API_BASE = '/api';
         let panZoomInstance = null;
         let currentDiagram = null;
-        let zoomMode = false;
+        let zoomMode = true;
 
         const select = document.getElementById('diagramSelect');
         const fileCount = document.getElementById('fileCount');
@@ -359,7 +359,7 @@
                 center: true,
                 minZoom: 0.3,
                 maxZoom: 10,
-                zoomScaleSensitivity: 0.05,
+                zoomScaleSensitivity: 0.1,
                 mouseWheelZoomEnabled: zoomMode
             });
 

@@ -1,0 +1,146 @@
+flowchart TD
+    Start([Pasien]) --> EntryPoint{Pilih Jalur?}
+    EntryPoint{Pilih Jalur?} -->|Langsung| A1
+    EntryPoint{Pilih Jalur?} -->|Online| B1
+
+    %% ==================== A. PENDAFTARAN LANGSUNG (Walk-In) ====================
+    subgraph A_Pendaftaran_Langsung["A. PENDAFTARAN LANGSUNG (Walk-In)"]
+        A1["Pasien Datang ke Klinik"] --> A2["Dapat Nomor Antrian Otomatis"]
+        A2 --> A3["📋 Estimasi Jam Realtime"]
+        A3 --> A4["Tampilkan di Layar Antrian"]
+        A4 --> A5["Menunggu Dipanggil Front Liner"]
+        A5 --> A6["Pilih Dokter"]
+        A6 --> A6a["Pilih Tanggal & Jam"]
+        A6a --> A7{"Pernah Berobat?"}
+        A7 -->|Baru| A8["Verifikasi KTP"]
+        A7 -->|Lama| A9["Scan Nomor RM"]
+
+        %% --- Pasien Baru (Walk-In) ---
+        A8 --> A8a["Scan/Foto KTP"]
+        A8a --> A8b["Auto-Fill: Nama, Alamat, NIK, Tgl Lahir"]
+        A8b --> A8c["Lengkapi Data (Pekerjaan, Telepon)"]
+        A8c --> A12["Registrasi Pasien Baru"]
+        A12 --> A12a["👤 Buat Member Otomatis"]
+        A12a --> A12b["Buat Kunjungan Baru"]
+        A12b --> A11["Input Keluhan"]
+        A11 --> A8d["📸 Upload Foto Before"]
+        A8d --> A17["Masuk Antrian Dokter"]
+
+        %% --- Pasien Lama (Walk-In) ---
+        A9 --> A9a{"Lebih dari 1 Bulan?"}
+        A9a -->|Tidak| A9b["Langsung Masuk Antrian"]
+        A9a -->|Ya| A9c["⚠️ Notif: Wajib Konsultasi"]
+        A9c --> A9ca["Konsultasi Dokter"]
+        A9ca --> A9d["Input Keluhan"]
+        A9d --> A9e["📸 Upload Foto Before"]
+        A9e --> A17["Masuk Antrian Dokter"]
+        A9b --> A16["Buat Kunjungan Baru"]
+        A16 --> A15["Input Keluhan"]
+        A15 --> A17["Masuk Antrian Dokter"]
+        A17 --> A18["📱 WhatsApp: Kirim Konfirmasi & Estimasi"]
+    end
+
+    A18 --> C1
+
+    %% ==================== B. BOOKING ONLINE ====================
+    subgraph B_Booking_Online["B. BOOKING ONLINE"]
+        B1["Buka Link / Scan QR Code"] --> B2["Pilih Konsultasi atau Treatment"]
+        B2 --> B3["Pilih Dokter"]
+        B3 --> B4["Pilih Tanggal & Jam"]
+        B4 --> B4a["📅 Sistem atur 30 menit/slot"]
+        B4a --> B5{"Pernah Berobat?"}
+
+        %% --- Pernah Berobat (Online) - Lama ---
+        B5 -->|Ya| B6["Input Nomor RM"]
+        B6 --> B6a{"Lebih dari 1 Bulan?"}
+        B6a -->|Tidak| B6b["Langsung Masuk Antrian"]
+        B6a -->|Ya| B6c["⚠️ Notif: Wajib Konsultasi<br/>Kirim Etiket Wajib Konsul"]
+        B6c --> B6ca["Konsultasi Dokter"]
+        B6ca --> B10a["Input Keluhan"]
+        B10a --> B10b["📸 Upload Foto Before"]
+        B10b --> B15["Masuk Antrian Dokter"]
+        B6b --> B6d["Buat Kunjungan Baru"]
+        B6d --> B10c["Input Keluhan"]
+        B10c --> B15["Masuk Antrian Dokter"]
+
+        %% --- Belum Pernah Berobat (Online) - Baru ---
+        B5 -->|Tidak| B11["Upload KTP"]
+        B11 --> B11a["OCR Auto-Fill: Nama, Alamat, NIK, Tgl Lahir"]
+        B11a --> B11b["Lengkapi Data (Pekerjaan, Telepon)"]
+        B11b --> B14["Registrasi Pasien Baru"]
+        B14 --> B14a["👤 Buat Member Otomatis"]
+        B14a --> B14b["Buat Kunjungan Baru"]
+        B14b --> B10d["Input Keluhan"]
+        B10d --> B10e["📸 Upload Foto Before"]
+        B10e --> B15["Masuk Antrian Dokter"]
+
+        B15 --> B16["📱 WhatsApp: Kirim Pengingat"]
+        B16 --> B17["Konfirmasi Kedatangan"]
+    end
+
+    B17 --> C1
+
+    %% ==================== C. RUANG TUNGGU ====================
+    subgraph C_Ruang_Tunggu["C. RUANG TUNGGU"]
+        C1{"Antrian Dipanggil?"}
+        C1 -->|Ya| D1["Admin/Fron Office: Isi Data Pasien &Terima List Treatment"]
+        C1 -->|Belum| C3["Tunggu & Lihat Estimasi"]
+        C3 --> C1
+    end
+
+    D1 --> C2["Pasien Masuk Ruang Dokter"]
+    C2 --> D2
+
+    %% ==================== D. RUANG DOKTER ====================
+    subgraph D_Ruang_Dokter["D. RUANG DOKTER"]
+        D2["Dokter Input SOAP"] --> D2b["Input Treatment/Catatan"]
+        D2b --> D2a["📸 Input Foto After"]
+        D2a --> D3["Dokter Kirim List Treatment ke Front Office"]
+        D3 --> D4["Koordinasi Treatment dengan Pasien"]
+        D4 --> D5["Pasien Kembali ke Front Liner"]
+    end
+
+    D5 --> E1
+
+    %% ==================== E. FRONT LINER ====================
+    subgraph E_Front_Liner["E. FRONT LINER"]
+        E1["Front Liner Jelaskan Treatment"] --> E1a["Konfirmasi Treatment"]
+        E1a --> E2["Ke Kasir"]
+        E2 --> F1
+    end
+
+    %% ==================== F. KASIR ====================
+    subgraph F_Kasir["F. PEMBAYARAN"]
+        F1["Kasir Tampilkan Rincian"] --> F2{"Metode Bayar?"}
+        F2 -->|Tunai| F3["Bayar Tunai"]
+        F2 -->|QRIS| F4["Scan QRIS"]
+        F2 -->|Transfer| F5["Upload Bukti Transfer"]
+
+        F3 --> F6["Cetak Struk"]
+        F4 --> F6
+        F5 --> F6
+        F6 --> F7["WhatsApp: Kirim Struk"]
+        F7 --> End
+    end
+    
+    End([Selesai])
+
+    %% ==================== ANNOTATIONS ====================
+    subgraph Annotations["📌 Annotations"]
+        EW1["📋 Estimasi Jam Realtime<br/><br/>📊 Kalkulasi: Sekarang + (Posisi × 30 menit)<br/>📺 Tampilan: Layar monitor<br/>📱 Update: Realtime"]
+        KP1["📱 Kirim Pengingat WA<br/><br/>📋 Isi: Tanggal, dokter, antrian<br/>⚠️ Jika >1 bulan: Tambah etiket WAJIB KONSULTASI<br/>⏰ Kirim saat: Dapat nomor antrian"]
+        NW1["⚠️ Wajib Konsultasi<br/><br/>📋 Pasien >1 bulan tidak hadir<br/>harus konsultasi dokter terlebih dahulu"]
+        MB1["👤 Member System<br/><br/>📋 Otomatis dibuat saat registrasi baru<br/>📱 Berisi: Member ID, history, foto"]
+        FBA1["📸 Foto Before/After<br/><br/>📷 Before: Saat pendaftaran<br/>📷 After: Setelah treatment<br/>💾 Disimpan: patient_photos/{member_id}/"]
+    end
+
+    %% ==================== STYLES ====================
+    style Start fill:#E8F5E9,stroke:#4CAF50
+    style End fill:#FFEBEE,stroke:#F44336
+    style A_Pendaftaran_Langsung fill:#E8F5E9,stroke:#4CAF50
+    style B_Booking_Online fill:#E3F2FD,stroke:#2196F3
+    style C_Ruang_Tunggu fill:#E3F2FD,stroke:#2196F3
+    style D_Ruang_Dokter fill:#FFF3E0,stroke:#FF9800
+    style E_Front_Liner fill:#F3E5F5,stroke:#9C27B0
+    style F_Kasir fill:#ECEFF1,stroke:#607D8B
+    style Annotations fill:#F5F5F5,stroke:#9E9E9E
