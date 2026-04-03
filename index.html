@@ -86,6 +86,12 @@
         .btn-fullscreen:hover {
             background: #388E3C;
         }
+        .btn-toggle-active {
+            background: #FF9800;
+        }
+        .btn-toggle-active:hover {
+            background: #F57C00;
+        }
         .diagram-info {
             background: #e3f2fd;
             padding: 10px 15px;
@@ -117,6 +123,9 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
         .zoom-controls {
             display: flex;
@@ -134,19 +143,31 @@
         }
         .diagram-container {
             padding: 20px;
-            min-height: 500px;
+            min-height: 600px;
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            overflow: hidden;
+            overflow: auto;
             cursor: grab;
+            background-color: #e0e0e0;
+            background-image: radial-gradient(#999 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .mermaid {
+            display: block !important;
         }
         .diagram-container:active {
             cursor: grabbing;
         }
         .diagram-container svg {
             max-width: none !important;
+            max-height: none !important;
             display: block;
+        }
+
+        .diagram-container svg text {
+            font-size: 14px !important;
         }
         .loading {
             text-align: center;
@@ -217,9 +238,10 @@
             <div class="diagram-toolbar">
                 <span id="diagramName">Tidak ada diagram</span>
                 <div class="zoom-controls">
-                    <button id="zoomOut" class="btn zoom-btn" title="Zoom Out">−</button>
-                    <button id="zoomReset" class="btn" title="Reset Zoom">100%</button>
-                    <button id="zoomIn" class="btn zoom-btn" title="Zoom In">+</button>
+                    <button id="zoomToggle" class="btn btn-toggle-active" title="Toggle Zoom Mode">🔍 Scroll</button>
+                    <button id="zoomOut" class="btn zoom-btn" title="Zoom Out" disabled>−</button>
+                    <button id="zoomReset" class="btn" title="Reset Zoom" disabled>100%</button>
+                    <button id="zoomIn" class="btn zoom-btn" title="Zoom In" disabled>+</button>
                 </div>
             </div>
             <div class="diagram-container" id="diagramContainer">
@@ -240,6 +262,7 @@
         const API_BASE = '/api';
         let panZoomInstance = null;
         let currentDiagram = null;
+        let zoomMode = false;
 
         const select = document.getElementById('diagramSelect');
         const fileCount = document.getElementById('fileCount');
@@ -253,7 +276,7 @@
         mermaid.initialize({
             startOnLoad: false,
             theme: 'default',
-            flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' },
+            flowchart: { useMaxWidth: false, htmlLabels: true, curve: 'basis' },
             securityLevel: 'loose'
         });
 
@@ -275,9 +298,10 @@
             diagramOutput.classList.add('hidden');
 
             if (panZoomInstance) {
-                panZoomInstance.unpan();
-                panZoomInstance.resetZoom();
+                panZoomInstance.destroy();
+                panZoomInstance = null;
             }
+            currentDiagram = null;
 
             try {
                 const res = await fetch(`${API_BASE}/diagram?path=${encodeURIComponent(path)}`);
@@ -322,6 +346,8 @@
         }
 
         function initPanZoom() {
+            if (!currentDiagram) return;
+
             if (panZoomInstance) {
                 panZoomInstance.destroy();
             }
@@ -331,10 +357,39 @@
                 controlIconsEnabled: false,
                 fit: true,
                 center: true,
-                minZoom: 0.1,
+                minZoom: 0.3,
                 maxZoom: 10,
-                zoomScaleSensitivity: 0.3
+                zoomScaleSensitivity: 0.05,
+                mouseWheelZoomEnabled: zoomMode
             });
+
+            panZoomInstance.zoom(1.5);
+        }
+
+        function toggleZoomMode() {
+            zoomMode = !zoomMode;
+            const zoomToggle = document.getElementById('zoomToggle');
+            const zoomIn = document.getElementById('zoomIn');
+            const zoomOut = document.getElementById('zoomOut');
+            const zoomReset = document.getElementById('zoomReset');
+
+            if (zoomMode) {
+                zoomToggle.textContent = '🔍 Zoom ON';
+                zoomToggle.classList.add('btn-toggle-active');
+                zoomIn.disabled = false;
+                zoomOut.disabled = false;
+                zoomReset.disabled = false;
+            } else {
+                zoomToggle.textContent = '🔍 Scroll';
+                zoomToggle.classList.remove('btn-toggle-active');
+                zoomIn.disabled = true;
+                zoomOut.disabled = true;
+                zoomReset.disabled = true;
+            }
+
+            if (currentDiagram) {
+                initPanZoom();
+            }
         }
 
         function showError(msg) {
@@ -372,10 +427,16 @@
                 loadingState.classList.remove('hidden');
                 diagramName.textContent = 'Tidak ada diagram';
                 fullscreenBtn.classList.add('hidden');
+                if (panZoomInstance) {
+                    panZoomInstance.destroy();
+                    panZoomInstance = null;
+                }
             }
         });
 
         document.getElementById('refreshBtn').addEventListener('click', refreshList);
+
+        document.getElementById('zoomToggle').addEventListener('click', toggleZoomMode);
 
         document.getElementById('zoomIn').addEventListener('click', () => {
             if (panZoomInstance) panZoomInstance.zoomIn();
