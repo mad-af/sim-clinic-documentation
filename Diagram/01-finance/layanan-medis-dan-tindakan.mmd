@@ -1,0 +1,50 @@
+flowchart TD
+    Start([Mulai]) --> A1
+
+    %% ==================== A. LAYANAN MEDIS ====================
+    subgraph A_Layanan["A. LAYANAN MEDIS"]
+        A1["Pasien → Dokter\nPeriksa"] --> A2["Input SOAP\n→ Plan"]
+        A2 --> A3["💰 Jasa Konsultasi\n→ Tagihan"]
+    end
+
+    A3 --> B1
+
+    %% ==================== B. TINDAKAN MEDIS ====================
+    subgraph B_Tindakan["B. TINDAKAN MEDIS"]
+        B1{"Ada\nTindakan?"} -->|Ya| B2["💰 Tindakan Medis\n→ Tagihan"]
+    end
+
+    B1 -->|Tidak| C1
+    B2 --> C1
+
+    %% ==================== C. LAB ====================
+    subgraph C_Lab["C. LAB"]
+        C1{"Order\nLab?"} -->|Ya| C2["💰 Biaya Lab\n→ Tagihan\n(setelah hasil selesai)"]
+    end
+
+    C1 -->|Tidak| D1
+    C2 --> D1
+
+    %% ==================== D. FARMASI ====================
+    subgraph D_Farmasi["D. FARMASI"]
+        D1{"Resep\nObat?"} -->|Ya| D2["💰 Obat & Alkes\n→ Tagihan\n(setelah diserahkan)"]
+    end
+
+    D1 -->|Tidak| E1
+    D2 --> E1
+
+    %% ==================== E. SELESAI ====================
+    subgraph E_Selesai["E. SELESAI"]
+        E1["Status: 'Siap Bayar'\n→ Pasien ke Kasir"]
+    end
+
+    E1 --> End([Lunas])
+
+    %% ==================== STYLES ====================
+    style Start fill:#E8F5E9,stroke:#4CAF50
+    style End fill:#FFEBEE,stroke:#F44336
+    style A_Layanan fill:#E3F2FD,stroke:#2196F3
+    style B_Tindakan fill:#FFF3E0,stroke:#FF9800
+    style C_Lab fill:#F3E5F5,stroke:#9C27B0
+    style D_Farmasi fill:#B2DFDB,stroke:#00897B
+    style E_Selesai fill:#E0F2F1,stroke:#00796B

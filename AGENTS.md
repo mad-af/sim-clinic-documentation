@@ -67,6 +67,7 @@ Klinik App/
 | Front Office | ✅ Done (3 diagrams) |
 | Rekam Medis (EMR) | Pending diagram |
 | Kasir & Tagihan | ✅ Done (tagihan-pasien.mmd) |
+| Layanan Medis & Tindakan | ✅ Done (layanan-medis-dan-tindakan.mmd) |
 | Farmasi | Pending diagram |
 | Keuangan | Pending diagram |
 | HR | Pending diagram |

@@ -374,8 +374,8 @@
                 mouseWheelZoomEnabled: zoomMode
             });
 
-            panZoomInstance.zoom(0.77);
-            panZoomInstance.pan({ x: 210, y: 38 });
+            panZoomInstance.zoom(1);
+            panZoomInstance.pan({ x: 0, y: 0 });
             updatePanzoomInfo();
 
             panZoomInstance.setOnZoom(function(level) {
@@ -438,7 +438,7 @@
             
             fileCount.textContent = diagrams.length ? `(${diagrams.length} file)` : '';
 
-            const defaultPath = diagrams.find(d => d.path.includes('tagihan-pasien'))?.path;
+            const defaultPath = diagrams.find(d => d.path.includes('layanan-medis-dan-tindakan'))?.path;
             if (defaultPath) {
                 select.value = defaultPath;
                 loadDiagram(defaultPath);
