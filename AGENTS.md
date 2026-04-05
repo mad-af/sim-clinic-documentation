@@ -26,10 +26,19 @@ Klinik App/
 │   ├── front-office-gigi.md       # Spec front office klinik gigi
 │   └── front-office-kecantikan.md # Spec front office klinik kecantikan
 ├── Diagram/
-│   └── 00-front-office/          # Diagram flowchart front office
-│       ├── klinik-umum.mmd       # Alur klinik umum
-│       ├── klinik-gigi.mmd       # Alur klinik gigi
-│       └── klinik-kecantikan.mmd  # Alur klinik kecantikan
+│   ├── 00-front-office/          # Diagram flowchart front office
+│   │   ├── klinik-umum.mmd       # Alur klinik umum
+│   │   ├── klinik-gigi.mmd       # Alur klinik gigi
+│   │   └── klinik-kecantikan.mmd  # Alur klinik kecantikan
+│   ├── 01-finance/               # Diagram finance
+│   │   ├── tagihan-pasien.mmd
+│   │   ├── layanan-medis-dan-tindakan.mmd
+│   │   ├── payroll-staff-dan-dokter.mmd
+│   │   └── pemasukan-dan-pengeluaran-klinik.mmd
+│   └── 02-hr/                   # Diagram HR
+│       ├── manajemen-staff-dan-dokter.mmd
+│       ├── absensi-staff-dan-dokter.mmd
+│       └── pengaturan-shift-staff-dan-dokter.mmd
 ├── index.html                     # Viewer diagram
 ├── server.js                      # Static server untuk index.html
 └── AGENTS.md

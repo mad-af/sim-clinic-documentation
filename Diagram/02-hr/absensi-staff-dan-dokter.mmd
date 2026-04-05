@@ -1,0 +1,56 @@
+flowchart TD
+    Start([Mulai]) --> A1
+
+    A1["📅 Kelola Kehadiran\nPegawai & Dokter"] --> A_Staff["A. STAFF"]
+    A1 --> B_Dokter["B. DOKTER"]
+
+    %% ==================== A. STAFF ====================
+    subgraph A_Staff["A. STAFF"]
+        A_Staff1["📅 Lihat Jadwal Shift"] --> A_StaffA["Shift: Pagi, Sore, Malam"]
+        A_StaffA --> A_StaffB{"Sudah Presensi?"}
+        A_StaffB -->|Ya| A_StaffC["✅ Record:\nJam Masuk & Pulang"]
+        A_StaffB -->|Tidak| A_StaffD["🔴 Presensi\n(Web/Fingerprint)"]
+        A_StaffD --> A_StaffC
+        A_StaffC --> A_StaffE{"Tidak\nMasuk?"}
+        A_StaffE -->|Ya| A_StaffF["⚙️ Otomatis:\nPotongan Tunjangan"]
+        A_StaffE -->|Tidak| A_StaffG["📊 Data ke\nPayroll"]
+        A_StaffF --> A_StaffG
+    end
+
+    %% ==================== B. DOKTER ====================
+    subgraph B_Dokter["B. DOKTER"]
+        B_Dok1["📅 Lihat Jadwal Praktik"] --> B_DokA["Practice Hours\n(Bisa berbeda tiap hari)"]
+        B_DokA --> B_DokB{"Sudah\nCheck-in?"}
+        B_DokB -->|Ya| B_DokC["⏰ Check-out\nSelesai Praktik"]
+        B_DokB -->|Tidak| B_DokD["🔴 Check-in\nMulai Praktik"]
+        B_DokD --> B_DokC
+        B_DokC --> B_DokE{"Tidak\nPraktik?"}
+        B_DokE -->|Ya| B_DokF["⚙️ Otomatis:\nBagi Hasil Berkurang"]
+        B_DokE -->|Tidak| B_DokG["📊 Data ke\nPayroll"]
+        B_DokF --> B_DokG
+    end
+
+    A_StaffG & B_DokG --> H1
+
+    %% ==================== C. INTEGRASI ====================
+    subgraph H1_Integrasi["C. INTEGRASI PAYROLL"]
+        H1["📊 Rekap Kehadiran"] --> H2["📋 Hitung Otomatis:\n• Tunjangan (Staff)\n• Bagi Hasil (Dokter)"]
+    end
+
+    H2 --> End([Selesai])
+
+    %% ==================== ANNOTATIONS ====================
+    subgraph Annotations["📌 Annotations"]
+        ANN1["👨‍💼 Staff<br/><br/>📋 Presensi sesuai shift kerja<br/>📋 Shift: Pagi, Sore, Malam<br/>📋 Jika tidak presensi = potongan tunjangan otomatis"]
+        ANN2["👨‍⚕️ Dokter<br/><br/>📋 Practice hours bisa berbeda tiap hari<br/>📋 Check-in saat mulai, check-out saat selesai<br/>📋 Jika tidak praktik = bagi hasil berkurang otomatis"]
+        ANN3["🌐 Presensi Digital<br/><br/>📋 Web: Via web (IP kantor, tidak bisa dari rumah)<br/>📋 Fingerprint: Upload data dari mesin absensi"]
+        ANN4["⚙️ Otomatis<br/><br/>📋 Potongan & bagi hasil dihitung otomatis oleh sistem<br/>📋 Berdasarkan data presensi dari modul HR<br/>📋 Hasilnya masuk ke modul payroll"]
+    end
+
+    %% ==================== STYLES ====================
+    style Start fill:#E8F5E9,stroke:#4CAF50
+    style End fill:#FFEBEE,stroke:#F44336
+    style A_Staff fill:#E3F2FD,stroke:#2196F3
+    style B_Dokter fill:#FFF3E0,stroke:#FF9800
+    style H1_Integrasi fill:#F3E5F5,stroke:#9C27B0
+    style Annotations fill:#F5F5F5,stroke:#9E9E9E

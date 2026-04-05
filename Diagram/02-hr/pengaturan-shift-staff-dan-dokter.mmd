@@ -1,0 +1,55 @@
+flowchart TD
+    Start([Mulai]) --> A1
+
+    %% ==================== A. PENGATURAN ====================
+    subgraph A_Pengaturan["A. PENGATURAN"]
+        A1["🕐 Atur Shift Kerja"] --> A1a["Pagi (08:00-16:00)\nSore (16:00-24:00)\nMalam (00:00-08:00)"]
+        A1a --> A2["📝 Input Jam\nMasuk & Pulang"]
+    end
+
+    A2 --> B_Staff1
+
+    subgraph B_Staff["B1. TUGASKAN KE STAFF"]
+        B_Staff1["📋 Assign Shift"] --> B_StaffA["Pilih Staff"]
+        B_StaffA --> B_StaffB["Tentukan Jadwal\n(Per Minggu/Bulan)"]
+        B_StaffB --> B_StaffC["✅ Simpan"]
+    end
+
+    A2 --> B_Dok1
+
+    subgraph B_Dokter["B2. TUGASKAN KE DOKTER"]
+        B_Dok1["📅 Atur Jadwal Praktik"] --> B_DokA["Practice Hours\n(Bisa berbeda tiap dokter)"]
+        B_DokA --> B_DokB["Pilih Dokter"]
+        B_DokB --> B_DokC["Tentukan Jam Praktik\nHarian"]
+        B_DokC --> B_DokD["✅ Simpan"]
+    end
+
+    B_StaffC & B_DokD --> C1
+
+    %% ==================== C. MONITORING ====================
+    subgraph C_Monitoring["C. MONITORING & LAPORAN"]
+        C1["📅 Kelola Jadwal"] --> C1a["📊 Kalender Shift\n(Staff & Dokter)"]
+        C1a --> C2{"Ada Konflik?"}
+        C2 -->|Ya| C3["⚠️ Alert Konflik\nShift Bertabrakan"]
+        C2 -->|Tidak| C4["✅ Jadwal Valid"]
+        C3 --> C1
+    end
+
+    C4 --> End([Selesai])
+
+    %% ==================== ANNOTATIONS ====================
+    subgraph Annotations["📌 Annotations"]
+        ANN1["🕐 Shift Kerja<br/><br/>📋 Pagi: 08:00 - 16:00<br/>📋 Sore: 16:00 - 24:00<br/>📋 Malam: 00:00 - 08:00"]
+        ANN2["👨‍⚕️ Practice Hours<br/><br/>📋 Jam praktik dokter fleksibel per dokter<br/>📋 Contoh: Dr. A = 09:00-15:00, Dr. B = 14:00-21:00<br/>📋 Bisa berbeda setiap hari"]
+        ANN3["📊 Kalender Shift<br/><br/>📋 View visual jadwal shift per minggu/bulan<br/>📋 Tampilkan shift staff & jam praktik dokter<br/>📋 Mudah lihat siapa sedang praktik"]
+        ANN4["⚠️ Konflik Shift<br/><br/>📋 Alert jika ada tumpang tindih shift<br/>📋 Misal: Staff A & B diassign shift yang sama<br/>📋 Atau: 2 dokter dijadwalkan praktik jam bersamaan (untuk klinik kecil)"]
+    end
+
+    %% ==================== STYLES ====================
+    style Start fill:#E8F5E9,stroke:#4CAF50
+    style End fill:#FFEBEE,stroke:#F44336
+    style A_Pengaturan fill:#E3F2FD,stroke:#2196F3
+    style B_Staff fill:#FFF3E0,stroke:#FF9800
+    style B_Dokter fill:#FFF3E0,stroke:#FF9800
+    style C_Monitoring fill:#F3E5F5,stroke:#9C27B0
+    style Annotations fill:#F5F5F5,stroke:#9E9E9E
