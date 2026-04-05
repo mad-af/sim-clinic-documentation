@@ -1,0 +1,130 @@
+flowchart TD
+    Start([Pasien]) --> EntryPoint{Pilih Jalur?}
+    EntryPoint{Pilih Jalur?} -->|Langsung| A1
+    EntryPoint{Pilih Jalur?} -->|Online| B1
+
+    %% ==================== A. PENDAFTARAN LANGSUNG (Walk-In) ====================
+    subgraph A_Pendaftaran_Langsung["A. PENDAFTARAN LANGSUNG (Walk-In)"]
+        A1["Pasien Datang ke Klinik"] --> A2["Dapat Nomor Antrian Otomatis"]
+        A2 --> A3["📋 Estimasi Jam Realtime"]
+        A3 --> A4["Tampilkan di Layar Antrian"]
+        A4 --> A5["Menunggu Dipanggil Front Liner"]
+        A5 --> A6["Pilih Dokter"]
+        A6 --> A6a["Pilih Tanggal dan Jam"]
+        A6a --> A7{"Pernah Berobat?"}
+        A7 -->|Tidak| A8["Verifikasi KTP"]
+        A7 -->|Ya| A9["Scan Nomor RM"]
+
+        %% --- Pasien Baru (Walk-In) ---
+        A8 --> A8a["Scan/Foto KTP"]
+        A8a --> A8b["Auto-Fill: Nama, Alamat, NIK, Tgl Lahir"]
+        A8b --> A10["Lengkapi Data (Pekerjaan, Telepon)"]
+        A10 --> A10a["Registrasi Pasien Baru"]
+        A10a --> A12["👤 Buat Member Otomatis"]
+        A12 --> A12a["Buat Kunjungan Baru"]
+        A12a --> A12b["Input Keluhan"]
+        A12b --> A11["📷 Upload Foto Gigi"]
+        A11 --> A17["Masuk Antrian Dokter"]
+
+        %% --- Pasien Lama (Walk-In) ---
+        A9 --> A16["Buat Kunjungan Baru"]
+        A16 --> A15["Input Keluhan"]
+        A15 --> A15a["📷 Upload Foto Gigi"]
+        A15a --> A17["Masuk Antrian Dokter"]
+    end
+
+    A17 --> C1
+
+    %% ==================== B. BOOKING ONLINE ====================
+    subgraph B_Booking_Online["B. BOOKING ONLINE"]
+        B1["Buka Link / Scan QR Code"] --> B1a["Booking: Pasien pilih jenis layanan"]
+        B1a --> B2["Pilih Konsultasi atau Tindakan"]
+        B2 --> B3["Pilih Dokter"]
+        B3 --> B4["Pilih Tanggal dan Jam"]
+        B4 --> B4a["📅 Sistem atur 30 menit/slot"]
+        B4a --> B5{"Pernah Berobat?"}
+
+        %% --- Pernah Berobat (Online) - Lama ---
+        B5 -->|Ya| B6["Input Nomor RM"]
+        B6 --> B6b["Buat Kunjungan Baru"]
+        B6b --> B10a["Input Keluhan"]
+        B10a --> B6a["📷 Upload Foto Gigi"]
+        B6a --> B15["Masuk Antrian Dokter"]
+
+        %% --- Belum Pernah Berobat (Online) - Baru ---
+        B5 -->|Tidak| B11["Upload KTP"]
+        B11 --> B11a["OCR Auto-Fill: Nama, Alamat, NIK, Tgl Lahir"]
+        B11a --> B12["Lengkapi Data (Pekerjaan, Telepon)"]
+        B12 --> B14["Registrasi Pasien Baru"]
+        B14 --> B14a["👤 Buat Member Otomatis"]
+        B14a --> B14b["Buat Kunjungan Baru"]
+        B14b --> B10b["Input Keluhan"]
+        B10b --> B10ba["📷 Upload Foto Gigi"]
+        B10ba --> B15["Masuk Antrian Dokter"]
+
+        B15 --> B16["📱 WhatsApp: Kirim Pengingat dan Konfirmasi"]
+        B16 --> B17["Konfirmasi Kedatangan"]
+    end
+
+    B17 --> C1
+
+    %% ==================== C. RUANG TUNGGU ====================
+    subgraph C_Ruang_Tunggu["C. RUANG TUNGGU"]
+        C1{"Antrian Dipanggil?"}
+        C1 -->|Ya| C2["Pasien Masuk Ruang Dokter"]
+        C1 -->|Belum| C3["Tunggu dan Lihat Estimasi"]
+        C3 --> C1
+    end
+
+    C2 --> D1
+
+    %% ==================== D. RUANG DOKTER ====================
+    subgraph D_Ruang_Dokter["D. RUANG DOKTER"]
+        D1["Admin/Front Office: Isi Data Pasien"] --> D2["Dokter Input SOAP"]
+        D2 --> D3["Dokter Konsultasi dan Langsung Tindakan"]
+        D3 --> D4["Input Hasil Pemeriksaan dan Tindakan ke Rekam Medis"]
+        D4 --> D5["Pasien Kembali ke Front Liner"]
+    end
+
+    D5 --> E1
+
+    %% ==================== E. FRONT LINER ====================
+    subgraph E_Front_Liner["E. FRONT LINER"]
+        E1["Konfirmasi Selesai"] --> E2["Ke Kasir"]
+        E2 --> F1
+    end
+
+    %% ==================== F. KASIR ====================
+    subgraph F_Kasir["F. PEMBAYARAN"]
+        F1["Kasir Tampilkan Rincian"] --> F2{"Metode Bayar?"}
+        F2 -->|Tunai| F3["Bayar Tunai"]
+        F2 -->|QRIS| F4["Scan QRIS"]
+        F2 -->|Transfer| F5["Upload Bukti Transfer"]
+
+        F3 --> F6["Cetak Struk"]
+        F4 --> F6
+        F5 --> F6
+        F6 --> F7["WhatsApp: Kirim Struk"]
+        F7 --> End
+    end
+
+    End([Selesai])
+
+    %% ==================== ANNOTATIONS ====================
+    subgraph Annotations["📌 Annotations"]
+        EW1["📋 Estimasi Jam Realtime<br/><br/>📊 Kalkulasi: Sekarang + (Posisi × 30 menit)<br/>📺 Layar monitor<br/>📱 Update: Realtime"]
+        KP1["📱 Kirim Pengingat dan Konfirmasi WA<br/><br/>📋 Isi: Tanggal, dokter, antrian<br/>📋 Konsultasi atau Tindakan<br/>⏰ Kirim saat: Dapat nomor antrian"]
+        FG1["📷 Upload Foto Gigi<br/><br/>📷 Diambil saat pendaftaran<br/>📋 Untuk dokumentasi kondisi gigi<br/>💾 Disimpan: patient_photos/{member_id}/"]
+        MB1["👤 Member System<br/><br/>📋 Otomatis dibuat saat registrasi baru<br/>📱 Berisi: Member ID, history, foto"]
+    end
+
+    %% ==================== STYLES ====================
+    style Start fill:#E8F5E9,stroke:#4CAF50
+    style End fill:#FFEBEE,stroke:#F44336
+    style A_Pendaftaran_Langsung fill:#E8F5E9,stroke:#4CAF50
+    style B_Booking_Online fill:#E3F2FD,stroke:#2196F3
+    style C_Ruang_Tunggu fill:#E3F2FD,stroke:#2196F3
+    style D_Ruang_Dokter fill:#FFF3E0,stroke:#FF9800
+    style E_Front_Liner fill:#F3E5F5,stroke:#9C27B0
+    style F_Kasir fill:#ECEFF1,stroke:#607D8B
+    style Annotations fill:#F5F5F5,stroke:#9E9E9E
