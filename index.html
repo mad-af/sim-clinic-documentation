@@ -438,7 +438,7 @@
             
             fileCount.textContent = diagrams.length ? `(${diagrams.length} file)` : '';
 
-            const defaultPath = diagrams.find(d => d.path.includes('klinik-kecantikan'))?.path;
+            const defaultPath = diagrams.find(d => d.path.includes('manajemen-staff-dan-dokter'))?.path;
             if (defaultPath) {
                 select.value = defaultPath;
                 loadDiagram(defaultPath);

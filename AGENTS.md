@@ -82,7 +82,7 @@ Klinik App/
 | Pemasukan & Pengeluaran | ✅ Done (pemasukan-dan-pengeluaran-klinik.mmd) |
 | Farmasi | Pending diagram |
 | Keuangan | ✅ Done (pemasukan-dan-pengeluaran-klinik.mmd) |
-| HR | Pending diagram |
+| HR | ✅ Done (manajemen-staff-dan-dokter.mmd) |
 | Penunjang (Lab/Rad) | Pending diagram |
 | Hak Akses | Pending diagram |
 

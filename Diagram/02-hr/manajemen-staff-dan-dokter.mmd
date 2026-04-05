@@ -1,0 +1,67 @@
+flowchart TD
+    Start([Mulai]) --> A1
+
+    %% ==================== A. DATA INDUK (PARALLEL) ====================
+    subgraph A_Data_Induk["A. DATA INDUK"]
+        A1["📋 Input Profil"] --> A1a["Foto, KTP, Alamat"]
+    end
+
+    subgraph A2Staff["A1. STAFF"]
+        A1a --> A2Staff1["Input Jabatan\n(Admin, Perawat, CS, Farmasi)"]
+    end
+
+    subgraph A2Dokter["A2. DOKTER"]
+        A1a --> A2Dok1["Input Jabatan\n(Dokter, Dokter Gigi, dll)"]
+        A2Dok1 --> A2Dok2["📜 Kredensial Medis"]
+        A2Dok2 --> A2Dok2a["STR & SIP"]
+        A2Dok2a --> A2Dok3["⚠️ Sistem Cek Expiry\n(Alert 3 bulan sebelum expired)"]
+    end
+
+    A2Staff1 & A2Dok3 --> A3
+
+    subgraph A3_Dokumen["A3. DOKUMEN"]
+        A3["📁 Upload Dokumen"] --> A3a["Kontrak Kerja, Ijazah"]
+    end
+
+    A3a --> B1
+
+    %% ==================== B. PRESENSI & JADWAL (PARALLEL) ====================
+    subgraph B_Presensi["B. PRESENSI & JADWAL"]
+        B1["📅 Kelola Jadwal\n& Kehadiran"] --> B1a["📅 Atur Shift"]
+        B1["📅 Kelola Jadwal\n& Kehadiran"] --> B1b["📅 Pengajuan Cuti"]
+
+        B1a --> B1a1["Pagi, Sore, Malam"]
+        B1a1 --> B2["✅ Presensi Harian"]
+        B2 --> B2a["Web (IP-based) /\nFingerprint"]
+
+        B1b --> B1b1["→ Owner/Manager\nApproval"]
+    end
+
+    B2a & B1b1 --> C1
+
+    %% ==================== C. LAPORAN HR ====================
+    subgraph C_Laporan["C. LAPORAN HR"]
+        C1["📊 Daftar Pegawai\n+ Status STR/SIP"] --> C2["📊 Presensi &\nKehadiran"]
+        C2 --> C3["📊 Cuti Menunggu\nApproval"]
+    end
+
+    C3 --> End([Selesai])
+
+    %% ==================== ANNOTATIONS ====================
+    subgraph Annotations["📌 Annotations"]
+        ANN1["📜 Kredensial Medis<br/><br/>📋 STR: Surat Tanda Registrasi<br/>Sertifikat kelayakan dokter dari Konsil Kedokteran Indonesia<br/><br/>📋 SIP: Surat Izin Praktik<br/>Izin praktik dari Dinas Kesehatan setempat"]
+        ANN2["⚠️ Alert Expiry<br/><br/>📋 Sistem otomatis cek tanggal expiry STR/SIP<br/>📋 Notifikasi 3 bulan sebelum expired<br/>📋 Agar dokter tetap bisa praktik dengan dokumen valid"]
+        ANN3["✅ Presensi Digital<br/><br/>📋 Web: Absensi via web (IP kantor, tidak bisa dari rumah)<br/>📋 Fingerprint: Upload data dari mesin absensi<br/>📋 Menghitung kehadiran untuk tunjangan & potongan"]
+        ANN4["📅 Cuti → Approval<br/><br/>📋 Karyawan ajukan cuti via sistem<br/>📋 Owner/Manager review & approve<br/>📋 Cuti yang belum disetujui muncul di Dashboard alert"]
+    end
+
+    %% ==================== STYLES ====================
+    style Start fill:#E8F5E9,stroke:#4CAF50
+    style End fill:#FFEBEE,stroke:#F44336
+    style A_Data_Induk fill:#E3F2FD,stroke:#2196F3
+    style A2Staff fill:#FFF3E0,stroke:#FF9800
+    style A2Dokter fill:#FFF3E0,stroke:#FF9800
+    style A3_Dokumen fill:#E8F5E9,stroke:#4CAF50
+    style B_Presensi fill:#F3E5F5,stroke:#9C27B0
+    style C_Laporan fill:#ECEFF1,stroke:#607D8B
+    style Annotations fill:#F5F5F5,stroke:#9E9E9E
