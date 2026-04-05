@@ -1,0 +1,75 @@
+flowchart TD
+    Start([Mulai]) --> Header
+
+    Header["📋 Pengajuan Izin Cuti & Lembur"] --> Split
+
+    Split["Pilih Tipe Pengajuan"] --> A_Cuti["A. CUTI"]
+    Split --> B_Lembur["B. LEMBUR"]
+
+    %% ==================== A. CUTI ====================
+    subgraph A_Cuti["A. CUTI"]
+        direction TB
+        A1["👤 Employee Akses\nMenu Pengajuan Cuti"] --> A2["📝 Form Pengajuan"]
+        A2 --> A3{"Jenis Cuti?"}
+        A3 -->|Tahunan| A4a["🎯 Sistem Cek\nKuota Cuti Tahunan"]
+        A3 -->|Sakit| A4b["🩺 Input Diagnosa\n(Kode ICD)"]
+        A3 -->|Melahirkan| A4c["📅 Input Tanggal\n Rencana Melahirkan"]
+        A3 -->|Darurat| A4d["⚡ Input Keterangan\n Darurat"]
+        
+        A4a --> A5a{"Kuota\nTersedia?"}
+        A4b --> A5b["✅ Lanjut\n ke Approval"]
+        A4c --> A5c["✅ Lanjut\n ke Approval"]
+        A4d --> A5d["✅ Lanjut\n ke Approval"]
+        
+        A5a -->|Ya| A5b
+        A5a -->|Tidak| A5x["❌ Tidak Bisa\nAjukan Cuti"]
+        
+        A5b --> A6["📤 Submit\nPengajuan"]
+        A6 --> A7["🔔 Notifikasi ke\nOwner/Manager"]
+        A7 --> A8{"✅ Approved\n atau ❌ Rejected?"}
+        
+        A8 -->|Approved| A9["📅 Update\nKalender & Shift"]
+        A9 --> A10["💰 Potongan Otomatis\n(Jika Ada)"]
+        A10 --> A11["✅ Slip Gaji\nTerintegrasi"]
+        
+        A8 -->|Rejected| A12["📩 Notifikasi ke\nEmployee\n(Pakai Alasan)"]
+    end
+
+    %% ==================== B. LEMBUR ====================
+    subgraph B_Lembur["B. LEMBUR"]
+        direction TB
+        B1["👤 Employee Akses\nMenu Pengajuan Lembur"] --> B2["📝 Form Pengajuan"]
+        B2 --> B3["💡 Input:\n• Alasan Lembur\n• Rencana Jam Mulai\n• Estimasi Durasi"]
+        B3 --> B4["🎯 Sistem Validasi\nAturan Lembur"]
+        B4 --> B5{"Rules\nPassed?"}
+        B5 -->|Ya| B6["📤 Submit\nPengajuan"]
+        B5 -->|Tidak| B5x["❌ Tidak Bisa\nAjukan Lembur\n(Misal: exceeds max)"]
+        B6 --> B7["🔔 Notifikasi ke\nOwner/Manager"]
+        B7 --> B8{"✅ Approved\n atau ❌ Rejected?"}
+        
+        B8 -->|Approved| B9["⏱️ Employee Log\nJam Aktual Lembur"]
+        B9 --> B10["🔍 Approver Verifikasi\nJam Aktual"]
+        B10 --> B11["✅ Verifikasi\nDisetujui"]
+        B11 --> B12["💰 Uang Lembur\nMasuk Payroll"]
+        
+        B8 -->|Rejected| B12x["📩 Notifikasi ke\nEmployee\n(Pakai Alasan)"]
+    end
+
+    A11 & B12 & A12 & B12x --> End([Selesai])
+
+    %% ==================== ANNOTATIONS ====================
+    subgraph Annotations["📌 Annotations"]
+        ANN1["🎯 Aturan Cuti<br/><br/>📋 Cuti Tahunan: berdasarkan kuota yang terdaftar<br/>📋 Cuti Sakit: butuh diagnosa dokter (ICD)<br/>📋 Cuti Melahirkan: sesuai ketentuan KRH<br/>📋 Cuti Darurat: untuk keadaan mendesak"]
+        ANN2["⚙️ Validasi Lembur<br/><br/>📋 Maksimum jam lembur per bulan ( regra klinik)<br/>📋 Lembur harus diajukan BEFORE lembur (pre-approval)<br/>📋 Tidak bisa lembur jika sudah di luar jam kerja yang diizinkan"]
+        ANN3["🔔 Notification<br/><br/>📋 Notifikasi real-time ke Owner/Manager (in-app)<br/>📋 Tersedia di Dashboard: &quot;Cuti Menunggu Approval&quot;<br/>📋 Employee bisa track status pengajuan"]
+        ANN4["💰 Payroll Integration<br/><br/>📋 Approved leave → otomatis potong tunjangan (jika applicable)<br/>📋 Approved overtime → uang lembur jadi komponen gaji<br/>📋 Slip Gaji: employee bisa download sendiri"]
+    end
+
+    %% ==================== STYLES ====================
+    style Start fill:#E8F5E9,stroke:#4CAF50
+    style End fill:#FFEBEE,stroke:#F44336
+    style A_Cuti fill:#E3F2FD,stroke:#2196F3
+    style B_Lembur fill:#FFF3E0,stroke:#FF9800
+    style Annotations fill:#F5F5F5,stroke:#9E9E9E
+    style A5x fill:#FFCDD2,stroke:#F44336
+    style B5x fill:#FFCDD2,stroke:#F44336
