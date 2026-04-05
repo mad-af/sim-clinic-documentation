@@ -79,8 +79,9 @@ Klinik App/
 | Kasir & Tagihan | ✅ Done (tagihan-pasien.mmd) |
 | Layanan Medis & Tindakan | ✅ Done (layanan-medis-dan-tindakan.mmd) |
 | Payroll Staff & Dokter | ✅ Done (payroll-staff-dan-dokter.mmd) |
+| Pemasukan & Pengeluaran | ✅ Done (pemasukan-dan-pengeluaran-klinik.mmd) |
 | Farmasi | Pending diagram |
-| Keuangan | Pending diagram |
+| Keuangan | ✅ Done (pemasukan-dan-pengeluaran-klinik.mmd) |
 | HR | Pending diagram |
 | Penunjang (Lab/Rad) | Pending diagram |
 | Hak Akses | Pending diagram |
