@@ -1,0 +1,67 @@
+flowchart TD
+    Start([Pasien Selesai\nPeriksa]) --> A1
+
+    %% ==================== A. STATUS ====================
+    subgraph A_Status["A. STATUS"]
+        A1["Status jd 'Siap Bayar'\n(otomatis)"]
+    end
+
+    A1 --> B1
+
+    %% ==================== B. RINCIAN TAGIHAN ====================
+    subgraph B_Tagihan["B. RINCIAN TAGIHAN"]
+        B1["Rincian Tagihan\n(Otomatis dari sistem)"]
+        B1 --> B2["📋 Item:"]
+        B2 --> B3["👨‍⚕️ Jasa Konsultasi\n(Rekam Medis)"]
+        B2 --> B4["💊 Obat & Alkes\n(Farmasi — stlh serahkan)"]
+        B2 --> B5["🔬 Biaya Lab/Rad\n(Penunjang)"]
+        B2 --> B6["🩺 Tindakan Medis\n(Rekam Medis - Plan)"]
+    end
+
+    B3 --> C1
+    B4 --> C1
+    B5 --> C1
+    B6 --> C1
+
+    %% ==================== C. DISKON ====================
+    subgraph C_Diskon["C. DISKON"]
+        C1{"Tambah\nDiskon?"} -->|Ya| C2["Input Diskon / Voucher"]
+        C2 --> D1
+        C1 -->|Tidak| D1
+    end
+
+    D1 --> E1
+
+    %% ==================== D. PEMBAYARAN ====================
+    subgraph D_Bayar["D. PEMBAYARAN"]
+        D1["Bayar Tunai"] --> D2["Hitung Kembalian"]
+    end
+
+    D2 --> E1
+
+    %% ==================== E. SELESAI ====================
+    subgraph E_Selesai["E. SELESAI"]
+        E1["Kasir klik 'Bayar'"] --> E2["Status jd 'Selesai'\n→ Data ke Keuangan"]
+    end
+
+    E2 --> F1
+
+    %% ==================== F. STRUK ====================
+    subgraph F_Struk["F. STRUK & REKAP"]
+        F1{"Cetak Struk?"} -->|Ya| F2["Cetak Struk"]
+        F1 -->|Tidak| F3
+        F2 --> F3
+        F3["📋 Rekap Kasir Harian"]
+    end
+
+    F3 --> End([Selesai])
+
+    %% ==================== STYLES ====================
+    style Start fill:#E8F5E9,stroke:#4CAF50
+    style End fill:#FFEBEE,stroke:#F44336
+    style A_Status fill:#E8F5E9,stroke:#4CAF50
+    style B_Tagihan fill:#E3F2FD,stroke:#2196F3
+    style C_Diskon fill:#FFF3E0,stroke:#FF9800
+    style D_Bayar fill:#F3E5F5,stroke:#9C27B0
+    style E_Selesai fill:#E0F2F1,stroke:#00796B
+    style F_Struk fill:#ECEFF1,stroke:#607D8B

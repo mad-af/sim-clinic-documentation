@@ -177,24 +177,7 @@
         .diagram-container svg text {
             font-size: 14px !important;
         }
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid #ddd;
-            border-top-color: #2196F3;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
-        }
+        
         .hidden {
             display: none !important;
         }
@@ -216,6 +199,7 @@
             right: 20px;
             z-index: 10000;
         }
+        
         .file-count {
             color: #666;
             font-size: 13px;
@@ -254,8 +238,8 @@
                 </div>
             </div>
             <div class="diagram-container" id="diagramContainer">
-                <div id="diagramOutput" class="mermaid hidden"></div>
-            </div>
+<div id="diagramOutput" class="mermaid hidden"></div>
+        </div>
         </div>
 
         <button id="fullscreenBtn" class="btn btn-fullscreen fullscreen-toggle hidden" title="Fullscreen">
@@ -275,7 +259,7 @@
         const errorMsg = document.getElementById('errorMsg');
         const diagramOutput = document.getElementById('diagramOutput');
         const diagramName = document.getElementById('diagramName');
-        const loadingState = document.getElementById('loadingState');
+        
         const fullscreenBtn = document.getElementById('fullscreenBtn');
         const panzoomInfo = document.getElementById('panzoomInfo');
 
@@ -300,7 +284,7 @@
         async function loadDiagram(path) {
             showError('');
             diagramInfo.style.display = 'none';
-            loadingState.classList.remove('hidden');
+            
             diagramOutput.classList.add('hidden');
 
             if (panZoomInstance) {
@@ -316,12 +300,12 @@
                 await renderDiagram(content, path);
             } catch (err) {
                 showError('Gagal memuat diagram: ' + err.message);
-                loadingState.classList.add('hidden');
+                
             }
         }
 
         async function renderDiagram(mmdContent, path) {
-            loadingState.classList.remove('hidden');
+            
             diagramOutput.classList.add('hidden');
             diagramOutput.innerHTML = '';
             diagramOutput.classList.remove('hidden');
@@ -359,7 +343,7 @@
                 diagramInfo.style.display = 'block';
             } catch (err) {
                 showError('Gagal render diagram: ' + err.message);
-                loadingState.classList.remove('hidden');
+                
                 diagramOutput.classList.add('hidden');
             }
         }
@@ -454,7 +438,7 @@
             
             fileCount.textContent = diagrams.length ? `(${diagrams.length} file)` : '';
 
-            const defaultPath = diagrams.find(d => d.path.includes('klinik-umum'))?.path;
+            const defaultPath = diagrams.find(d => d.path.includes('tagihan-pasien'))?.path;
             if (defaultPath) {
                 select.value = defaultPath;
                 loadDiagram(defaultPath);
@@ -467,7 +451,7 @@
                 loadDiagram(path);
             } else {
                 diagramOutput.classList.add('hidden');
-                loadingState.classList.remove('hidden');
+                
                 diagramName.textContent = 'Tidak ada diagram';
                 fullscreenBtn.classList.add('hidden');
                 panzoomInfo.textContent = '-';
