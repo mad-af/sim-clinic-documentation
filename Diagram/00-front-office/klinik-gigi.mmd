@@ -12,6 +12,7 @@ flowchart TD
         A5 --> A6["Pilih Dokter"]
         A6 --> A6a["Pilih Tanggal dan Jam"]
         A6a --> A7{"Pernah Berobat?"}
+
         A7 -->|Tidak| A8["Verifikasi KTP"]
         A7 -->|Ya| A9["Scan Nomor RM"]
 
@@ -21,16 +22,13 @@ flowchart TD
         A8b --> A10["Lengkapi Data (Pekerjaan, Telepon)"]
         A10 --> A10a["Registrasi Pasien Baru"]
         A10a --> A12["👤 Buat Member Otomatis"]
-        A12 --> A12a["Buat Kunjungan Baru"]
-        A12a --> A12b["Input Keluhan"]
-        A12b --> A11["📷 Upload Foto Gigi"]
-        A11 --> A17["Masuk Antrian Dokter"]
+        A12 --> A11["📷 Upload Foto Gigi (Optional)"]
+        A11 --> A12ab["Buat Kunjungan &\nInput Keluhan"]
+        A12ab --> A17["Masuk Antrian Dokter"]
 
         %% --- Pasien Lama (Walk-In) ---
-        A9 --> A16["Buat Kunjungan Baru"]
-        A16 --> A15["Input Keluhan"]
-        A15 --> A15a["📷 Upload Foto Gigi"]
-        A15a --> A17["Masuk Antrian Dokter"]
+        A9 --> A15ab["Buat Kunjungan &\nInput Keluhan"]
+        A15ab --> A17["Masuk Antrian Dokter"]
     end
 
     A17 --> C1
@@ -46,10 +44,8 @@ flowchart TD
 
         %% --- Pernah Berobat (Online) - Lama ---
         B5 -->|Ya| B6["Input Nomor RM"]
-        B6 --> B6b["Buat Kunjungan Baru"]
-        B6b --> B10a["Input Keluhan"]
-        B10a --> B6a["📷 Upload Foto Gigi"]
-        B6a --> B15["Masuk Antrian Dokter"]
+        B6 --> B10a["Buat Kunjungan &\nInput Keluhan"]
+        B10a --> B15["Masuk Antrian Dokter"]
 
         %% --- Belum Pernah Berobat (Online) - Baru ---
         B5 -->|Tidak| B11["Upload KTP"]
@@ -57,10 +53,9 @@ flowchart TD
         B11a --> B12["Lengkapi Data (Pekerjaan, Telepon)"]
         B12 --> B14["Registrasi Pasien Baru"]
         B14 --> B14a["👤 Buat Member Otomatis"]
-        B14a --> B14b["Buat Kunjungan Baru"]
-        B14b --> B10b["Input Keluhan"]
-        B10b --> B10ba["📷 Upload Foto Gigi"]
-        B10ba --> B15["Masuk Antrian Dokter"]
+        B14a --> B10ba["📷 Upload Foto Gigi (Optional)"]
+        B10ba --> B14ab["Buat Kunjungan &\nInput Keluhan"]
+        B14ab --> B15["Masuk Antrian Dokter"]
 
         B15 --> B16["📱 WhatsApp: Kirim Pengingat dan Konfirmasi"]
         B16 --> B17["Konfirmasi Kedatangan"]
@@ -114,7 +109,7 @@ flowchart TD
     subgraph Annotations["📌 Annotations"]
         EW1["📋 Estimasi Jam Realtime<br/><br/>📊 Kalkulasi: Sekarang + (Posisi × 30 menit)<br/>📺 Layar monitor<br/>📱 Update: Realtime"]
         KP1["📱 Kirim Pengingat dan Konfirmasi WA<br/><br/>📋 Isi: Tanggal, dokter, antrian<br/>📋 Konsultasi atau Tindakan<br/>⏰ Kirim saat: Dapat nomor antrian"]
-        FG1["📷 Upload Foto Gigi<br/><br/>📷 Diambil saat pendaftaran<br/>📋 Untuk dokumentasi kondisi gigi<br/>💾 Disimpan: patient_photos/{member_id}/"]
+        FG1["📷 Upload Foto Gigi<br/><br/>📷 Diambil saat pendaftaran<br/>📋 Untuk dokumentasi kondisi gigi"]
         MB1["👤 Member System<br/><br/>📋 Otomatis dibuat saat registrasi baru<br/>📱 Berisi: Member ID, history, foto"]
     end
 

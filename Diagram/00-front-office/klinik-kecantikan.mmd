@@ -12,31 +12,22 @@ flowchart TD
         A5 --> A6["Pilih Dokter"]
         A6 --> A6a["Pilih Tanggal dan Jam"]
         A6a --> A7{"Pernah Berobat?"}
-        A7 -->|Baru| A8["Verifikasi KTP"]
-        A7 -->|Lama| A9["Scan Nomor RM"]
 
         %% --- Pasien Baru (Walk-In) ---
+        A7 -->|Baru| A8["Verifikasi KTP"]
         A8 --> A8a["Scan/Foto KTP"]
         A8a --> A8b["Auto-Fill: Nama, Alamat, NIK, Tgl Lahir"]
         A8b --> A8c["Lengkapi Data (Pekerjaan, Telepon)"]
         A8c --> A12["Registrasi Pasien Baru"]
         A12 --> A12a["👤 Buat Member Otomatis"]
-        A12a --> A12b["Buat Kunjungan Baru"]
-        A12b --> A11["Input Keluhan"]
-        A11 --> A8d["📸 Upload Foto Before"]
-        A8d --> A17["Masuk Antrian"]
+        A12a --> A8d["📸 Upload Foto Before"]
+        A8d --> A11["Buat Kunjungan &\nInput Keluhan"]
+        A11 --> A17["Masuk Antrian"]
 
         %% --- Pasien Lama (Walk-In) ---
-        A9 --> A9a{"Lebih dari 1 Bulan?"}
-        A9a -->|Tidak| A9b["Langsung Masuk Antrian"]
-        A9a -->|Ya| A9c["⚠️ Notif: Wajib Konsultasi"]
-        A9c --> A9ca["Konsultasi Dokter"]
-        A9ca --> A9d["Input Keluhan"]
-        A9d --> A9e["📸 Upload Foto Before"]
-        A9e --> A17["Masuk Antrian"]
-        A9b --> A16["Buat Kunjungan Baru"]
-        A16 --> A15["Input Keluhan"]
-        A15 --> A17["Masuk Antrian"]
+        A7 -->|Lama| A9["Scan Nomor RM"]
+        A9 --> A16["Buat Kunjungan &\nInput Keluhan"]
+        A16 --> A17["Masuk Antrian"]
         A17 --> A18["📱 WhatsApp: Kirim Konfirmasi dan Estimasi"]
     end
 
@@ -52,16 +43,8 @@ flowchart TD
 
         %% --- Pernah Berobat (Online) - Lama ---
         B5 -->|Ya| B6["Input Nomor RM"]
-        B6 --> B6a{"Lebih dari 1 Bulan?"}
-        B6a -->|Tidak| B6b["Langsung Masuk Antrian"]
-        B6a -->|Ya| B6c["⚠️ Notif: Wajib Konsultasi<br/>Kirim Etiket Wajib Konsul"]
-        B6c --> B6ca["Konsultasi Dokter"]
-        B6ca --> B10a["Input Keluhan"]
-        B10a --> B10b["📸 Upload Foto Before"]
-        B10b --> B15["Masuk Antrian"]
-        B6b --> B6d["Buat Kunjungan Baru"]
-        B6d --> B10c["Input Keluhan"]
-        B10c --> B15["Masuk Antrian"]
+        B6 --> B6d["Buat Kunjungan &\nInput Keluhan"]
+        B6d --> B15["Masuk Antrian"]
 
         %% --- Belum Pernah Berobat (Online) - Baru ---
         B5 -->|Tidak| B11["Upload KTP"]
@@ -69,10 +52,9 @@ flowchart TD
         B11a --> B11b["Lengkapi Data (Pekerjaan, Telepon)"]
         B11b --> B14["Registrasi Pasien Baru"]
         B14 --> B14a["👤 Buat Member Otomatis"]
-        B14a --> B14b["Buat Kunjungan Baru"]
-        B14b --> B10d["Input Keluhan"]
-        B10d --> B10e["📸 Upload Foto Before"]
-        B10e --> B15["Masuk Antrian"]
+        B14a --> B10e["📸 Upload Foto Before"]
+        B10e --> B10d["Buat Kunjungan &\nInput Keluhan"]
+        B10d --> B15["Masuk Antrian"]
 
         B15 --> B16["📱 WhatsApp: Kirim Pengingat"]
         B16 --> B17["Konfirmasi Kedatangan"]
@@ -129,10 +111,9 @@ flowchart TD
     %% ==================== ANNOTATIONS ====================
     subgraph Annotations["📌 Annotations"]
         EW1["📋 Estimasi Jam Realtime<br/><br/>📊 Kalkulasi: Sekarang + (Posisi × 30 menit)<br/>📺 Tampilan: Layar monitor<br/>📱 Update: Realtime"]
-        KP1["📱 Kirim Pengingat WA<br/><br/>📋 Isi: Tanggal, dokter, antrian<br/>⚠️ Jika >1 bulan: Tambah etiket WAJIB KONSULTASI<br/>⏰ Kirim saat: Dapat nomor antrian"]
-        NW1["⚠️ Wajib Konsultasi<br/><br/>📋 Pasien >1 bulan tidak hadir<br/>harus konsultasi dokter terlebih dahulu"]
+        KP1["📱 Kirim Pengingat WA<br/><br/>📋 Isi: Tanggal, dokter, antrian<br/>⏰ Kirim saat: Dapat nomor antrian"]
         MB1["👤 Member System<br/><br/>📋 Otomatis dibuat saat registrasi baru<br/>📱 Berisi: Member ID, history, foto"]
-        FBA1["📸 Foto Before/After<br/><br/>📷 Before: Saat pendaftaran<br/>📷 After: Setelah treatment<br/>💾 Disimpan: patient_photos/{member_id}/"]
+        FBA1["📸 Foto Before/After<br/><br/>📷 Before: Saat pendaftaran<br/>📷 After: Setelah treatment"]
     end
 
     %% ==================== STYLES ====================
