@@ -55,9 +55,19 @@ Klinik App/
 
 1. Queue numbers auto-generated on patient registration; online and walk-in queues must sync
 2. Inventory decreases **only** when medication is handed over (not on prescription)
-3. Doctor fee split is per-invoice (e.g., 70% doctor / 30% clinic)
+3. Doctor fee split is per-invoice (configurable %, e.g., 70% doctor / 30% clinic)
 4. SIP/STR expiry alerts trigger **3 months before** expiration
 5. WhatsApp integration for appointment reminders and receipts
+
+## Payroll Components
+
+### Staff (Perawat, Admin, CS)
+- **Pendapatan:** Gaji Pokok + Tunjangan (Makan, Transport) + Bonus/Insentif
+- **Potongan:** PPh 21 (TER), BPJS Kesehatan (5%), BPJS Ketenagakerjaan (JHT, JP, JKK, JKM, JKP)
+
+### Dokter
+- **Pendapatan:** Gaji Pokok + Tunjangan + **Bagi Hasil (% per invoice)**
+- **Potongan:** PPh 21 (TER), BPJS Kesehatan, BPJS Ketenagakerjaan
 
 ## Modules (for future diagrams)
 
@@ -68,6 +78,7 @@ Klinik App/
 | Rekam Medis (EMR) | Pending diagram |
 | Kasir & Tagihan | ✅ Done (tagihan-pasien.mmd) |
 | Layanan Medis & Tindakan | ✅ Done (layanan-medis-dan-tindakan.mmd) |
+| Payroll Staff & Dokter | ✅ Done (payroll-staff-dan-dokter.mmd) |
 | Farmasi | Pending diagram |
 | Keuangan | Pending diagram |
 | HR | Pending diagram |

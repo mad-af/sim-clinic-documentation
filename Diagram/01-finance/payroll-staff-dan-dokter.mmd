@@ -1,0 +1,46 @@
+flowchart TD
+    Start([Mulai]) --> A1
+
+    %% ==================== A. PENDAPATAN ====================
+    subgraph A_Pendapatan["A. PENDAPATAN"]
+        A1["📅 Hitung\nKehadiran"] --> A2["Gaji Pokok"]
+    end
+
+    A2 --> A3Staff["A3. STAFF"]
+    A2 --> A3Dokter["A3. DOKTER"]
+
+    subgraph A3Staff["A3. STAFF\n(Perawat, Admin, CS)"]
+        A3Staff1["+ Tunjangan\n(Makan, Transport, dll)"] --> A3Staff2["+ Bonus/Insentif\n(Performa, Target)"]
+        A3Staff2 --> A3Staff3["= Subtotal\nPendapatan Staff"]
+    end
+
+    subgraph A3Dokter["A3. DOKTER"]
+        A3Dokter1["+ Tunjangan"] --> A3Dokter2["+ Bagi Hasil (%)\nper Invoice"]
+        A3Dokter2 --> A3Dokter3["= Subtotal\nPendapatan Dokter"]
+    end
+
+    A3Staff3 & A3Dokter3 --> B1
+
+    %% ==================== B. POTONGAN ====================
+    subgraph B_Potongan["B. POTONGAN"]
+        B1["PPh Pasal 21\n(TER 2026)"] --> B2["BPJS Kesehatan\n(5%)"]
+        B2 --> B3["BPJS Ketenagakerjaan\n(JHT, JP, JKK, JKM, JKP)"]
+    end
+
+    B3 --> C1
+
+    %% ==================== C. SELESAI ====================
+    subgraph C_Selesai["C. SELESAI"]
+        C1["💰 Gaji Bersih"] --> C2["📄 Slip Gaji Digital\n→ Staff & Dokter"]
+    end
+
+    C2 --> End([Selesai])
+
+    %% ==================== STYLES ====================
+    style Start fill:#E8F5E9,stroke:#4CAF50
+    style End fill:#FFEBEE,stroke:#F44336
+    style A_Pendapatan fill:#E3F2FD,stroke:#2196F3
+    style A3Staff fill:#FFF3E0,stroke:#FF9800
+    style A3Dokter fill:#FFF3E0,stroke:#FF9800
+    style B_Potongan fill:#F3E5F5,stroke:#9C27B0
+    style C_Selesai fill:#E0F2F1,stroke:#00796B
