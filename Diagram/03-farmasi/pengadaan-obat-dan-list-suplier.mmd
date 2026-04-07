@@ -1,0 +1,27 @@
+flowchart TD
+    Start([Mulai]) --> A["Tambah Supplier"]
+
+    A --> B["Input Faktur\n(Pilih Supplier)"]
+
+    B --> C["Terima Barang\n(Verifikasi)"]
+
+    C --> D{"Sesuai\nFaktur?"}
+
+    D -->|Ya| E["Update HPP"]
+    E --> F["Update Stok"]
+    F --> End
+    D -->|Tidak| G["Retur / Komplain"]
+    G --> End
+
+    End([Selesai])
+
+    subgraph Annotations["📌 Annotations"]
+        ANN1["📋 Supplier: Nama, Alamat, Kontak, No. PBF"]
+        ANN2["📝 Faktur: Input berdasarkan faktur pembelian"]
+        ANN3["💰 HPP: Harga Pokok Pembelian"]
+    end
+
+    %% ==================== STYLES ====================
+    style Start fill:#E8F5E9,stroke:#4CAF50
+    style End fill:#FFEBEE,stroke:#F44336
+    style Annotations fill:#F5F5F5,stroke:#9E9E9E
