@@ -1,0 +1,37 @@
+flowchart TD
+    Start([Mulai]) --> P["📥 PENERIMAAN"]
+
+    P --> P1["Input Faktur\nSupplier (PBF)"]
+    P1 --> P2["Update HPP\n& Stok"]
+    P2 --> P3["Margin Otomatis\n(HPP + 20%)"]
+
+    P2 --> K["📤 PENGELUARAN"]
+
+    K --> K1["Serahkan Obat\nke Pasien"]
+    K1 --> K2["📦 Stok\nBerkurang"]
+    K2 --> K3["📋 Kartu Stok\n(Ter-record)"]
+
+    P3 -.-> O["⚖️ STOK OPNAME"]
+    O --> O1["Audit Fisik\n(Rak vs Sistem)"]
+    O1 --> O2["📊 Laporan\nSelisih"]
+    O2 --> O3["(Hilang, Rusak,\nExpired)"]
+
+    K3 & O3 --> S["📦 STOK\nTERUPDATE"]
+
+    S --> End([Selesai])
+
+    subgraph Annotations["📌 Annotations"]
+        ANN1["📥 Penerimaan: Input dari faktur supplier (PBF) → Update HPP → Margin otomatis HPP + 20%"]
+        ANN2["📤 Pengeluaran: Stok berkurang SAAT serahkan obat → Ter-record di Kartu Stok"]
+        ANN3["⚖️ Opname: Audit fisik (Rak vs Sistem) → Laporan selisih (hilang, rusak, expired)"]
+        ANN4["🔔 Monitoring: Low Stock (warna merah jika < limit) | ED < 3 bulan (alert kadaluarsa) — sebagai annotation, bukan branch"]
+    end
+
+    %% ==================== STYLES ====================
+    style Start fill:#E8F5E9,stroke:#4CAF50
+    style End fill:#FFEBEE,stroke:#F44336
+    style P fill:#E3F2FD,stroke:#2196F3
+    style K fill:#FFF3E0,stroke:#FF9800
+    style O fill:#F3E5F5,stroke:#9C27B0
+    style S fill:#B2DFDB,stroke:#00897B
+    style Annotations fill:#F5F5F5,stroke:#9E9E9E

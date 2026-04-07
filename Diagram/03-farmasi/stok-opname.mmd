@@ -1,0 +1,26 @@
+flowchart TD
+    Start([Mulai]) --> A["📋 Persiapan\nJadwal & Tim Audit"]
+
+    A --> B["🔢 Hitung Fisik\n(Obat di Rak vs Sistem)"]
+
+    B --> C{"Ada\nSelisih?"}
+
+    C -->|Ya| D["📝 Input\nSelisih"]
+    C -->|Tidak| End
+
+    D --> E["📋 Laporan Selisih"]
+    E --> End
+
+    End([Selesai])
+
+    subgraph Annotations["📌 Annotations"]
+        ANN1["📋 Persiapan: Tentukan jadwal opname, siapkan tim & daftar obat yang akan dihitung"]
+        ANN2["🔢 Hitung Fisik: Jumlahkan obat secara fisik di rak & gudang, bandingkan dengan sistem"]
+        ANN3["📝 Selisih: Jenis selisih — Hilang (lost), Rusak (damaged), Expired (dibuang)"]
+        ANN4["📋 Outcome: Laporan selisih jadi dasar adjustment stock di sistem"]
+    end
+
+    %% ==================== STYLES ====================
+    style Start fill:#E8F5E9,stroke:#4CAF50
+    style End fill:#FFEBEE,stroke:#F44336
+    style Annotations fill:#F5F5F5,stroke:#9E9E9E
