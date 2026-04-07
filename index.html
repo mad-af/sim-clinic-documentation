@@ -438,7 +438,7 @@
             
             fileCount.textContent = diagrams.length ? `(${diagrams.length} file)` : '';
 
-            const defaultPath = diagrams.find(d => d.path.includes('pengajuan-izin-cuti-dan-lembur'))?.path;
+            const defaultPath = diagrams.find(d => d.path.includes('layanan-medis-dan-tindakan'))?.path;
             if (defaultPath) {
                 select.value = defaultPath;
                 loadDiagram(defaultPath);
