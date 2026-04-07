@@ -1,0 +1,41 @@
+flowchart TD
+    Start([Mulai]) --> Input["Dokter Input Resep\n(SOAP → Plan)"]
+
+    subgraph A_Antrean["📋 ANTREAN RESEP"]
+        A1["Pasien 1\n(Menunggu)"]
+        A2["Pasien 2\n(Menunggu)"]
+        A3["Pasien N\n(Menunggu)"]
+    end
+
+    Input --> A1
+    Input --> A2
+    Input --> A3
+
+    A1 & A2 & A3 --> B1["🔄 DIRACIK"]
+
+    subgraph B_Process["B. PROSES"]
+        B1 --> B2["🖨️ Cetak Label\nObat"]
+    end
+
+    B2 --> C1["✅ SIAP\nDiserahkan"]
+
+    subgraph C_Serah["C. SERAHKAN"]
+        C1 --> C2["👤 Serahkan Obat\ndiklik"]
+        C2 --> C3["📦 STOK\nBERKURANG"]
+    end
+
+    C3 --> End([Selesai])
+
+    subgraph Annotations["📌 Annotations"]
+        ANN1["📌 Status<br/><br/>📋 Menunggu → Diracik →<br/>   Siap Diserahkan<br/><br/>📋 3 status dalam alur farmasi"]
+        ANN2["📌 Stok<br/><br/>📋 Stok berkurang HANYA saat<br/>   tombol &quot;Serahkan Obat&quot; diklik<br/>📋 Tidak saat racik atau etiket cetak"]
+        ANN3["📌 Label Obat<br/><br/>📋 Cetak otomatis saat status<br/>   berubah ke Diracik<br/>📋 Biar tidak tulis tangan di plastik"]
+    end
+
+    %% ==================== STYLES ====================
+    style Start fill:#E8F5E9,stroke:#4CAF50
+    style End fill:#FFEBEE,stroke:#F44336
+    style A_Antrean fill:#E3F2FD,stroke:#2196F3
+    style B_Process fill:#FFF3E0,stroke:#FF9800
+    style C_Serah fill:#B2DFDB,stroke:#00897B
+    style Annotations fill:#F5F5F5,stroke:#9E9E9E

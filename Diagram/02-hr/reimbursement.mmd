@@ -1,0 +1,31 @@
+flowchart TD
+    Start([Mulai]) --> A["Employee\nSubmit Klaim"]
+
+    A --> B["📤 Upload Bukti\n(Receipt/Foto)"]
+    B --> C["💰 Input Nominal\n& Kategori"]
+
+    C --> D{"Owner/Manager\nReview"}
+
+    D -->|✅ Approved| E{"Melebihi\nMax Limit?"}
+    D -->|❌ Rejected| F["📩 Notification\n ke Employee"]
+
+    E -->|Ya| F
+    E -->|Tidak| G["💸 Approved"]
+
+    G --> H["💵 Transfer\nLangsung"]
+    G --> I["📋 Masuk\nPayroll"]
+    F --> End([Selesai])
+    H --> End
+    I --> End
+
+    %% ==================== ANNOTATIONS ====================
+    subgraph Annotations["📌 Annotations"]
+        ANN1["📌 Kategori Klaim<br/><br/>📋 Medis<br/>📋 Transport<br/>📋 Pelatihan<br/>📋 Lain-Lain"]
+        ANN2["📌 Bukti<br/><br/>📋 Upload receipt/foto (wajib)<br/>📋 Sebagai dasar verifikasi klaim"]
+        ANN3["📌 Max Limit<br/><br/>📋 Batas maksimal per kategori (opsional)<br/>📋 Jika melebihi batas = otomatis rejected"]
+    end
+
+    %% ==================== STYLES ====================
+    style Start fill:#E8F5E9,stroke:#4CAF50
+    style End fill:#FFEBEE,stroke:#F44336
+    style Annotations fill:#F5F5F5,stroke:#9E9E9E
