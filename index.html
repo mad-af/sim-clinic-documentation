@@ -249,6 +249,7 @@
 
     <script>
         const API_BASE = '/api';
+        const STORAGE_KEY = 'lastSelectedDiagram';
         let panZoomInstance = null;
         let currentDiagram = null;
         let zoomMode = true;
@@ -438,8 +439,14 @@
             
             fileCount.textContent = diagrams.length ? `(${diagrams.length} file)` : '';
 
-            const defaultPath = diagrams.find(d => d.path.includes('pemasukan-dan-pengeluaran-klinik'))?.path;
-            if (defaultPath) {
+            const savedPath = localStorage.getItem(STORAGE_KEY);
+            const savedExists = diagrams.some(d => d.path === savedPath);
+            
+            if (savedExists && savedPath) {
+                select.value = savedPath;
+                loadDiagram(savedPath);
+            } else if (diagrams.length > 0) {
+                const defaultPath = diagrams.find(d => d.path.includes('pemasukan-dan-pengeluaran-klinik'))?.path || diagrams[0].path;
                 select.value = defaultPath;
                 loadDiagram(defaultPath);
             }
@@ -448,8 +455,10 @@
         select.addEventListener('change', (e) => {
             const path = e.target.value;
             if (path) {
+                localStorage.setItem(STORAGE_KEY, path);
                 loadDiagram(path);
             } else {
+                localStorage.removeItem(STORAGE_KEY);
                 diagramOutput.classList.add('hidden');
                 
                 diagramName.textContent = 'Tidak ada diagram';
