@@ -1,18 +1,18 @@
 flowchart TD
-    Start([Mulai]) --> A["A. PENDAPATAN"]
+    Start([Mulai]) --> A_Pendapatan
 
     subgraph A_Pendapatan["A. PENDAPATAN"]
         A1["💰 Gaji Pokok"] --> A2["💰 Tunjangan"]
         A2 --> A3["💰 Bonus / Insentif / Bagi Hasil"]
     end
 
-    A3 --> B["B. POTONGAN"]
+    A3 --> B_Potongan
 
     subgraph B_Potongan["B. POTONGAN"]
         B1["💸 PPh 21 (TER)"] --> B2["💸 BPJS Kesehatan & Ketenagakerjaan"]
     end
 
-    B2 --> C["C. SELESAI"]
+    B2 --> C_Selesai
 
     subgraph C_Selesai["C. SELESAI"]
         C1["💰 Gaji Bersih"] --> C2["📄 Slip Gaji Digital"]
@@ -20,9 +20,16 @@ flowchart TD
 
     C2 --> End([Selesai])
 
+    subgraph Annotations["📌 Annotations"]
+        ANN1["A. PENDAPATAN: Gaji Pokok + Tunjangan + Bonus/Insentif/Bagi Hasil"]
+        ANN2["B. POTONGAN: PPh 21 (TER) + BPJS Kesehatan & Ketenagakerjaan"]
+        ANN3["C. SELESAI: Gaji Bersih → Slip Gaji Digital"]
+    end
+
     %% ==================== STYLES ====================
     style Start fill:#E8F5E9,stroke:#4CAF50
     style End fill:#FFEBEE,stroke:#F44336
     style A_Pendapatan fill:#E3F2FD,stroke:#2196F3
     style B_Potongan fill:#F3E5F5,stroke:#9C27B0
     style C_Selesai fill:#E0F2F1,stroke:#00796B
+    style Annotations fill:#F5F5F5,stroke:#9E9E9E
