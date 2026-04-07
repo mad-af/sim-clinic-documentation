@@ -1,33 +1,31 @@
 flowchart TD
-    Start([Mulai]) --> A1
+    Start([Mulai]) --> A
 
-    %% ==================== A. PENDAPATAN ====================
     subgraph A_Pendapatan["A. PENDAPATAN"]
-        A1["Kasir 'Bayar'\n→ Status: Selesai"] --> A2["💰 Sumber Pendapatan:"]
-        A2 --> A3["👨‍⚕️ Jasa Medis"]
-        A2 --> A4["💊 Obat & Alkes"]
-        A2 --> A5["🔬 Biaya Lab/Rad"]
-        A2 --> A6["🩺 Tindakan Medis"]
+        A["Kasir 'Bayar'\n→ Status: Selesai"] --> A1["💰 Sumber Pendapatan:"]
+        A1 --> A2["👨‍⚕️ Jasa Medis"]
+        A1 --> A3["💊 Obat & Alkes"]
+        A1 --> A4["🔬 Lab / Radiologi"]
+        A1 --> A5["🩺 Tindakan Medis"]
     end
 
-    A3 & A4 & A5 & A6 --> B1
+    A2 & A3 & A4 & A5 --> B
 
-    %% ==================== B. PENGELUARAN ====================
     subgraph B_Pengeluaran["B. PENGELUARAN"]
-        B1["💸 Gaji & Kompensasi\n(Staff, Dokter, BPJS, PPh)"] --> B2["💸 Biaya Operasional\n(Listrik, Air, Internet,\nSewa, Maintenance)"]
-        B2 --> B3["💸 Belanja Stok\n(Obat, Alkes, BHP)"]
-        B3 --> B4["💸 Lain-Lain\n(Marketing, Transport,\nPelatihan, Asuransi)"]
+        B["💸 Kategori Pengeluaran:"]
+        B --> B1["💸 Gaji & Kompensasi"]
+        B --> B2["💸 Biaya Operasional"]
+        B --> B3["💸 Belanja Stok"]
+        B --> B4["💸 Lain-Lain"]
     end
 
-    B4 --> C1
+    B1 & B2 & B3 & B4 --> C
 
-    %% ==================== C. LAPORAN ====================
     subgraph C_Laporan["C. LAPORAN KEUANGAN"]
-        C1["📊 Laporan Pendapatan"] --> C2["📊 Laporan Pengeluaran"]
-        C2 --> C3["📊 Laba/Rugi"]
+        C["📊 Laba / Rugi"]
     end
 
-    C3 --> End([Selesai])
+    C --> End([Selesai])
 
     %% ==================== STYLES ====================
     style Start fill:#E8F5E9,stroke:#4CAF50
