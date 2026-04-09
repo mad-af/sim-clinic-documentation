@@ -20,21 +20,25 @@ flowchart TD
         A10 --> A12["Registrasi Pasien Baru"]
         A12 --> A12a["👤 Buat Member Otomatis"]
         A12a --> A11["📸 Upload Foto Before"]
-        A11 --> A11a["Buat Kunjungan &\nInput Keluhan"]
-        A11a --> A17["Masuk Antrian"]
+        A11 --> A13["Pilih Dokter"]
+        A13 --> A14["Pilih Tanggal dan Jam"]
+        A14 --> A15["Buat Kunjungan &\nInput Keluhan\n(Wajib Konsultasi)"]
+        A15 --> A17["Masuk Antrian"]
 
         A7 -->|Lama| A9["Scan Nomor RM"]
-        A9 --> A9a{"Punya Paket\nTreatment?"}
-        A9a -->|Ya| A9b["Cek Quota"]
-        A9b -->|Ada| A16["Langsung Treatment\n(Tanpa Bayar)"]
-        A9b -->|Habis| A15["Buat Kunjungan &\nInput Keluhan"]
-        A9a -->|Tidak| A15
-        A15 --> A16
-        A16 --> A17["Masuk Antrian"]
-        A17 --> A18["📱 WhatsApp: Kirim Konfirmasi"]
+        A9 --> A9a{"Pilih?"}
+        A9a -->|Treatment| A9b["Pilih Treatment"]
+        A9b --> A9c["Cek Quota Paket"]
+        A9c --> A9d["Assign Therapist\nOtomatis"]
+        A9d --> A17["Masuk Antrian"]
+
+        A9a -->|Konsultasi| A10b["Pilih Dokter"]
+        A10b --> A10a["Pilih Tanggal dan Jam"]
+        A10a --> A16["Buat Kunjungan &\nInput Keluhan"]
+        A16 --> A17
     end
 
-    A18 --> C1
+    A17 --> C1
 
     %% ==================== B. BOOKING ONLINE ====================
     subgraph B_Booking_Online["B. BOOKING ONLINE"]
@@ -60,11 +64,15 @@ flowchart TD
         B8b --> B8c["Registrasi Pasien Baru"]
         B8c --> B8d["👤 Buat Member Otomatis"]
         B8d --> B8e["📸 Upload Foto Before"]
-        B8e --> B8f["Buat Kunjungan &\nInput Keluhan\n(Wajib Konsultasi)"]
+        B8e --> B10["Pilih Dokter"]
+        B10 --> B11["Pilih Tanggal dan Jam"]
+        B11 --> B12["Buat Kunjungan &\nInput Keluhan\n(Wajib Konsultasi)"]
+
+        B12 --> B15
+        B15 --> B16["📱 WhatsApp: Kirim Pengingat"]
+        B16 --> B17["Konfirmasi Kedatangan"]
     end
 
-    B15 --> B16["📱 WhatsApp: Kirim Pengingat"]
-    B16 --> B17["Konfirmasi Kedatangan"]
 
     B17 --> C1
 
@@ -92,10 +100,24 @@ flowchart TD
     subgraph E_Front_Liner["E. FRONT LINER"]
         E1["Front Liner Terima\nList Treatment"] --> E1b["Jelaskan Treatment"]
         E1b --> E1a["Konfirmasi Treatment"]
-        E1a --> E1c["📸 Foto After"]
-        E1c --> E2["Ke Kasir"]
-        E2 --> F1
+        E1a --> G2
+
+        %% ==================== G. PROSES TREATMENT ====================
+        subgraph G["G. PROSES TREATMENT"]
+            G2["Pasien ke Ruang\nTreatment"]
+            G3["Therapist Mulai\nTreatment"]
+            G4["Treatment Selesai"]
+            G2 --> G3
+            G3 --> G4
+        end
+
+        G4 --> E1c["📸 Foto After"]
+        E1c --> E3["💊 Pemberian Obat"]
+        E3 --> E2["Ke Kasir"]
     end
+
+
+    E2 --> F1
 
     %% ==================== F. KASIR ====================
     subgraph F_Kasir["F. PEMBAYARAN"]
@@ -135,5 +157,6 @@ flowchart TD
     style C_Ruang_Tunggu fill:#E3F2FD,stroke:#2196F3
     style D_Ruang_Dokter fill:#FFF3E0,stroke:#FF9800
     style E_Front_Liner fill:#F3E5F5,stroke:#9C27B0
+    style G fill:#E8F5E9,stroke:#4CAF50
     style F_Kasir fill:#ECEFF1,stroke:#607D8B
     style Annotations fill:#F5F5F5,stroke:#9E9E9E
