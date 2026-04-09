@@ -1,0 +1,43 @@
+flowchart TD
+    Start([Mulai]) --> Input["👨‍⚕️ Dokter Input\nResep Racikan\n(SOAP → Plan)"]
+
+    subgraph A_Antrean["A. ANTREAN RACIKAN"]
+        A1["Pasien 1\n(Menunggu)"]
+        A2["Pasien 2\n(Menunggu)"]
+    end
+
+    Input --> A1
+    Input --> A2
+
+    A1 & A2 --> B_Verif["🔍 VERIFIKASI"]
+
+    B_Verif --> C1{"Resep\nValid?"}
+
+    C1 -->|Tidak| E1["❌ Tolak Resep\nKembalikan ke Dokter"]
+    C1 -->|Ya| D1["✅ Lanjut\nRacik"]
+
+    subgraph D_Racik["B. PROSES RACIK"]
+        D1["📝 Input Bahan Baku"]
+        D1 --> D2["⚖️ Timbang & Hitung\nDosis per Bahan"]
+        D2 --> D3["🔄 Campurkan\nBahan"]
+    end
+
+    D3 --> F1["🖨️ Cetak Label\nRacikan"]
+
+    F1 --> G1["✅ SIAP\nDiserahkan"]
+
+    subgraph G_Serah["C. SERAHKAN"]
+        G1 --> G2["👤 Serahkan Obat\ndiklik"]
+        G2 --> G3["📦 STOK\nBERKURANG"]
+    end
+
+    G3 --> End([Selesai])
+    E1 --> End
+
+    %% ==================== STYLES ====================
+    style Start fill:#E8F5E9,stroke:#4CAF50
+    style End fill:#FFEBEE,stroke:#F44336
+    style A_Antrean fill:#E3F2FD,stroke:#2196F3
+    style B_Verif fill:#FFF3E0,stroke:#FF9800
+    style D_Racik fill:#FFF3E0,stroke:#FF9800
+    style G_Serah fill:#B2DFDB,stroke:#00897B

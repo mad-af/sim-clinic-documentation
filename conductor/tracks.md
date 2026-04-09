@@ -6,3 +6,8 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 - [ ] **Track: Simplify Payroll Diagram**
   *Link: [./tracks/simplify-payroll_20260409/](./tracks/simplify-payroll_20260409/)*
+
+---
+
+- [ ] **Track: Buat flow Obat Racikan pada farmasi**
+  *Link: [./tracks/obat-racikan_20260409/](./tracks/obat-racikan_20260409/)*
