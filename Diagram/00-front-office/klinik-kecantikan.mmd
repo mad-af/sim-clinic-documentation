@@ -21,7 +21,7 @@ flowchart TD
         A12 --> A12a["👤 Buat Member Otomatis"]
         A12a --> A11["📸 Upload Foto Before"]
         A11 --> A11a["Buat Kunjungan &\nInput Keluhan"]
-        A11a --> A17["Masuk Antrian\n(Wajib Konsultasi)"]
+        A11a --> A17["Masuk Antrian"]
 
         A7 -->|Lama| A9["Scan Nomor RM"]
         A9 --> A9a{"Punya Paket\nTreatment?"}
@@ -42,13 +42,14 @@ flowchart TD
 
         %% --- Lama (Pernah Berobat) ---
         B2 -->|Ya| B3["Input Nomor RM"]
-        B3 --> B3a{"Punya Paket\nTreatment?"}
-        B3a -->|Ya| B4["Pilih Treatment"]
-        B4 --> B4a["Sistem Assign\nTherapist Otomatis"]
-        B4a --> B15["Masuk Antrian"]
+        B3 --> B4{"Pilih?"}
+        B4 -->|Treatment| B5["Pilih Treatment"]
+        B5 --> B5a{"Cek Quota\nPaket?"}
+        B5a -->|Ada| B5b["Assign Therapist\nOtomatis"]
+        B5a -->|Habis| B5c["Tetap Treatment\n(Bayar)"]
+        B5b & B5c --> B15["Masuk Antrian"]
 
-        B3a -->|Tidak| B5["Pilih Konsultasi"]
-        B5 --> B6["Pilih Dokter"]
+        B4 -->|Konsultasi| B6["Pilih Dokter"]
         B6 --> B7["Pilih Tanggal dan Jam"]
         B7 --> B15["Masuk Antrian"]
 
