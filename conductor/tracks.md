@@ -4,5 +4,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Create flowchart diagrams for all SIM Klinik modules**
-  *Link: [./tracks/flowchart-allmodules_20260409/](./tracks/flowchart-allmodules_20260409/)*
+- [ ] **Track: Simplify Payroll Diagram**
+  *Link: [./tracks/simplify-payroll_20260409/](./tracks/simplify-payroll_20260409/)*
