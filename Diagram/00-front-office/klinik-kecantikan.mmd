@@ -13,99 +13,96 @@ flowchart TD
         A6 --> A6a["Pilih Tanggal dan Jam"]
         A6a --> A7{"Pernah Berobat?"}
 
-        %% --- Pasien Baru (Walk-In) ---
         A7 -->|Baru| A8["Verifikasi KTP"]
         A8 --> A8a["Scan/Foto KTP"]
         A8a --> A8b["Auto-Fill: Nama, Alamat, NIK, Tgl Lahir"]
-        A8b --> A8c["Lengkapi Data (Pekerjaan, Telepon)"]
-        A8c --> A12["Registrasi Pasien Baru"]
+        A8b --> A10["Lengkapi Data (Pekerjaan, Telepon)"]
+        A10 --> A12["Registrasi Pasien Baru"]
         A12 --> A12a["👤 Buat Member Otomatis"]
-        A12a --> A8d["📸 Upload Foto Before"]
-        A8d --> A11["Buat Kunjungan &\nInput Keluhan"]
-        A11 --> A17["Masuk Antrian"]
+        A12a --> A11["📸 Upload Foto Before"]
+        A11 --> A11a["Buat Kunjungan &\nInput Keluhan"]
+        A11a --> A17["Masuk Antrian\n(Wajib Konsultasi)"]
 
-        %% --- Pasien Lama (Walk-In) ---
         A7 -->|Lama| A9["Scan Nomor RM"]
-        A9 --> A16["Buat Kunjungan &\nInput Keluhan"]
+        A9 --> A9a{"Punya Paket\nTreatment?"}
+        A9a -->|Ya| A9b["Cek Quota"]
+        A9b -->|Ada| A16["Langsung Treatment\n(Tanpa Bayar)"]
+        A9b -->|Habis| A15["Buat Kunjungan &\nInput Keluhan"]
+        A9a -->|Tidak| A15
+        A15 --> A16
         A16 --> A17["Masuk Antrian"]
-        A17 --> A18["📱 WhatsApp: Kirim Konfirmasi dan Estimasi"]
+        A17 --> A18["📱 WhatsApp: Kirim Konfirmasi"]
     end
 
     A18 --> C1
 
     %% ==================== B. BOOKING ONLINE ====================
     subgraph B_Booking_Online["B. BOOKING ONLINE"]
-        B1["Buka Link / Scan QR Code"] --> B2["Pilih Konsultasi atau Treatment"]
-        B2 --> B3["Pilih Dokter"]
-        B3 --> B4["Pilih Tanggal dan Jam"]
-        B4 --> B4a["📅 Sistem atur 30 menit/slot"]
-        B4a --> B5{"Pernah Berobat?"}
+        B1["Buka Link / Scan QR"] --> B2["Input Nomor RM"]
+        B2 --> B2a{"Punya Paket\nTreatment?"}
 
-        %% --- Pernah Berobat (Online) - Lama ---
-        B5 -->|Ya| B6["Input Nomor RM"]
-        B6 --> B6d["Buat Kunjungan &\nInput Keluhan"]
-        B6d --> B15["Masuk Antrian"]
+        B2a -->|Ya| B3["Pilih Treatment"]
+        B3 --> B3a["Sistem Assign\nTherapist Otomatis"]
+        B3a --> B15["Masuk Antrian"]
 
-        %% --- Belum Pernah Berobat (Online) - Baru ---
-        B5 -->|Tidak| B11["Upload KTP"]
-        B11 --> B11a["OCR Auto-Fill: Nama, Alamat, NIK, Tgl Lahir"]
-        B11a --> B11b["Lengkapi Data (Pekerjaan, Telepon)"]
-        B11b --> B14["Registrasi Pasien Baru"]
-        B14 --> B14a["👤 Buat Member Otomatis"]
-        B14a --> B10e["📸 Upload Foto Before"]
-        B10e --> B10d["Buat Kunjungan &\nInput Keluhan"]
-        B10d --> B15["Masuk Antrian"]
-
-        B15 --> B16["📱 WhatsApp: Kirim Pengingat"]
-        B16 --> B17["Konfirmasi Kedatangan"]
+        B2a -->|Tidak| B4["Pilih Konsultasi"]
+        B4 --> B5["Pilih Dokter"]
+        B5 --> B6["Pilih Tanggal dan Jam"]
+        B6 --> B6a["📅 Sistem atur 30 menit/slot"]
+        B6a --> B15["Masuk Antrian"]
     end
+
+    B15 --> B16["📱 WhatsApp: Kirim Pengingat"]
+    B16 --> B17["Konfirmasi Kedatangan"]
 
     B17 --> C1
 
     %% ==================== C. RUANG TUNGGU ====================
     subgraph C_Ruang_Tunggu["C. RUANG TUNGGU"]
         C1{"Antrian Dipanggil?"}
-        C1 -->|Ya| D1["Admin/Front Office: Isi Data Pasien"]
+        C1 -->|Ya| C2["Pasien Masuk Ruang Dokter"]
         C1 -->|Belum| C3["Tunggu dan Lihat Estimasi"]
         C3 --> C1
     end
 
-    D1 --> C2["Pasien Masuk Ruang Dokter"]
-    C2 --> D2
+    C2 --> D1
 
     %% ==================== D. RUANG DOKTER ====================
     subgraph D_Ruang_Dokter["D. RUANG DOKTER"]
-        D2["Dokter Input SOAP"] --> D2b["Input Treatment/Catatan"]
-        D2b --> D2a["📸 Input Foto After"]
-        D2a --> D3["Dokter Kirim List Treatment ke Front Office"]
-        D3 --> D4["Koordinasi Treatment dengan Pasien"]
+        D1["Dokter Input SOAP"] --> D2["Input Treatment/Catatan"]
+        D2 --> D3["Dokter Kirim List\nTreatment ke Front Office"]
+        D3 --> D4["Koordinasi Treatment\ndengan Pasien"]
     end
 
-    D4 --> D5["Pasien Kembali ke Front Liner"]
+    D4 --> D5["Pasien Kembali\nke Front Liner"]
     D5 --> E1
 
     %% ==================== E. FRONT LINER ====================
     subgraph E_Front_Liner["E. FRONT LINER"]
-        E1["Front Liner Terima List Treatment"] --> E1b["Front Liner Jelaskan Treatment"]
+        E1["Front Liner Terima\nList Treatment"] --> E1b["Jelaskan Treatment"]
         E1b --> E1a["Konfirmasi Treatment"]
-        E1a --> E2["Ke Kasir"]
+        E1a --> E1c["📸 Foto After"]
+        E1c --> E2["Ke Kasir"]
         E2 --> F1
     end
 
     %% ==================== F. KASIR ====================
     subgraph F_Kasir["F. PEMBAYARAN"]
-        F1["Kasir Tampilkan Rincian"] --> F2{"Metode Bayar?"}
-        F2 -->|Tunai| F3["Bayar Tunai"]
-        F2 -->|QRIS| F4["Scan QRIS"]
-        F2 -->|Transfer| F5["Upload Bukti Transfer"]
-
+        F1{"Ada Quota\nPaket?"}
+        F1 -->|Ya| F1a["✅ Pakai Quota"]
+        F1 -->|Tidak| F1b["💰 Bayar"]
+        F1a --> F7
+        F1b --> F1c{"Metode Bayar?"}
+        F1c -->|Tunai| F3["Bayar Tunai"]
+        F1c -->|QRIS| F4["Scan QRIS"]
+        F1c -->|Transfer| F5["Upload Bukti Transfer"]
         F3 --> F6["Cetak Struk"]
         F4 --> F6
         F5 --> F6
         F6 --> F7["WhatsApp: Kirim Struk"]
         F7 --> End
     end
-    
+
     End([Selesai])
 
     %% ==================== ANNOTATIONS ====================
@@ -113,7 +110,10 @@ flowchart TD
         EW1["📋 Estimasi Jam Realtime<br/><br/>📊 Kalkulasi: Sekarang + (Posisi × 30 menit)<br/>📺 Tampilan: Layar monitor<br/>📱 Update: Realtime"]
         KP1["📱 Kirim Pengingat WA<br/><br/>📋 Isi: Tanggal, dokter, antrian<br/>⏰ Kirim saat: Dapat nomor antrian"]
         MB1["👤 Member System<br/><br/>📋 Otomatis dibuat saat registrasi baru<br/>📱 Berisi: Member ID, history, foto"]
-        FBA1["📸 Foto Before/After<br/><br/>📷 Before: Saat pendaftaran<br/>📷 After: Setelah treatment"]
+        FBA1["📸 Foto Before<br/><br/>📷 Before: Saat pendaftaran"]
+        FA1["📸 Foto After<br/><br/>📷 After: Setelah treatment<br/>📷 Diambil di Frontliner"]
+        PAKET1["📦 Paket Treatment<br/><br/>📋 Pasien lama bisa punya quota paket<br/>📋 Jika ada quota = langsung treatment<br/>📋 Jika habis = harus bayar"]
+        THERAPIST1["👩‍⚕️ Therapist<br/><br/>📋 Sistem assign otomatis berdasarkan treatment<br/>📋 Dokter untuk konsultasi saja"]
     end
 
     %% ==================== STYLES ====================
