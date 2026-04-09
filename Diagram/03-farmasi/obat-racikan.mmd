@@ -1,43 +1,59 @@
 flowchart TD
-    Start([Mulai]) --> Input["👨‍⚕️ Dokter Input\nResep Racikan\n(SOAP → Plan)"]
+    Start([Mulai]) --> Input["👨‍⚕️ Dokter Input Resep\nRacikan (SOAP → Plan)"]
 
-    subgraph A_Antrean["A. ANTREAN RACIKAN"]
-        A1["Pasien 1\n(Menunggu)"]
-        A2["Pasien 2\n(Menunggu)"]
+    subgraph A_Antrean["📋 ANTREAN RACIKAN"]
+        A1["① Pasien 1\nMenunggu"]
+        A2["② Pasien 2\nMenunggu"]
     end
 
-    Input --> A1
-    Input --> A2
+    Input --> QueueStart["🚶 Masuk\nAntrean"]
+    QueueStart --> A1
 
-    A1 & A2 --> B_Verif["🔍 VERIFIKASI"]
-
+    A1 --> B_Verif["🔍 Verifikasi\n①"]
     B_Verif --> C1{"Resep\nValid?"}
-
-    C1 -->|Tidak| E1["❌ Tolak Resep\nKembalikan ke Dokter"]
-    C1 -->|Ya| D1["✅ Lanjut\nRacik"]
+    C1 -->|Tidak| E1["❌ Tolak\nKembalikan"]
+    C1 -->|Ya| D1
 
     subgraph D_Racik["B. PROSES RACIK"]
-        D1["📝 Input Bahan Baku"]
-        D1 --> D2["⚖️ Timbang & Hitung\nDosis per Bahan"]
-        D2 --> D3["🔄 Campurkan\nBahan"]
+        D1["📝 Input\nBahan ①"] --> D2["⚖️ Timbang\nDosis"]
+        D2 --> D3["🔄 Campurkan"]
     end
 
     D3 --> F1["🖨️ Cetak Label\nRacikan"]
+    F1 --> G1["✅ Siap\nDiserahkan"]
+    G1 --> G2["👤 Serahkan"]
+    G2 --> G3["📦 Stok\nBerkurang"]
+    G3 --> A2
 
-    F1 --> G1["✅ SIAP\nDiserahkan"]
+    A2 --> B_Verif2["🔍 Verifikasi\n②"]
+    B_Verif2 --> C2{"Resep\nValid?"}
+    C2 -->|Tidak| E2["❌ Tolak"]
+    C2 -->|Ya| D1b
 
-    subgraph G_Serah["C. SERAHKAN"]
-        G1 --> G2["👤 Serahkan Obat\ndiklik"]
-        G2 --> G3["📦 STOK\nBERKURANG"]
+    D1b["📝 Input\nBahan ②"] --> D2b["⚖️ Timbang"]
+    D2b --> D3b["🔄 Campurkan"]
+    D3b --> F1b["🖨️ Cetak Label"]
+    F1b --> G1b["✅ Siap"]
+    G1b --> G2b["👤 Serahkan"]
+    G2b --> G3b["📦 Stok"]
+    G3b --> End
+
+    E1 & E2 --> End
+
+    End([Selesai])
+
+    %% ==================== ANNOTATIONS ====================
+    subgraph Annotations["📌 FIFO"]
+        ANN1["① ② = Urutan FIFO\nDiproses satu per satu"]
     end
-
-    G3 --> End([Selesai])
-    E1 --> End
 
     %% ==================== STYLES ====================
     style Start fill:#E8F5E9,stroke:#4CAF50
     style End fill:#FFEBEE,stroke:#F44336
     style A_Antrean fill:#E3F2FD,stroke:#2196F3
     style B_Verif fill:#FFF3E0,stroke:#FF9800
+    style B_Verif2 fill:#FFF3E0,stroke:#FF9800
     style D_Racik fill:#FFF3E0,stroke:#FF9800
-    style G_Serah fill:#B2DFDB,stroke:#00897B
+    style G3 fill:#B2DFDB,stroke:#00897B
+    style G3b fill:#B2DFDB,stroke:#00897B
+    style Annotations fill:#F5F5F5,stroke:#9E9E9E

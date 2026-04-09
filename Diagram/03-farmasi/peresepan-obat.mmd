@@ -1,41 +1,53 @@
 flowchart TD
-    Start([Mulai]) --> Input["Dokter Input Resep\n(SOAP → Plan)"]
+    Start([Mulai]) --> Input["👨‍⚕️ Dokter Input Resep\n(SOAP → Plan)"]
 
     subgraph A_Antrean["📋 ANTREAN RESEP"]
-        A1["Pasien 1\n(Menunggu)"]
-        A2["Pasien 2\n(Menunggu)"]
-        A3["Pasien N\n(Menunggu)"]
+        A1["① Pasien 1\nMenunggu"]
+        A2["② Pasien 2\nMenunggu"]
+        A3["③ Pasien 3\nMenunggu"]
+        A4["N ...\nMenunggu"]
     end
 
-    Input --> A1
-    Input --> A2
-    Input --> A3
+    Input --> QueueStart["🚶 Masuk\nAntrean"]
+    QueueStart --> A1
 
-    A1 & A2 & A3 --> B1["🔄 DIRACIK"]
+    A1 --> B1["🔄 Proses\n① Diracik"]
+    B1 --> B2["🖨️ Cetak Label"]
+    B2 --> C1["✅ Siap\nDiserahkan"]
+    C1 --> C2["👤 Serahkan"]
+    C2 --> C3["📦 Stok\nBerkurang"]
+    C3 --> A2
 
-    subgraph B_Process["B. PROSES"]
-        B1 --> B2["🖨️ Cetak Label\nObat"]
-    end
+    A2 --> B1b["🔄 Proses\n② Diracik"]
+    B1b --> B2b
+    B2b --> C1b["✅ Siap\nDiserahkan"]
+    C1b --> C2b
+    C2b --> C3b["📦 Stok\nBerkurang"]
+    C3b --> A3
 
-    B2 --> C1["✅ SIAP\nDiserahkan"]
+    A3 --> B1c["🔄 Proses\n③ Diracik"]
+    B1c --> B2c
+    B2c --> C1c["✅ Siap\nDiserahkan"]
+    C1c --> C2c
+    C2c --> C3c["📦 Stok\nBerkurang"]
+    C3c --> End
 
-    subgraph C_Serah["C. SERAHKAN"]
-        C1 --> C2["👤 Serahkan Obat\ndiklik"]
-        C2 --> C3["📦 STOK\nBERKURANG"]
-    end
+    A4 -.-> End
 
-    C3 --> End([Selesai])
+    End([Selesai])
 
-    subgraph Annotations["📌 Annotations"]
-        ANN1["📌 Status<br/><br/>📋 Menunggu → Diracik →<br/>   Siap Diserahkan<br/><br/>📋 3 status dalam alur farmasi"]
-        ANN2["📌 Stok<br/><br/>📋 Stok berkurang HANYA saat<br/>   tombol &quot;Serahkan Obat&quot; diklik<br/>📋 Tidak saat racik atau etiket cetak"]
-        ANN3["📌 Label Obat<br/><br/>📋 Cetak otomatis saat status<br/>   berubah ke Diracik<br/>📋 Biar tidak tulis tangan di plastik"]
+    %% ==================== ANNOTATIONS ====================
+    subgraph Annotations["📌 FIFO"]
+        ANN1["① ② ③ = Urutan\nFIFO (First In First Out)"]
+        ANN2["📋 Diproses satu per satu\nTidak boleh bersamaan"]
     end
 
     %% ==================== STYLES ====================
     style Start fill:#E8F5E9,stroke:#4CAF50
     style End fill:#FFEBEE,stroke:#F44336
     style A_Antrean fill:#E3F2FD,stroke:#2196F3
-    style B_Process fill:#FFF3E0,stroke:#FF9800
+    style B1 fill:#FFF3E0,stroke:#FF9800
+    style B1b fill:#FFF3E0,stroke:#FF9800
+    style B1c fill:#FFF3E0,stroke:#FF9800
     style C_Serah fill:#B2DFDB,stroke:#00897B
     style Annotations fill:#F5F5F5,stroke:#9E9E9E
