@@ -90,10 +90,9 @@ flowchart TD
     subgraph D_Ruang_Dokter["D. RUANG DOKTER"]
         D1["Dokter Input SOAP"] --> D2["Input Treatment/Catatan"]
         D2 --> D3["Dokter Kirim List\nTreatment ke Front Office"]
-        D3 --> D4["Koordinasi Treatment\ndengan Pasien"]
     end
 
-    D4 --> D5["Pasien Kembali\nke Front Liner"]
+    D3 --> D5["Pasien Kembali\nke Front Liner"]
     D5 --> E1
 
     %% ==================== E. FRONT LINER ====================
