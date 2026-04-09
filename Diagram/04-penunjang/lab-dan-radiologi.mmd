@@ -1,0 +1,57 @@
+flowchart TD
+    Start([Mulai]) --> Input["👨‍⚕️ Dokter Input Order Lab\n(SOAP → Plan)"]
+
+    subgraph A_Order["A. ORDER MASUK"]
+        Input --> A1["📋 Checklist Lab\n(Tersedia)"]
+        A1 --> A1a["🩸 Darah Lengkap\n🧪 Urine\n🔬 Lipid Profile\n dll."]
+        A1a --> A2{"💰 Billing\nCheck"}
+        A2 -->|Belum Bayar| A2a["⏳ Tunggu\nBayar"]
+        A2 -->|Sudah Bayar| B1
+    end
+
+    subgraph B_Proses["B. PROSES"]
+        B1["📥 Terima Order"] --> B1a{"Jenis Lab?"}
+
+        B1a -->|Kerja Sama| B2["📝 Form Checklist\ndari Lab Partner"]
+        B2 --> B2a["✅ Centang\nItem yang Diperiksa"]
+        B2a --> B3["📤 Upload Hasil\n(File/PDF)"]
+
+        B1a -->|Milik Sendiri| B4["🔬 Input Hasil\n(Nilai/Deskripsi)"]
+        B4 --> B4a["📷 Upload File\n(Gambar/Dokumen)"]
+        B4a --> B5["⚠️ Nilai di luar\nRujukan?"]
+        B5 -->|Ya| B5a["🔴 Highlight\nAbnormal"]
+        B5 -->|Tidak| B5b["✅ Normal"]
+    end
+
+    B3 & B5b & B5a --> C1
+
+    subgraph C_Verif["C. VERIFIKASI"]
+        C1["👨‍⚕️ Dokter Verifikasi\nHasil"] --> C2{"OK?"}
+        C2 -->|Revisi| B4
+        C2 -->|Setuju| D1
+    end
+
+    subgraph D_Output["D. OUTPUT"]
+        D1["📄 Generate\nLaporan PDF"] --> D2["🖨️ Cetak Hasil"]
+        D2 --> D3["📱 Kirim WA\nke Pasien"]
+    end
+
+    D3 --> End([Selesai])
+    A2a --> A2
+
+    subgraph Rujuk["RUJUKAN"]
+        R1{"Perlu\nRujuk?"} -->|Ya| R2["📋 Buat\nSurat Rujukan"]
+        R2 --> R3["🏥 Lab Eksternal\n/ RS"]
+        R3 --> End
+    end
+
+    B1a -.-> R1
+
+    %% ==================== STYLES ====================
+    style Start fill:#E8F5E9,stroke:#4CAF50
+    style End fill:#FFEBEE,stroke:#F44336
+    style A_Order fill:#E3F2FD,stroke:#2196F3
+    style B_Proses fill:#FFF3E0,stroke:#FF9800
+    style C_Verif fill:#F3E5F5,stroke:#9C27B0
+    style D_Output fill:#B2DFDB,stroke:#00897B
+    style Rujuk fill:#ECEFF1,stroke:#607D8B

@@ -11,3 +11,8 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 - [ ] **Track: Buat flow Obat Racikan pada farmasi**
   *Link: [./tracks/obat-racikan_20260409/](./tracks/obat-racikan_20260409/)*
+
+---
+
+- [ ] **Track: Buat diagram Lab dan flowchart**
+  *Link: [./tracks/lab-workflow_20260409/](./tracks/lab-workflow_20260409/)*
