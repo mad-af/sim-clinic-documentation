@@ -38,18 +38,29 @@ flowchart TD
 
     %% ==================== B. BOOKING ONLINE ====================
     subgraph B_Booking_Online["B. BOOKING ONLINE"]
-        B1["Buka Link / Scan QR"] --> B2["Input Nomor RM"]
-        B2 --> B2a{"Punya Paket\nTreatment?"}
+        B1["Buka Link / Scan QR"] --> B2{"Pernah Berobat?"}
 
-        B2a -->|Ya| B3["Pilih Treatment"]
-        B3 --> B3a["Sistem Assign\nTherapist Otomatis"]
-        B3a --> B15["Masuk Antrian"]
+        %% --- Lama (Pernah Berobat) ---
+        B2 -->|Ya| B3["Input Nomor RM"]
+        B3 --> B3a{"Punya Paket\nTreatment?"}
+        B3a -->|Ya| B4["Pilih Treatment"]
+        B4 --> B4a["Sistem Assign\nTherapist Otomatis"]
+        B4a --> B15["Masuk Antrian"]
 
-        B2a -->|Tidak| B4["Pilih Konsultasi"]
-        B4 --> B5["Pilih Dokter"]
-        B5 --> B6["Pilih Tanggal dan Jam"]
-        B6 --> B6a["📅 Sistem atur 30 menit/slot"]
-        B6a --> B15["Masuk Antrian"]
+        B3a -->|Tidak| B5["Pilih Konsultasi"]
+        B5 --> B6["Pilih Dokter"]
+        B6 --> B7["Pilih Tanggal dan Jam"]
+        B7 --> B15["Masuk Antrian"]
+
+        %% --- Baru (Belum Pernah Berobat) ---
+        B2 -->|Tidak| B8["Upload KTP"]
+        B8 --> B8a["OCR Auto-Fill: Nama, Alamat, NIK, Tgl Lahir"]
+        B8a --> B8b["Lengkapi Data (Pekerjaan, Telepon)"]
+        B8b --> B8c["Registrasi Pasien Baru"]
+        B8c --> B8d["👤 Buat Member Otomatis"]
+        B8d --> B8e["📸 Upload Foto Before"]
+        B8e --> B8f["Buat Kunjungan &\nInput Keluhan"]
+        B8f --> B15["Masuk Antrian\n(Wajib Konsultasi)"]
     end
 
     B15 --> B16["📱 WhatsApp: Kirim Pengingat"]
