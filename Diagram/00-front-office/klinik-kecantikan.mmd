@@ -44,14 +44,14 @@ flowchart TD
         B2 -->|Ya| B3["Input Nomor RM"]
         B3 --> B4{"Pilih?"}
         B4 -->|Treatment| B5["Pilih Treatment"]
-        B5 --> B5a{"Cek Quota\nPaket?"}
-        B5a -->|Ada| B5b["Assign Therapist\nOtomatis"]
-        B5a -->|Habis| B5c["Tetap Treatment\n(Bayar)"]
-        B5b & B5c --> B15["Masuk Antrian"]
+        B5 --> B5a["Cek Quota Paket"]
+        B5a --> B5b["Assign Therapist\nOtomatis"]
+        B5b --> B15["Masuk Antrian"]
 
         B4 -->|Konsultasi| B6["Pilih Dokter"]
         B6 --> B7["Pilih Tanggal dan Jam"]
-        B7 --> B15["Masuk Antrian"]
+        B7 --> B8g["Buat Kunjungan &\nInput Keluhan"]
+        B8g --> B15["Masuk Antrian"]
 
         %% --- Baru (Belum Pernah Berobat) ---
         B2 -->|Tidak| B8["Upload KTP"]
@@ -60,8 +60,7 @@ flowchart TD
         B8b --> B8c["Registrasi Pasien Baru"]
         B8c --> B8d["👤 Buat Member Otomatis"]
         B8d --> B8e["📸 Upload Foto Before"]
-        B8e --> B8f["Buat Kunjungan &\nInput Keluhan"]
-        B8f --> B15["Masuk Antrian\n(Wajib Konsultasi)"]
+        B8e --> B8f["Buat Kunjungan &\nInput Keluhan\n(Wajib Konsultasi)"]
     end
 
     B15 --> B16["📱 WhatsApp: Kirim Pengingat"]
