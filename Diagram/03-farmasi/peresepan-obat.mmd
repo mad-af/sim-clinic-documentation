@@ -5,34 +5,36 @@ flowchart TD
         A1["① Pasien 1\nMenunggu"]
         A2["② Pasien 2\nMenunggu"]
         A3["③ Pasien 3\nMenunggu"]
-        A4["N ...\nMenunggu"]
+        AN["N ...\nMenunggu"]
     end
 
     Input --> QueueStart["🚶 Masuk\nAntrean"]
     QueueStart --> A1
 
-    A1 --> B1["🔄 Proses\n① Diracik"]
-    B1 --> B2["🖨️ Cetak Label"]
-    B2 --> C1["✅ Siap\nDiserahkan"]
-    C1 --> C2["👤 Serahkan"]
-    C2 --> C3["📦 Stok\nBerkurang"]
-    C3 --> A2
+    subgraph Farmasi["FARMASI"]
+        A1 --> P1["🔄 Proses\n① Diracik"]
+        P1 --> C1["🖨️ Cetak Label\n①"]
+        C1 --> S1["✅ Siap\n① Diserahkan"]
+        S1 --> H1["👤 Serahkan\n① ke Pasien"]
+        H1 --> ST1["📦 Stok\n① Berkurang"]
 
-    A2 --> B1b["🔄 Proses\n② Diracik"]
-    B1b --> B2b
-    B2b --> C1b["✅ Siap\nDiserahkan"]
-    C1b --> C2b
-    C2b --> C3b["📦 Stok\nBerkurang"]
-    C3b --> A3
+        A2 --> P2["🔄 Proses\n② Diracik"]
+        P2 --> C2["🖨️ Cetak Label\n②"]
+        C2 --> S2["✅ Siap\n② Diserahkan"]
+        S2 --> H2["👤 Serahkan\n② ke Pasien"]
+        H2 --> ST2["📦 Stok\n② Berkurang"]
 
-    A3 --> B1c["🔄 Proses\n③ Diracik"]
-    B1c --> B2c
-    B2c --> C1c["✅ Siap\nDiserahkan"]
-    C1c --> C2c
-    C2c --> C3c["📦 Stok\nBerkurang"]
-    C3c --> End
+        A3 --> P3["🔄 Proses\n③ Diracik"]
+        P3 --> C3["🖨️ Cetak Label\n③"]
+        C3 --> S3["✅ Siap\n③ Diserahkan"]
+        S3 --> H3["👤 Serahkan\n③ ke Pasien"]
+        H3 --> ST3["📦 Stok\n③ Berkurang"]
+    end
 
-    A4 -.-> End
+    ST1 -.-> A2
+    ST2 -.-> A3
+    ST3 -.-> AN
+    AN -.-> End
 
     End([Selesai])
 
@@ -46,8 +48,5 @@ flowchart TD
     style Start fill:#E8F5E9,stroke:#4CAF50
     style End fill:#FFEBEE,stroke:#F44336
     style A_Antrean fill:#E3F2FD,stroke:#2196F3
-    style B1 fill:#FFF3E0,stroke:#FF9800
-    style B1b fill:#FFF3E0,stroke:#FF9800
-    style B1c fill:#FFF3E0,stroke:#FF9800
-    style C_Serah fill:#B2DFDB,stroke:#00897B
+    style Farmasi fill:#E8F5E9,stroke:#4CAF50
     style Annotations fill:#F5F5F5,stroke:#9E9E9E
