@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaji Dokter - Payroll</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f5f5f5; padding: 24px; }
+        
+        .page { max-width: 1400px; margin: 0 auto; background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #e0e0e0; }
+        .page-title { font-size: 20px; font-weight: 700; color: #1a1a2e; }
+        
+        .filter-bar { display: flex; gap: 12px; margin-bottom: 20px; }
+        .filter-group { display: flex; align-items: center; gap: 8px; }
+        .filter-label { font-size: 13px; color: #666; font-weight: 500; }
+        .filter-select { padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; min-width: 120px; }
+        
+        table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        th { background: #f8f9fa; padding: 10px 12px; text-align: left; font-weight: 600; color: #333; border-bottom: 2px solid #e0e0e0; }
+        td { padding: 10px 12px; border-bottom: 1px solid #eee; }
+        tr:hover td { background: #f8f9fa; }
+        
+        .text-right { text-align: right; }
+        .text-bold { font-weight: 700; }
+        
+        .badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+        .badge-dokter { background: #ffebee; color: #c62828; }
+        
+        .btn { padding: 8px 16px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; }
+        .btn-print { background: #3b82f6; color: white; }
+        .btn-print:hover { background: #2563eb; }
+        
+        .summary-row { background: #f8f9fa; font-weight: 700; }
+        .summary-row td { border-top: 2px solid #e0e0e0; }
+        
+        .currency { font-variant-numeric: tabular-nums; }
+        
+        .footer-note { margin-top: 16px; font-size: 12px; color: #888; text-align: right; }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="page-header">
+            <h1 class="page-title">Gaji Dokter</h1>
+        </div>
+        
+        <div class="filter-bar">
+            <div class="filter-group">
+                <span class="filter-label">Bulan</span>
+                <select class="filter-select">
+                    <option>Januari</option>
+                    <option selected>Februari</option>
+                    <option>Maret</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <span class="filter-label">Tahun</span>
+                <select class="filter-select">
+                    <option>2025</option>
+                    <option selected>2026</option>
+                </select>
+            </div>
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:40px">#</th>
+                    <th>Nama</th>
+                    <th>SIP</th>
+                    <th class="text-right">Gaji Pokok</th>
+                    <th class="text-right">Tunjangan</th>
+                    <th class="text-right">% Bagi Hasil</th>
+                    <th class="text-right">Total Pendapatan</th>
+                    <th class="text-right">Total Potongan</th>
+                    <th class="text-right">Gaji Bersih</th>
+                    <th style="width:100px">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>Dr. Ahmad Wijaya</td>
+                    <td>SIP-2024-001234</td>
+                    <td class="text-right currency">8.000.000</td>
+                    <td class="text-right currency">2.500.000</td>
+                    <td class="text-right">70%</td>
+                    <td class="text-right currency">15.500.000</td>
+                    <td class="text-right currency">2.100.000</td>
+                    <td class="text-right text-bold currency">15.400.000</td>
+                    <td><button class="btn btn-print">Cetak Slip</button></td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Drg. Siti Nurhaliza</td>
+                    <td>SIP-2024-005678</td>
+                    <td class="text-right currency">7.500.000</td>
+                    <td class="text-right currency">2.000.000</td>
+                    <td class="text-right">70%</td>
+                    <td class="text-right currency">12.800.000</td>
+                    <td class="text-right currency">1.850.000</td>
+                    <td class="text-right text-bold currency">18.450.000</td>
+                    <td><button class="btn btn-print">Cetak Slip</button></td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>Dr. Budi Prasetyo</td>
+                    <td>SIP-2023-003456</td>
+                    <td class="text-right currency">8.000.000</td>
+                    <td class="text-right currency">2.500.000</td>
+                    <td class="text-right">70%</td>
+                    <td class="text-right currency">14.200.000</td>
+                    <td class="text-right currency">1.980.000</td>
+                    <td class="text-right text-bold currency">14.720.000</td>
+                    <td><button class="btn btn-print">Cetak Slip</button></td>
+                </tr>
+                <tr class="summary-row">
+                    <td colspan="3">TOTAL</td>
+                    <td class="text-right currency">23.500.000</td>
+                    <td class="text-right currency">7.000.000</td>
+                    <td class="text-right"></td>
+                    <td class="text-right currency">42.500.000</td>
+                    <td class="text-right currency">5.930.000</td>
+                    <td class="text-right currency">48.570.000</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="footer-note">Periode: Februari 2026</div>
+    </div>
+</body>
+</html>

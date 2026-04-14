@@ -19,28 +19,18 @@ Repositori dokumentasi **System Analyst** untuk sistem manajemen klinik (SIM Kli
 
 ```
 Klinik App/
-├── Materi/
-│   ├── note-meet.txt              # Catatan meeting
-│   ├── task-deskripsi.txt        # Deskripsi tugas/alur patient
-│   ├── usulan-module-docs.txt     # Spesifikasi modul lengkap
-│   ├── front-office-gigi.md       # Spec front office klinik gigi
-│   └── front-office-kecantikan.md # Spec front office klinik kecantikan
+├── Materi/                        # Specs & meeting notes
 ├── Diagram/
-│   ├── 00-front-office/          # Diagram flowchart front office
-│   │   ├── klinik-umum.mmd       # Alur klinik umum
-│   │   ├── klinik-gigi.mmd       # Alur klinik gigi
-│   │   └── klinik-kecantikan.mmd  # Alur klinik kecantikan
-│   ├── 01-finance/               # Diagram finance
-│   │   ├── tagihan-pasien.mmd
-│   │   ├── layanan-medis-dan-tindakan.mmd
-│   │   ├── payroll-staff-dan-dokter.mmd
-│   │   └── pemasukan-dan-pengeluaran-klinik.mmd
-│   └── 02-hr/                   # Diagram HR
-│       ├── manajemen-staff-dan-dokter.mmd
-│       ├── absensi-staff-dan-dokter.mmd
-│       └── pengaturan-shift-staff-dan-dokter.mmd
-├── index.html                     # Viewer diagram
-├── server.js                      # Static server untuk index.html
+│   ├── 00-front-office/           # Klinik umum, gigi, kecantikan
+│   ├── 01-finance/                # Tagihan, layanan medis, payroll, pemasukan
+│   ├── 02-hr/                     # Staff management, absensi, shift, izin cuti, reimbursement
+│   ├── 03-farmasi/                # Stok obat, peresepan, obat racikan, pengadaan
+│   └── 04-penunjang/              # Lab dan radiologi
+├── conductor/                      # Track planning system (spec.md, plan.md per track)
+├── index.html                     # Mermaid diagram viewer (port 3000)
+├── server.js                      # Static server with /api/diagrams endpoint
+├── sidebar.json                    # Sidebar navigation config (data-driven)
+├── sidebar.html                   # Sidebar component preview
 └── AGENTS.md
 ```
 
@@ -51,6 +41,13 @@ Klinik App/
 - Location: `Diagram/[module-name]/[nama-alur].mmd`
 - Style: Gunakan `subgraph` untuk area/stage, `style` untuk coloring
 - Bahasa: Indonesia untuk label node
+
+## Sidebar Navigation
+
+- Config: `sidebar.json` (data-driven, satu source of truth)
+- Component preview: `sidebar.html`
+- Struktur: Group → Menu → Sub-Menu
+- Semua 18 diagram (.mmd) sudah dipetakan ke struktur sidebar
 
 ## Three Clinic Types
 
@@ -78,22 +75,21 @@ Klinik App/
 - **Pendapatan:** Gaji Pokok + Tunjangan + **Bagi Hasil (% per invoice)**
 - **Potongan:** PPh 21 (TER), BPJS Kesehatan, BPJS Ketenagakerjaan
 
-## Modules (for future diagrams)
+## Modules
 
-| Module | Status |
-|--------|--------|
-| Dashboard | Pending diagram |
-| Front Office | ✅ Done (3 diagrams) |
-| Rekam Medis (EMR) | Pending diagram |
-| Kasir & Tagihan | ✅ Done (tagihan-pasien.mmd) |
-| Layanan Medis & Tindakan | ✅ Done (layanan-medis-dan-tindakan.mmd) |
-| Payroll Staff & Dokter | ✅ Done (payroll-staff-dan-dokter.mmd) |
-| Pemasukan & Pengeluaran | ✅ Done (pemasukan-dan-pengeluaran-klinik.mmd) |
-| Farmasi | Pending diagram |
-| Keuangan | ✅ Done (pemasukan-dan-pengeluaran-klinik.mmd) |
-| HR | ✅ Done (manajemen-staff-dan-dokter.mmd) |
-| Penunjang (Lab/Rad) | Pending diagram |
-| Hak Akses | Pending diagram |
+| Module | Status | Files |
+|--------|--------|-------|
+| Front Office | ✅ | klinik-umum, klinik-gigi, klinik-kecantikan |
+| Kasir & Tagihan | ✅ | tagihan-pasien |
+| Layanan Medis & Tindakan | ✅ | layanan-medis-dan-tindakan |
+| Payroll | ✅ | payroll-staff-dan-dokter |
+| Pemasukan & Pengeluaran | ✅ | pemasukan-dan-pengeluaran-klinik |
+| HR | ✅ | manajemen, absensi, shift, izin-cuti-lembur, reimbursement |
+| Farmasi | ✅ | stok-obat, peresepan, obat-racikan, pengadaan, stok-opname |
+| Penunjang (Lab/Rad) | ✅ | lab-dan-radiologi |
+| Dashboard | Pending | — |
+| Rekam Medis (EMR) | Pending | — |
+| Hak Akses | Pending | — |
 
 ## Change Log
 
@@ -102,3 +98,5 @@ Klinik App/
 | 2026-04-02 | Initial AGENTS.md |
 | 2026-04-05 | Compacted — removed speculative content |
 | 2026-04-05 | Role redefined as System Analyst focus |
+| 2026-04-13 | Updated: Farmasi & Penunjang diagrams now complete; HR updated; directory structure corrected |
+| 2026-04-13 | Added: sidebar.json (navigation config) and sidebar.html (component preview) |

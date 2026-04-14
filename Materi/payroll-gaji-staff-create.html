@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaji Staff - Create</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f5f5f5; padding: 24px; }
+        
+        .page { max-width: 800px; margin: 0 auto; background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #e0e0e0; }
+        .page-title { font-size: 20px; font-weight: 700; color: #1a1a2e; }
+        
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group.full { grid-column: span 2; }
+        .form-label { display: block; font-size: 13px; font-weight: 600; color: #333; margin-bottom: 8px; }
+        .form-input { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+        .form-input:focus { outline: none; border-color: #3b82f6; }
+        
+        .section { margin-top: 24px; padding-top: 16px; border-top: 1px solid #e0e0e0; }
+        .section-title { font-size: 14px; font-weight: 700; color: #333; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        .calc-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .calc-display { background: #f8f9fa; padding: 16px; border-radius: 8px; margin-top: 16px; }
+        .calc-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; }
+        .calc-item:last-child { border-bottom: none; }
+        .calc-item.total { font-weight: 700; font-size: 16px; border-top: 2px solid #333; margin-top: 8px; padding-top: 12px; }
+        .calc-label { color: #666; }
+        .calc-value { font-variant-numeric: tabular-nums; }
+        
+        .btn-row { display: flex; gap: 12px; margin-top: 24px; padding-top: 16px; border-top: 1px solid #e0e0e0; }
+        .btn { padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; }
+        .btn-primary { background: #3b82f6; color: white; }
+        .btn-primary:hover { background: #2563eb; }
+        .btn-secondary { background: #e0e0e0; color: #333; }
+        .btn-secondary:hover { background: #d0d0d0; }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="page-header">
+            <h1 class="page-title">Gaji Staff — Tambah / Edit</h1>
+        </div>
+        
+        <div class="form-grid">
+            <div class="form-group full">
+                <label class="form-label">Staff</label>
+                <select class="form-input">
+                    <option value="">— Pilih Staff —</option>
+                    <option value="1">Siti Aminah (Perawat)</option>
+                    <option value="2">Budi Santoso (Admin)</option>
+                    <option value="3">Wati Dewi (CS)</option>
+                    <option value="4">Ani Rahayu (Farmasi)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Bulan</label>
+                <select class="form-input">
+                    <option>Januari</option>
+                    <option selected>Februari</option>
+                    <option>Maret</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Tahun</label>
+                <select class="form-input">
+                    <option>2025</option>
+                    <option selected>2026</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">Pendapatan</div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Gaji Pokok (Rp)</label>
+                    <input type="number" class="form-input" placeholder="5.000.000" value="5000000">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tunjangan (Rp)</label>
+                    <input type="number" class="form-input" placeholder="1.500.000" value="1500000">
+                </div>
+                <div class="form-group full">
+                    <label class="form-label">Bonus / Insentif (Rp)</label>
+                    <input type="number" class="form-input" placeholder="0" value="500000">
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">Potongan</div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">PPh 21 (Rp)</label>
+                    <input type="number" class="form-input" placeholder="0" value="450000">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">BPJS Kesehatan (Rp)</label>
+                    <input type="number" class="form-input" placeholder="0" value="275000">
+                </div>
+                <div class="form-group full">
+                    <label class="form-label">BPJS Ketenagakerjaan (Rp)</label>
+                    <input type="number" class="form-input" placeholder="0" value="125000">
+                </div>
+            </div>
+        </div>
+        
+        <div class="calc-display">
+            <div class="calc-item">
+                <span class="calc-label">Total Pendapatan</span>
+                <span class="calc-value">7.000.000</span>
+            </div>
+            <div class="calc-item">
+                <span class="calc-label">Total Potongan</span>
+                <span class="calc-value">850.000</span>
+            </div>
+            <div class="calc-item total">
+                <span class="calc-label">GAJI BERSIH</span>
+                <span class="calc-value">6.150.000</span>
+            </div>
+        </div>
+        
+        <div class="btn-row">
+            <button class="btn btn-primary">💾 Simpan</button>
+            <button class="btn btn-secondary">← Kembali</button>
+        </div>
+    </div>
+</body>
+</html>

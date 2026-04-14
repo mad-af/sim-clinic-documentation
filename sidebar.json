@@ -1,0 +1,212 @@
+{
+  "logo": {
+    "title": "Dokter EMR",
+    "subtitle": "Aplikasi Rekam Medis Elektronik"
+  },
+  "nav": [
+    {
+      "type": "dashboard",
+      "label": "Dashboard",
+      "icon": "📊",
+      "active": true
+    },
+    {
+      "type": "group",
+      "label": "FRONT OFFICE",
+      "icon": "🏥",
+      "children": [
+        {
+          "type": "menu",
+          "label": "Pendaftaran",
+          "icon": "📝",
+          "children": [
+            { "type": "submenu", "label": "Walk-In", "icon": "🚶" },
+            { "type": "submenu", "label": "Booking Online", "icon": "📱" }
+          ]
+        },
+        {
+          "type": "menu",
+          "label": "Antrian",
+          "icon": "📋"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "REKAM MEDIS",
+      "icon": "📋",
+      "children": [
+        {
+          "type": "menu",
+          "label": "Konsultasi",
+          "icon": "👨‍⚕️"
+        },
+        {
+          "type": "menu",
+          "label": "Tindakan Medis",
+          "icon": "🩺"
+        },
+        {
+          "type": "menu",
+          "label": "Odontogram (Gigi)",
+          "icon": "🦷",
+          "clinicType": ["gigi"]
+        },
+        {
+          "type": "menu",
+          "label": "Proses Treatment",
+          "icon": "✨",
+          "clinicType": ["kecantikan"]
+        },
+        {
+          "type": "menu",
+          "label": "Before / After Photo",
+          "icon": "📸",
+          "clinicType": ["kecantikan"]
+        },
+        {
+          "type": "menu",
+          "label": "EMR",
+          "icon": "📁",
+          "badge": "Plan"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "PENUNJANG",
+      "icon": "🔬",
+      "children": [
+        {
+          "type": "menu",
+          "label": "Lab & Radiologi",
+          "icon": "🧪"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "FARMASI",
+      "icon": "💊",
+      "children": [
+        {
+          "type": "menu",
+          "label": "Stok Obat",
+          "icon": "📦"
+        },
+        {
+          "type": "menu",
+          "label": "Peresepan",
+          "icon": "📋"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "KASIR",
+      "icon": "💰",
+      "children": [
+        {
+          "type": "menu",
+          "label": "Tagihan Pasien",
+          "icon": "📄"
+        },
+        {
+          "type": "menu",
+          "label": "Struk & Rekap",
+          "icon": "🧾"
+        },
+        {
+          "type": "menu",
+          "label": "Pembayaran",
+          "icon": "💳"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "KEUANGAN",
+      "icon": "📈",
+      "children": [
+        {
+          "type": "menu",
+          "label": "Payroll",
+          "icon": "💳",
+          "children": [
+            { "type": "submenu", "label": "Gaji Staff", "icon": "👨‍💼" },
+            { "type": "submenu", "label": "Gaji Dokter", "icon": "👨‍⚕️" },
+            { "type": "submenu", "label": "Slip Gaji", "icon": "📃" }
+          ]
+        },
+        {
+          "type": "menu",
+          "label": "Laporan Keuangan",
+          "icon": "📊"
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": "SDM",
+      "icon": "👥",
+      "children": [
+        {
+          "type": "menu",
+          "label": "Manajemen Staff",
+          "icon": "👨‍💼"
+        },
+        {
+          "type": "menu",
+          "label": "Manajemen Dokter",
+          "icon": "👨‍⚕️",
+          "children": [
+            { "type": "submenu", "label": "Profil & Jabatan", "icon": "📋" },
+            { "type": "submenu", "label": "Kredensial Medis", "icon": "📜" },
+            { "type": "submenu", "label": "STR & SIP", "icon": "✅" }
+          ]
+        },
+        {
+          "type": "menu",
+          "label": "Absensi",
+          "icon": "🕐",
+          "children": [
+            { "type": "submenu", "label": "Staff", "icon": "👨‍💼" },
+            { "type": "submenu", "label": "Dokter", "icon": "👨‍⚕️" }
+          ]
+        },
+        {
+          "type": "menu",
+          "label": "Shift",
+          "icon": "📅"
+        },
+        {
+          "type": "menu",
+          "label": "Cuti",
+          "icon": "🏖️",
+          "children": [
+            { "type": "submenu", "label": "Pengajuan Cuti", "icon": "📝" },
+            { "type": "submenu", "label": "Kelola Cuti", "icon": "📋" }
+          ]
+        },
+        {
+          "type": "menu",
+          "label": "Lembur",
+          "icon": "⏰",
+          "children": [
+            { "type": "submenu", "label": "Pengajuan Lembur", "icon": "📝" },
+            { "type": "submenu", "label": "Verifikasi Lembur", "icon": "✅" }
+          ]
+        },
+        {
+          "type": "menu",
+          "label": "Reimbursement",
+          "icon": "💸",
+          "children": [
+            { "type": "submenu", "label": "Pengajuan Klaim", "icon": "📝" },
+            { "type": "submenu", "label": "Kelola Klaim", "icon": "📋" }
+          ]
+        }
+      ]
+    }
+  ]
+}

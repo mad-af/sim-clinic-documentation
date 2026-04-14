@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slip Gaji - Dr. Ahmad Wijaya</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: white; padding: 40px; }
+        
+        .slip { max-width: 600px; margin: 0 auto; }
+        
+        .slip-header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #333; }
+        .slip-title { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+        .clinic-name { font-size: 16px; color: #666; margin-bottom: 4px; }
+        .period { font-size: 14px; color: #888; }
+        
+        .slip-body { margin-bottom: 30px; }
+        .info-row { display: flex; margin-bottom: 12px; }
+        .info-label { width: 150px; font-weight: 600; color: #333; }
+        .info-value { flex: 1; color: #333; }
+        
+        .section { margin-bottom: 24px; }
+        .section-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #ddd; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        .line-item { display: flex; justify-content: space-between; padding: 6px 0; }
+        .line-item.sub { padding-left: 20px; font-size: 13px; color: #666; }
+        .line-label { }
+        .line-value { font-variant-numeric: tabular-nums; }
+        
+        .total-row { display: flex; justify-content: space-between; padding: 10px 0; border-top: 2px solid #333; margin-top: 8px; font-weight: 700; font-size: 15px; }
+        
+        .net-row { display: flex; justify-content: space-between; padding: 16px 0; border-top: 3px solid #333; border-bottom: 3px solid #333; margin-top: 12px; font-weight: 700; font-size: 18px; background: #f8f9fa; padding: 16px 20px; }
+        .net-label { }
+        .net-value { color: #2e7d32; }
+        
+        .slip-footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; display: flex; justify-content: space-between; }
+        .footer-left { font-size: 12px; color: #888; }
+        .footer-right { text-align: right; }
+        .signature-line { margin-top: 60px; font-size: 13px; }
+        
+        .btn-print { display: block; margin: 30px auto; padding: 12px 32px; background: #3b82f6; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .btn-print:hover { background: #2563eb; }
+        
+        @media print {
+            .btn-print { display: none; }
+            body { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="slip">
+        <div class="slip-header">
+            <div class="slip-title">SLIP GAJI</div>
+            <div class="clinic-name">Klinik Bening</div>
+            <div class="period">Februari 2026</div>
+        </div>
+        
+        <div class="slip-body">
+            <div class="info-row">
+                <span class="info-label">Nama</span>
+                <span class="info-value">: Dr. Ahmad Wijaya</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Jabatan/Profesi</span>
+                <span class="info-value">: Dokter Umum</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Tipe</span>
+                <span class="info-value">: Dokter</span>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">Pendapatan</div>
+                <div class="line-item">
+                    <span class="line-label">Gaji Pokok</span>
+                    <span class="line-value">8.000.000</span>
+                </div>
+                <div class="line-item">
+                    <span class="line-label">Tunjangan</span>
+                    <span class="line-value">2.500.000</span>
+                </div>
+                <div class="line-item sub">
+                    <span class="line-label">- Makan & Transport</span>
+                    <span class="line-value">2.500.000</span>
+                </div>
+                <div class="line-item">
+                    <span class="line-label">Bagi Hasil (70%)</span>
+                    <span class="line-value">5.000.000</span>
+                </div>
+                <div class="total-row">
+                    <span class="line-label">TOTAL PENDAPATAN</span>
+                    <span class="line-value">15.500.000</span>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">Potongan</div>
+                <div class="line-item">
+                    <span class="line-label">PPh 21 (TER)</span>
+                    <span class="line-value">1.200.000</span>
+                </div>
+                <div class="line-item">
+                    <span class="line-label">BPJS Kesehatan</span>
+                    <span class="line-value">450.000</span>
+                </div>
+                <div class="line-item">
+                    <span class="line-label">BPJS Ketenagakerjaan</span>
+                    <span class="line-value">450.000</span>
+                </div>
+                <div class="total-row">
+                    <span class="line-label">TOTAL POTONGAN</span>
+                    <span class="line-value">2.100.000</span>
+                </div>
+            </div>
+            
+            <div class="net-row">
+                <span class="net-label">GAJI BERSIH</span>
+                <span class="net-value">13.400.000</span>
+            </div>
+        </div>
+        
+        <div class="slip-footer">
+            <div class="footer-left">
+                Dicetak pada: 14 April 2026, 10:30 WIB
+            </div>
+            <div class="footer-right">
+                <div class="signature-line">Manager</div>
+                <div style="height: 50px;"></div>
+                <div>(....................)</div>
+            </div>
+        </div>
+    </div>
+    
+    <button class="btn-print" onclick="window.print()">🖨️ Cetak Slip</button>
+</body>
+</html>
