@@ -1,0 +1,681 @@
+erDiagram
+    %% ================================================================================
+    %% KLINIK SIM - ENTITY RELATIONSHIP DIAGRAM
+    %% Converted from erd.graphml
+    %% ================================================================================
+
+    %% ------------------------------------------------------------------------------
+    %% CORE HEALTHCARE
+    %% ------------------------------------------------------------------------------
+
+    healthcares {
+        bigint id PK
+        varchar name
+        varchar email
+        bigint healthcare_category_id FK
+        varchar phone
+        varchar logo
+        text address
+        varchar district
+        varchar city
+        varchar province
+        varchar satusehat_client_id
+        varchar satusehat_client_secret
+        varchar satusehat_healthcare_id
+        text satusehat_errors
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    healthcare_categories {
+        bigint id PK
+        varchar name
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    patients {
+        bigint id PK
+        bigint healthcare_id FK
+        varchar nik
+        varchar nrm
+        varchar name
+        varchar gender
+        date birth_date
+        varchar birth_city
+        varchar phone
+        text address
+        varchar district
+        varchar city
+        varchar province
+        varchar jobtitle
+        varchar status
+        varchar blood_type
+        boolean is_smoker
+        varchar emergency_name
+        varchar emergency_phone
+        text emergency_address
+        varchar satusehat_patient_id
+        text satusehat_errors
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    users {
+        bigint id PK
+        varchar email
+        timestamp email_verified_at
+        timestamp email_sent_at
+        timestamp email_delivered_at
+        varchar password
+        varchar name
+        varchar nik
+        varchar sip
+        varchar username
+        varchar phone
+        varchar profile_picture
+        bigint healthcare_id FK
+        bigint polyclinic_id FK
+        varchar satusehat_practitioner_id
+        text satusehat_errors
+        varchar remember_token
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    polyclinics {
+        bigint id PK
+        bigint healthcare_id FK
+        varchar name
+        bigint speciality_id FK
+        varchar category
+        bigint parent_id FK
+        varchar satusehat_organization_id
+        text satusehat_errors
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    specialities {
+        bigint id PK
+        varchar name
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    locations {
+        bigint id PK
+        bigint healthcare_id FK
+        bigint polyclinic_id FK
+        varchar name
+        varchar satusehat_location_id
+        varchar satusehat_organization_id
+        text satusehat_errors
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    %% ------------------------------------------------------------------------------
+    %% PATIENT VISIT & MEDICAL RECORD
+    %% ------------------------------------------------------------------------------
+
+    out_patients {
+        bigint id PK
+        bigint healthcare_id FK
+        bigint polyclinic_id FK
+        bigint doctor_id FK
+        bigint schedule_id FK
+        bigint nurse_id FK
+        bigint patient_id FK
+        date date_in
+        varchar visit_type
+        varchar payment
+        varchar encounter_number
+        varchar reference_number
+        varchar satusehat_encounter_id
+        text satusehat_errors
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    resumes {
+        bigint id PK
+        bigint healthcare_id FK
+        bigint polyclinic_id FK
+        bigint out_patient_id FK
+        bigint doctor_id FK
+        bigint schedule_id FK
+        bigint nurse_id FK
+        bigint patient_id FK
+        json patient_images
+        bigint consultant_id FK
+        date date_in
+        date date_out
+        timestamp patient_signed_date
+        timestamp doctor_signed_date
+        text reason_in
+        text diagnose_in
+        text diagnose_out_main
+        text diagnose_out_additional
+        text diagnose_out_complications
+        text disease_cause
+        text disease_history
+        text allergy_history
+        text physical_check
+        text suppporting_check
+        text treatment
+        text therapy
+        varchar status_generalis
+        bigint consciousness_level_id FK
+        bigint condition_out_id FK
+        varchar condition_out_other
+        bigint way_out_id FK
+        varchar way_out_other
+        bigint prognosis_id FK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    vital_signs {
+        bigint id PK
+        bigint resume_id FK
+        timestamp recorded_at
+        decimal height
+        decimal weight
+        decimal weight_ideal
+        decimal body_mass_index
+        decimal waist_circumference
+        varchar blood_pressure
+        varchar pulse
+        varchar respiration_rate
+        decimal temperature
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    resume_icd10s {
+        bigint id PK
+        bigint resume_id FK
+        bigint icd10_id FK
+        varchar diagnosis_type
+        text note
+        varchar satusehat_condition_id
+        text satusehat_errors
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    icd10s {
+        bigint id PK
+        varchar code
+        varchar name
+        varchar name_localized
+        text description
+        text reason_in
+        text diagnose_in
+        text diagnose_out_main
+        text diagnose_out_additional
+        text diagnose_out_complications
+        text disease_cause
+        text disease_history
+        text allergy_history
+        text physical_check
+        text suppporting_check
+        text treatment
+        text therapy
+        bigint consciousness_level_id FK
+        bigint condition_out_id FK
+        bigint way_out_id FK
+        bigint prognosis_id FK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    consciousness_levels {
+        bigint id PK
+        varchar name
+        varchar description
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    condition_outs {
+        bigint id PK
+        varchar name
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    way_outs {
+        bigint id PK
+        varchar name
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    prognoses {
+        bigint id PK
+        varchar name
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    %% ------------------------------------------------------------------------------
+    %% CERTIFICATES & REFERRAL LETTERS
+    %% ------------------------------------------------------------------------------
+
+    medical_certificates {
+        bigint id PK
+        bigint healthcare_id FK
+        bigint resume_id FK
+        varchar letter_number
+        timestamp signed_at
+        timestamp vacated_at
+        timestamp concluded_at
+        varchar patient_occupation
+        text description
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    health_certificates {
+        bigint id PK
+        bigint healthcare_id FK
+        bigint resume_id FK
+        varchar letter_number
+        timestamp signed_at
+        varchar blood_pressure
+        varchar pulse
+        decimal temperature
+        decimal weight
+        decimal height
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    patient_referral_letters {
+        bigint id PK
+        bigint healthcare_id FK
+        bigint resume_id FK
+        varchar letter_number
+        timestamp signed_at
+        varchar addressed_to
+        varchar location
+        text anamnesis
+        text diagnosis
+        text therapy
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    %% ------------------------------------------------------------------------------
+    %% PHARMACY
+    %% ------------------------------------------------------------------------------
+
+    drugs {
+        bigint id PK
+        bigint healthcare_id FK
+        varchar name
+        varchar inventory_code
+        bigint drug_category_id FK
+        bigint pharmaceutical_company_id FK
+        varchar package_id
+        varchar drug_class
+        varchar inventory_type
+        varchar kfa_code
+        varchar dpho_code
+        decimal price
+        varchar id_rxpert
+        json inventory_record
+        boolean notification_enabled
+        integer notification_days
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    drug_categories {
+        bigint id PK
+        varchar name
+        varchar description
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    pharmaceutical_companies {
+        bigint id PK
+        varchar name
+        text address
+        varchar phone
+        varchar email
+        varchar sales_name
+        varchar sales_phone
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    units {
+        bigint id PK
+        varchar name
+        varchar description
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    drug_prices {
+        bigint id PK
+        bigint drug_id FK
+        bigint unit_id FK
+        varchar name
+        varchar price_calculation
+        decimal value_margin
+        decimal fixed_price
+        decimal selling_price
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    prescriptions {
+        bigint id PK
+        bigint resume_id FK
+        date prescription_date
+        json record
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    prescription_items {
+        bigint id PK
+        bigint prescription_id FK
+        varchar block_type
+        bigint drug_id FK
+        varchar drug_custom
+        varchar frequency
+        varchar duration
+        text usage_rules
+        text info
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    %% ------------------------------------------------------------------------------
+    %% SCHEDULING & SERVICES
+    %% ------------------------------------------------------------------------------
+
+    schedules {
+        bigint id PK
+        bigint healthcare_id FK
+        bigint doctor_id FK
+        boolean is_active
+        integer daily_limit
+        json active_days
+        time opening_at
+        time closing_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    subscriptions {
+        bigint id PK
+        bigint healthcare_id FK
+        bigint service_id FK
+        varchar status
+        timestamp started_at
+        timestamp ended_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    services {
+        bigint id PK
+        varchar name
+        text description
+        decimal price
+        decimal final_price
+        integer duration_value
+        varchar duration_unit
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    orders {
+        bigint id PK
+        bigint service_id FK
+        bigint user_id FK
+        bigint healthcare_id FK
+        bigint subscription_id FK
+        decimal amount
+        integer quantity
+        decimal total
+        varchar status
+        varchar invoice
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    menus {
+        bigint id PK
+        varchar name
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    service_menus {
+        bigint id PK
+        bigint service_id FK
+        bigint menu_id FK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    %% ------------------------------------------------------------------------------
+    %% RBAC (Spatie-like)
+    %% ------------------------------------------------------------------------------
+
+    roles {
+        bigint id PK
+        varchar name
+        varchar guard_name
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    permissions {
+        bigint id PK
+        varchar name
+        varchar guard_name
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    model_has_roles {
+        bigint role_id PK
+        varchar model_type PK
+        bigint model_id PK
+    }
+
+    model_has_permissions {
+        bigint permission_id PK
+        varchar model_type PK
+        bigint model_id PK
+    }
+
+    role_has_permissions {
+        bigint permission_id PK
+        bigint role_id PK
+    }
+
+    %% ------------------------------------------------------------------------------
+    %% QUEUE & JOBS
+    %% ------------------------------------------------------------------------------
+
+    queue_monitors {
+        bigint id PK
+        bigint job_id FK
+        varchar name
+        varchar queue
+        timestamp started_at
+        timestamp finished_at
+        boolean failed
+        integer attempt
+        integer progress
+        text exception_message
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    jobs {
+        bigint id PK
+        varchar queue
+        json payload
+        integer attempts
+        timestamp reserved_at
+        timestamp available_at
+        timestamp created_at
+        timestamp failed_at
+    }
+
+    failed_jobs {
+        bigint id PK
+        varchar uuid
+        varchar connection
+        varchar queue
+        json payload
+        text exception
+        timestamp failed_at
+    }
+
+    activity_log {
+        bigint id PK
+        varchar log_name
+        text description
+        varchar subject_type
+        varchar event
+        bigint subject_id
+        varchar causer_type
+        bigint causer_id
+        json properties
+        varchar batch_uuid
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    personal_access_tokens {
+        bigint id PK
+        varchar tokenable_type
+        bigint tokenable_id
+        varchar name
+        varchar token
+        json abilities
+        timestamp last_used_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    password_resets {
+        varchar email PK
+        varchar token
+        timestamp created_at
+    }
+
+    migrations {
+        bigint id PK
+        varchar migration
+        integer batch
+    }
+
+    %% ================================================================================
+    %% RELATIONSHIPS
+    %% ================================================================================
+
+    healthcares ||--o{ patients : "healthcare_id"
+    healthcares ||--o{ users : "healthcare_id"
+    healthcares ||--o{ polyclinics : "healthcare_id"
+    healthcares ||--o{ locations : "healthcare_id"
+    healthcares ||--o{ schedules : "healthcare_id"
+    healthcares ||--o{ subscriptions : "healthcare_id"
+    healthcares ||--o{ orders : "healthcare_id"
+    healthcares ||--o{ drugs : "healthcare_id"
+    healthcares ||--o{ medical_certificates : "healthcare_id"
+    healthcares ||--o{ health_certificates : "healthcare_id"
+    healthcares ||--o{ patient_referral_letters : "healthcare_id"
+    healthcares ||--o{ resumes : "healthcare_id"
+    healthcares ||--o{ out_patients : "healthcare_id"
+    healthcare_categories ||--o{ healthcares : "healthcare_category_id"
+
+    patients ||--o{ out_patients : "patient_id"
+    patients ||--o{ resumes : "patient_id"
+    patients ||--o{ orders : "user_id"
+
+    users ||--o{ out_patients : "doctor_id"
+    users ||--o{ out_patients : "nurse_id"
+    users ||--o{ resumes : "doctor_id"
+    users ||--o{ resumes : "nurse_id"
+    users ||--o{ resumes : "consultant_id"
+    users ||--o{ schedules : "doctor_id"
+    users ||--o{ orders : "user_id"
+    users }o--o| polyclinics : "polyclinic_id"
+
+    polyclinics ||--o{ locations : "polyclinic_id"
+    polyclinics ||--o{ out_patients : "polyclinic_id"
+    polyclinics ||--o{ resumes : "polyclinic_id"
+    polyclinics ||--o{ specialities : "speciality_id"
+    polyclinics ||--o{ polyclinics : "parent_id"
+
+    specialities ||--o{ polyclinics : "speciality_id"
+
+    schedules ||--o{ out_patients : "schedule_id"
+    schedules ||--o{ resumes : "schedule_id"
+
+    subscriptions ||--o{ orders : "subscription_id"
+
+    services ||--o{ subscriptions : "service_id"
+    services ||--o{ orders : "service_id"
+    services ||--o{ service_menus : "service_id"
+
+    menus ||--o{ service_menus : "menu_id"
+
+    out_patients ||--o{ resumes : "out_patient_id"
+
+    resumes ||--o{ prescriptions : "resume_id"
+    resumes ||--o{ vital_signs : "resume_id"
+    resumes ||--o{ resume_icd10s : "resume_id"
+    resumes ||--o{ medical_certificates : "resume_id"
+    resumes ||--o{ health_certificates : "resume_id"
+    resumes ||--o{ patient_referral_letters : "resume_id"
+    resumes ||--o{ consciousness_levels : "consciousness_level_id"
+    resumes ||--o{ condition_outs : "condition_out_id"
+    resumes ||--o{ way_outs : "way_out_id"
+    resumes ||--o{ prognoses : "prognosis_id"
+
+    vital_signs }o--o| resumes : "resume_id"
+    resume_icd10s }o--o| resumes : "resume_id"
+    resume_icd10s }o--o| icd10s : "icd10_id"
+
+    icd10s ||--o{ consciousness_levels : "consciousness_level_id"
+    icd10s ||--o{ condition_outs : "condition_out_id"
+    icd10s ||--o{ way_outs : "way_out_id"
+    icd10s ||--o{ prognoses : "prognosis_id"
+
+    prescriptions ||--o{ prescription_items : "prescription_id"
+
+    prescription_items ||--o{ drugs : "drug_id"
+
+    drugs ||--o{ drug_categories : "drug_category_id"
+    drugs ||--o{ pharmaceutical_companies : "pharmaceutical_company_id"
+    drugs ||--o{ drug_prices : "drug_id"
+    drugs ||--o{ units : "unit_id"
+
+    drug_prices }o--o| drugs : "drug_id"
+    drug_prices }o--o| units : "unit_id"
+
+    drug_categories ||--o{ drugs : "drug_category_id"
+    pharmaceutical_companies ||--o{ drugs : "pharmaceutical_company_id"
+    units ||--o{ drugs : "unit_id"
+
+    roles ||--o{ model_has_roles : "role_id"
+    permissions ||--o{ model_has_permissions : "permission_id"
+    model_has_roles }o--o| roles : "role_id"
+    model_has_permissions }o--o| permissions : "permission_id"
+
+    permissions ||--o{ role_has_permissions : "permission_id"
+    roles ||--o{ role_has_permissions : "role_id"

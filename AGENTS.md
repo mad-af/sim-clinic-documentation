@@ -6,7 +6,7 @@ Fokus pada **analisis sistem** dan **pembuatan flowchart diagram** untuk dokumen
 
 ## Repo Purpose
 
-Repositori dokumentasi **System Analyst** untuk sistem manajemen klinik (SIM Klinik) Klinik Bening. Berisi analisis kebutuhan, spesifikasi workflow, dan diagram alur — **bukan kode aplikasi**.
+Repositori dokumentasi **System Analyst** untuk sistem manajemen klinik (SIM Klinik) Klinik Bening. Berisi analisis kebutuhan, spesifikasi workflow, diagram alur, dan desain UI — **bukan kode aplikasi**.
 
 ## Workflow
 
@@ -19,35 +19,28 @@ Repositori dokumentasi **System Analyst** untuk sistem manajemen klinik (SIM Kli
 
 ```
 Klinik App/
-├── Materi/                        # Specs & meeting notes
-├── Diagram/
-│   ├── 00-front-office/           # Klinik umum, gigi, kecantikan
-│   ├── 01-finance/                # Tagihan, layanan medis, payroll, pemasukan
-│   ├── 02-hr/                     # Staff management, absensi, shift, izin cuti, reimbursement
-│   ├── 03-farmasi/                # Stok obat, peresepan, obat racikan, pengadaan
-│   └── 04-penunjang/              # Lab dan radiologi
-├── conductor/                      # Track planning system (spec.md, plan.md per track)
-├── index.html                     # Mermaid diagram viewer (port 3000)
-├── server.js                      # Static server with /api/diagrams endpoint
-├── sidebar.json                    # Sidebar navigation config (data-driven)
-├── sidebar.html                   # Sidebar component preview
+├── Materi/                        # Specs, meeting notes, UI designs
+├── Diagram/                       # Mermaid flowcharts (.mmd)
+│   ├── 00-front-office/
+│   ├── 01-finance/
+│   ├── 02-hr/
+│   ├── 03-farmasi/
+│   └── 04-penunjang/
+├── conductor/                     # Track planning system
+├── index.html                    # Mermaid diagram viewer (port 3000)
+├── server.js                     # Static server + /api/diagrams
+├── sidebar.json                  # Sidebar navigation config
+├── sidebar.html                  # Sidebar component preview
 └── AGENTS.md
 ```
-
-## Diagram Convention
-
-- Format: **Mermaid flowchart** dengan ekstensi `.mmd`
-- Encoding: UTF-8
-- Location: `Diagram/[module-name]/[nama-alur].mmd`
-- Style: Gunakan `subgraph` untuk area/stage, `style` untuk coloring
-- Bahasa: Indonesia untuk label node
 
 ## Sidebar Navigation
 
 - Config: `sidebar.json` (data-driven, satu source of truth)
-- Component preview: `sidebar.html`
-- Struktur: Group → Menu → Sub-Menu
-- Semua 18 diagram (.mmd) sudah dipetakan ke struktur sidebar
+- Preview: `sidebar.html` (serve via `node server.js`)
+- Structure: Group → Menu → Sub-Menu
+- Filtering: menu dengan `clinicType: ["gigi"]` atau `["kecantikan"]` conditionally visible
+- Role separation: Cuti, Lembur, Reimbursement punya sub-menu untuk Employee vs Manager/HR
 
 ## Three Clinic Types
 
@@ -72,24 +65,38 @@ Klinik App/
 - **Potongan:** PPh 21 (TER), BPJS Kesehatan (5%), BPJS Ketenagakerjaan (JHT, JP, JKK, JKM, JKP)
 
 ### Dokter
-- **Pendapatan:** Gaji Pokok + Tunjangan + **Bagi Hasil (% per invoice)**
+- **Pendapatan:** Gaji Pokok + Tunjangan + **Bagi Hasil (% per invoice × total invoice)**
 - **Potongan:** PPh 21 (TER), BPJS Kesehatan, BPJS Ketenagakerjaan
 
-## Modules
+## Modules & Design Files
 
-| Module | Status | Files |
-|--------|--------|-------|
-| Front Office | ✅ | klinik-umum, klinik-gigi, klinik-kecantikan |
-| Kasir & Tagihan | ✅ | tagihan-pasien |
-| Layanan Medis & Tindakan | ✅ | layanan-medis-dan-tindakan |
-| Payroll | ✅ | payroll-staff-dan-dokter |
-| Pemasukan & Pengeluaran | ✅ | pemasukan-dan-pengeluaran-klinik |
-| HR | ✅ | manajemen, absensi, shift, izin-cuti-lembur, reimbursement |
-| Farmasi | ✅ | stok-obat, peresepan, obat-racikan, pengadaan, stok-opname |
-| Penunjang (Lab/Rad) | ✅ | lab-dan-radiologi |
-| Dashboard | Pending | — |
-| Rekam Medis (EMR) | Pending | — |
-| Hak Akses | Pending | — |
+| Module | Status | Diagram Files | UI Design Files |
+|--------|--------|---------------|-----------------|
+| Front Office | ✅ | klinik-umum, klinik-gigi, klinik-kecantikan | — |
+| Kasir & Tagihan | ✅ | tagihan-pasien | — |
+| Layanan Medis | ✅ | layanan-medis-dan-tindakan | — |
+| Payroll | ✅ | payroll-staff-dan-dokter | `Materi/payroll-*.html`, `layanan-medis-*.html` |
+| Pemasukan & Pengeluaran | ✅ | pemasukan-dan-pengeluaran-klinik | — |
+| HR | ✅ | manajemen, absensi, shift, izin-cuti-lembur, reimbursement | — |
+| Farmasi | ✅ | stok-obat, peresepan, obat-racikan, pengadaan, stok-opname | — |
+| Penunjang (Lab/Rad) | ✅ | lab-dan-radiologi | — |
+| Dashboard | Pending | — | — |
+| Rekam Medis (EMR) | Pending | — | — |
+| Hak Akses | Pending | — | — |
+
+## Payroll UI Designs (Materi/)
+
+| File | Purpose |
+|------|---------|
+| `payroll-gaji-staff.html` | List Gaji Staff (filter: Bulan, Tahun) |
+| `payroll-gaji-staff-create.html` | Form: Staff + Gaji/Tunjangan/Bonus + Potongan |
+| `payroll-gaji-staff-detail.html` | Detail: Full breakdown + Edit + Cetak Slip |
+| `payroll-gaji-dokter.html` | List Gaji Dokter (filter: Bulan, Tahun) |
+| `payroll-gaji-dokter-create.html` | Form: Dokter + Gaji + % Bagi Hasil + Total Invoice |
+| `payroll-gaji-dokter-detail.html` | Detail: Gaji + Tunjangan + **Bagi Hasil** breakdown + Gaji Bersih |
+| `payroll-slip-gaji.html` | Slip Gaji list (combined: Staff + Dokter) |
+| `payroll-slip-gaji-detail.html` | Printable slip dengan full detail |
+| `payroll-slip-preview.html` | Slip preview (alternative) |
 
 ## Change Log
 
@@ -98,5 +105,7 @@ Klinik App/
 | 2026-04-02 | Initial AGENTS.md |
 | 2026-04-05 | Compacted — removed speculative content |
 | 2026-04-05 | Role redefined as System Analyst focus |
-| 2026-04-13 | Updated: Farmasi & Penunjang diagrams now complete; HR updated; directory structure corrected |
-| 2026-04-13 | Added: sidebar.json (navigation config) and sidebar.html (component preview) |
+| 2026-04-13 | Farmasi & Penunjang diagrams complete; HR updated; directory corrected |
+| 2026-04-13 | Added sidebar.json and sidebar.html |
+| 2026-04-14 | Simplified sidebar (Farmasi: 2 menus, Penunjang: 1 menu); SDM split (Manajemen Staff/Dokter separate, Cuti/Lembur/Reimbursement with intent sub-menus); payroll UI designs added |
+| 2026-04-14 | Added: layanan-medis-list.html and layanan-medis-detail.html (billing pool with editable items) |

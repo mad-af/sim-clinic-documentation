@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Layanan Medis & Tindakan - Detail</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f5f5f5; padding: 24px; }
+        
+        .page { max-width: 900px; margin: 0 auto; background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #e0e0e0; }
+        .page-title { font-size: 20px; font-weight: 700; color: #1a1a2e; }
+        
+        .info-bar { display: flex; gap: 24px; margin-bottom: 24px; background: #f8f9fa; padding: 16px 20px; border-radius: 8px; }
+        .info-item { }
+        .info-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .info-value { font-size: 14px; font-weight: 600; color: #333; }
+        
+        .badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+        .badge-pending { background: #fff3e0; color: #e65100; }
+        .badge-lunas { background: #e8f5e9; color: #2e7d32; }
+        
+        .section { margin-bottom: 24px; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .section-title { font-size: 14px; font-weight: 700; color: #333; }
+        
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { background: #f8f9fa; padding: 10px 12px; text-align: left; font-weight: 600; color: #333; border-bottom: 2px solid #e0e0e0; }
+        td { padding: 10px 12px; border-bottom: 1px solid #eee; }
+        
+        .text-right { text-align: right; }
+        .text-bold { font-weight: 700; }
+        
+        .editable-row td { background: #fff; }
+        .editable-row:hover td { background: #f0f7ff; }
+        
+        input[type="text"], input[type="number"], select { 
+            padding: 6px 8px; 
+            border: 1px solid #ddd; 
+            border-radius: 4px; 
+            font-size: 13px; 
+            width: 100%;
+        }
+        input:focus, select:focus { outline: none; border-color: #3b82f6; }
+        
+        .btn-delete { 
+            background: #ef4444; 
+            color: white; 
+            padding: 4px 8px; 
+            border-radius: 4px; 
+            font-size: 11px; 
+            cursor: pointer; 
+            border: none;
+        }
+        .btn-delete:hover { background: #dc2626; }
+        
+        .btn-add-row { 
+            background: #22c55e; 
+            color: white; 
+            padding: 8px 16px; 
+            border-radius: 6px; 
+            font-size: 12px; 
+            cursor: pointer; 
+            border: none;
+        }
+        .btn-add-row:hover { background: #16a34a; }
+        
+        .summary-box { background: #f8f9fa; padding: 20px; border-radius: 12px; margin-top: 20px; }
+        .summary-row { display: flex; justify-content: space-between; padding: 8px 0; }
+        .summary-row.total { font-size: 18px; font-weight: 700; border-top: 2px solid #333; margin-top: 12px; padding-top: 16px; }
+        .summary-label { color: #333; }
+        .summary-value { font-variant-numeric: tabular-nums; }
+        .summary-row.total .summary-value { color: #2e7d32; }
+        
+        .btn-row { display: flex; gap: 12px; margin-top: 24px; padding-top: 16px; border-top: 1px solid #e0e0e0; }
+        .btn { padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; text-decoration: none; display: inline-block; }
+        .btn-primary { background: #3b82f6; color: white; }
+        .btn-primary:hover { background: #2563eb; }
+        .btn-success { background: #22c55e; color: white; }
+        .btn-success:hover { background: #16a34a; }
+        .btn-danger { background: #ef4444; color: white; }
+        .btn-danger:hover { background: #dc2626; }
+        .btn-secondary { background: #e0e0e0; color: #333; }
+        .btn-secondary:hover { background: #d0d0d0; }
+        
+        .locked-notice { 
+            background: #fff3e0; 
+            border: 1px solid #ffb74d; 
+            border-radius: 8px; 
+            padding: 12px 16px; 
+            margin-bottom: 16px; 
+            font-size: 13px; 
+            color: #e65100; 
+        }
+        
+        .currency { font-variant-numeric: tabular-nums; }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="page-header">
+            <h1 class="page-title">Layanan Medis & Tindakan — Detail</h1>
+        </div>
+        
+        <div class="info-bar">
+            <div class="info-item">
+                <div class="info-label">Pasien</div>
+                <div class="info-value">Andi Wijaya</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Tanggal Kunjungan</div>
+                <div class="info-value">14 April 2026</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Status</div>
+                <div class="info-value"><span class="badge badge-pending">Pending</span></div>
+            </div>
+        </div>
+        
+        <!-- Locked notice - show when status = Lunas -->
+        <div class="locked-notice" style="display: none;">
+            ⚠️ Record ini sudah difinalize dan terkunci. Hubungi manager untuk mengubah.
+        </div>
+        
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">Item Layanan</div>
+                <button class="btn-add-row">+ Tambah Item</button>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:120px">Kategori</th>
+                        <th>Nama Item</th>
+                        <th style="width:60px">Qty</th>
+                        <th style="width:130px" class="text-right">Harga</th>
+                        <th style="width:130px" class="text-right">Subtotal</th>
+                        <th style="width:60px"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="editable-row">
+                        <td>
+                            <select>
+                                <option selected>Konsultasi</option>
+                                <option>Tindakan</option>
+                                <option>Lab</option>
+                                <option>Farmasi</option>
+                                <option>Lain-Lain</option>
+                            </select>
+                        </td>
+                        <td><input type="text" value="Konsultasi Umum"></td>
+                        <td><input type="number" value="1" style="text-align: center;"></td>
+                        <td class="text-right"><input type="number" value="250000" class="currency"></td>
+                        <td class="text-right currency">250.000</td>
+                        <td><button class="btn-delete">🗑️</button></td>
+                    </tr>
+                    <tr class="editable-row">
+                        <td>
+                            <select>
+                                <option>Konsultasi</option>
+                                <option selected>Tindakan</option>
+                                <option>Lab</option>
+                                <option>Farmasi</option>
+                                <option>Lain-Lain</option>
+                            </select>
+                        </td>
+                        <td><input type="text" value="Pencabutan Gigi"></td>
+                        <td><input type="number" value="1" style="text-align: center;"></td>
+                        <td class="text-right"><input type="number" value="500000" class="currency"></td>
+                        <td class="text-right currency">500.000</td>
+                        <td><button class="btn-delete">🗑️</button></td>
+                    </tr>
+                    <tr class="editable-row">
+                        <td>
+                            <select>
+                                <option>Konsultasi</option>
+                                <option>Tindakan</option>
+                                <option selected>Lab</option>
+                                <option>Farmasi</option>
+                                <option>Lain-Lain</option>
+                            </select>
+                        </td>
+                        <td><input type="text" value="Rontgen Panorama"></td>
+                        <td><input type="number" value="1" style="text-align: center;"></td>
+                        <td class="text-right"><input type="number" value="350000" class="currency"></td>
+                        <td class="text-right currency">350.000</td>
+                        <td><button class="btn-delete">🗑️</button></td>
+                    </tr>
+                    <tr class="editable-row">
+                        <td>
+                            <select>
+                                <option>Konsultasi</option>
+                                <option>Tindakan</option>
+                                <option>Lab</option>
+                                <option selected>Farmasi</option>
+                                <option>Lain-Lain</option>
+                            </select>
+                        </td>
+                        <td><input type="text" value="Obat Anti Nyeri"></td>
+                        <td><input type="number" value="3" style="text-align: center;"></td>
+                        <td class="text-right"><input type="number" value="50000" class="currency"></td>
+                        <td class="text-right currency">150.000</td>
+                        <td><button class="btn-delete">🗑️</button></td>
+                    </tr>
+                    <!-- New row placeholder -->
+                    <tr class="editable-row" style="background: #f0fff0;">
+                        <td>
+                            <select>
+                                <option value="">- Pilih -</option>
+                                <option>Konsultasi</option>
+                                <option>Tindakan</option>
+                                <option>Lab</option>
+                                <option>Farmasi</option>
+                                <option>Lain-Lain</option>
+                            </select>
+                        </td>
+                        <td><input type="text" placeholder="Nama item..."></td>
+                        <td><input type="number" value="1" style="text-align: center;"></td>
+                        <td class="text-right"><input type="number" placeholder="0" class="currency"></td>
+                        <td class="text-right currency">0</td>
+                        <td><button class="btn-delete">🗑️</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="summary-box">
+            <div class="summary-row">
+                <span class="summary-label">Total Item</span>
+                <span class="summary-value">4</span>
+            </div>
+            <div class="summary-row total">
+                <span class="summary-label">TOTAL</span>
+                <span class="summary-value">1.750.000</span>
+            </div>
+        </div>
+        
+        <div class="btn-row">
+            <button class="btn btn-primary">💾 Simpan</button>
+            <button class="btn btn-success">📤 Kirim ke Tagihan</button>
+            <button class="btn btn-danger">🗑️ Hapus</button>
+            <a href="layanan-medis-list.html" class="btn btn-secondary">← Kembali</a>
+        </div>
+    </div>
+</body>
+</html>
