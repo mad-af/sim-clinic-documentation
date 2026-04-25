@@ -285,7 +285,7 @@ billing_payments {
 }
 
 %% ========================
-%% DATA MASTER
+%% ICD DATA MASTER
 %% ========================
 
 icd_codes {
@@ -336,6 +336,89 @@ search_aggregates {
     timestamp last_used_at
 }
 
+
+%% ========================
+%% KFA DATA MASTER
+%% ========================
+
+kfa_drug_templates {
+    uuid id PK
+
+    string kfa_code UK        "KFA template code (92xxxxxx)"
+    string name
+
+    boolean is_active
+    string status             "valid | invalid"
+
+    timestamp updated_at
+}
+
+kfa_drug_items {
+    uuid id PK
+
+    string kfa_code           "nullable, 93xxxxxx or '/'"
+    string name
+
+    uuid template_id FK
+
+    string brand_name
+    string production_type    "local | import"
+    string manufacturer
+    string registrar
+
+    string type_code          "drug | device"
+    string type_group         "obat | alkes"
+
+    boolean is_generic
+
+    decimal dose_per_unit
+
+    string unit_key
+    string dosage_form_key
+
+    decimal net_weight
+    string net_weight_unit_key
+
+    decimal volume
+    string volume_unit_key
+
+    decimal fixed_price
+    decimal ceiling_price
+
+    boolean is_listed_in_lkpp
+    string lkpp_code
+
+    string image_url
+
+    boolean is_active
+    string status
+
+    timestamp updated_at
+}
+
+kfa_lookups {
+    string key PK             "mg, ml, tablet"
+    string label
+    string type               "unit | dosage_form"
+    boolean is_active
+}
+
+kfa_drug_ingredients {
+    uuid id PK
+
+    uuid drug_item_id FK
+
+    string kfa_code        "91xxxxxx (BZA code)"
+    string name            "zat_aktif"
+
+    string strength        "300 mg (raw dari API)"
+
+    boolean is_active
+    string status
+
+    timestamp updated_at
+}
+
 %% ========================
 %% RELATIONSHIPS
 %% ========================
@@ -376,3 +459,17 @@ billing_invoices ||--o{ billing_payments : paid_by
 
 icd_codes ||--o{ search_logs : referenced
 icd_codes ||--o{ search_aggregates : ranked
+
+kfa_drug_templates ||--o{ kfa_drug_items : has
+
+kfa_drug_items }o--|| kfa_lookups : "unit_key"
+kfa_drug_items }o--|| kfa_lookups : "dosage_form_key"
+kfa_drug_items }o--|| kfa_lookups : "net_weight_unit_key"
+kfa_drug_items }o--|| kfa_lookups : "volume_unit_key"
+
+kfa_drug_items ||--o{ kfa_drug_ingredients : has
+
+kfa_drug_items ||--o{ search_logs : referenced
+kfa_drug_items ||--o{ search_aggregates : ranked
+
+
