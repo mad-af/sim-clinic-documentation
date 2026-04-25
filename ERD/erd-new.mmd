@@ -1,0 +1,378 @@
+erDiagram
+
+%% ========================
+%% USERS
+%% ========================
+users {
+    uuid id PK
+    string name
+    string email UK
+    timestamp email_verified_at
+    string password
+    boolean is_active
+    string remember_token
+    timestamp created_at
+    timestamp updated_at
+}
+
+user_profiles {
+    uuid user_id PK, FK
+    string phone
+    date birth_date
+    string identity_number
+
+    string address
+    string city
+    string province
+    string postal_code
+    string country
+}
+
+%% ========================
+%% ACCOUNTS
+%% ========================
+accounts {
+    uuid id PK
+    string name
+    boolean is_active
+    timestamp created_at
+    timestamp updated_at
+}
+
+account_profiles {
+    uuid account_id PK, FK
+
+    string email
+    string phone
+
+    string address
+    string city
+    string province
+    string postal_code
+    string country
+
+    string website
+    text description
+
+    string tax_id
+    string legal_name
+}
+
+account_users {
+    uuid account_id PK, FK
+    uuid user_id PK, FK
+    string role
+    timestamp created_at
+}
+
+%% ========================
+%% CLINICS
+%% ========================
+clinics {
+    uuid id PK
+    uuid account_id FK
+    string name
+    string code UK
+    string domain UK
+    string database UK
+    boolean is_active
+    timestamp created_at
+    timestamp updated_at
+}
+
+clinic_profiles {
+    uuid clinic_id PK, FK
+
+    string category "general | aesthetic | dental"
+    string timezone
+
+    string email
+    string phone
+
+    string address
+    string city
+    string province
+    string postal_code
+    string country
+
+    float latitude
+    float longitude
+
+    string website
+    text description
+}
+
+clinic_users {
+    uuid clinic_id PK, FK
+    uuid user_id PK, FK
+    string role
+    boolean is_active
+    timestamp created_at
+}
+
+%% ========================
+%% MEDIA
+%% ========================
+media {
+    uuid id PK
+
+    string scope_type "account | clinic"
+    uuid scope_id
+
+    string disk "public | private"
+    string path
+    string file_name
+    string mime_type
+    bigint size
+    string collection "default: default"
+    text placeholder "nullable (base64 preview)"
+
+    string mediable_type
+    uuid mediable_id
+
+    uuid uploaded_by FK "nullable -> users.id"
+
+    timestamp created_at
+    timestamp deleted_at
+}
+
+%% ========================
+%% BILLING
+%% ========================
+plans {
+    uuid id PK
+    string code
+    string name
+    decimal base_price
+    string billing_cycle
+    string currency
+    boolean is_active
+    int trial_duration_days
+    timestamp created_at
+    timestamp updated_at
+}
+
+subscriptions {
+    uuid id PK
+    uuid account_id FK
+    uuid plan_id FK
+
+    string status
+    timestamp started_at
+    timestamp expired_at
+    timestamp trial_end_at
+    timestamp cancelled_at
+    timestamp suspended_at
+    string suspend_reason
+
+    timestamp billing_anchor_date
+    timestamp next_billing_at
+    timestamp plan_changed_at
+
+    timestamp created_at
+    timestamp updated_at
+}
+
+extras {
+    uuid id PK
+    string code
+    string name
+    string unit
+    string price_type
+    decimal base_price
+    boolean is_active
+    timestamp created_at
+    timestamp updated_at
+    timestamp deleted_at
+}
+
+subscription_extras {
+    uuid id PK
+    uuid subscription_id FK
+    uuid extra_id FK
+
+    int quantity
+    decimal unit_price
+    boolean is_active
+    json metadata
+
+    timestamp started_at
+    timestamp ended_at
+    timestamp created_at
+    timestamp updated_at
+    timestamp deleted_at
+}
+
+%% ========================
+%% FEATURE / ENTITLEMENT SYSTEM
+%% ========================
+features {
+    uuid id PK
+    string key UK
+    string name
+    string type  "limit | boolean | config"
+    text description
+}
+
+plan_features {
+    uuid id PK
+    uuid plan_id FK
+    uuid feature_id FK
+    string value
+}
+
+extra_features {
+    uuid id PK
+    uuid extra_id FK
+    uuid feature_id FK
+    string value
+}
+
+account_entitlements {
+    uuid id PK
+    uuid account_id FK
+    uuid feature_id FK
+    string value
+    string source_type
+    uuid source_id
+    timestamp created_at
+}
+
+%% ========================
+%% BILLING TRANSACTION
+%% ========================
+billing_invoices {
+    uuid id PK
+    uuid account_id FK
+    uuid subscription_id FK
+    string invoice_number UK
+    string status
+    decimal subtotal
+    decimal discount_amount
+    decimal tax
+    decimal total
+    string currency
+    timestamp due_date
+    timestamp paid_at
+}
+
+billing_invoice_items {
+    uuid id PK
+    uuid invoice_id FK
+    string reference_type
+    uuid reference_id
+    string name
+    int quantity
+    decimal unit_price
+    decimal total_price
+}
+
+billing_payments {
+    uuid id PK
+    uuid invoice_id FK
+    decimal amount
+    string currency
+    string provider
+    string method
+    string status
+    string provider_reference
+    text payment_url
+    jsonb provider_payload
+    jsonb provider_payload_update
+    string provider_account_id
+    timestamp expires_at
+    timestamp paid_at
+}
+
+%% ========================
+%% DATA MASTER
+%% ========================
+
+icd_codes {
+    uuid id PK
+    string code UK
+    string type "ICD10 | ICD9CM"
+
+    string name_en
+    string name_id
+    text description
+
+    boolean is_active
+    timestamp created_at
+    timestamp updated_at
+}
+
+%% ========================
+%% SEARCH
+%% ========================
+
+search_logs {
+    uuid id PK
+
+    string query_text
+
+    string entity_type   "icd | patient | medicine | dll"
+    uuid entity_id
+
+    int result_count
+    int click_rank
+
+    timestamp created_at
+}
+
+search_aggregates {
+    uuid id PK
+
+    string query_text
+
+    string entity_type
+    uuid entity_id
+
+    int total_search
+    int total_selected
+
+    float success_rate
+
+    timestamp last_used_at
+}
+
+%% ========================
+%% RELATIONSHIPS
+%% ========================
+
+users ||--|| user_profiles : "has"
+accounts ||--|| account_profiles : "has"
+clinics ||--|| clinic_profiles : "has"
+
+users ||--o{ account_users : "member"
+accounts ||--o{ account_users : "has"
+
+accounts ||--o{ clinics : "owns"
+
+clinics ||--o{ clinic_users : "has staff"
+users ||--o{ clinic_users : "assigned"
+
+users ||--o{ media : "uploads"
+
+accounts ||--o{ subscriptions : "subscribes"
+plans ||--o{ subscriptions : "used by"
+
+subscriptions ||--o{ subscription_extras : "has"
+extras ||--o{ subscription_extras : "used"
+
+plans ||--o{ plan_features : defines
+features ||--o{ plan_features : mapped
+
+extras ||--o{ extra_features : defines
+features ||--o{ extra_features : mapped
+
+accounts ||--o{ account_entitlements : has
+
+accounts ||--o{ billing_invoices : owns
+subscriptions ||--o{ billing_invoices : generates
+
+billing_invoices ||--o{ billing_invoice_items : contains
+billing_invoices ||--o{ billing_payments : paid_by
+
+icd_codes ||--o{ search_logs : referenced
+icd_codes ||--o{ search_aggregates : ranked
