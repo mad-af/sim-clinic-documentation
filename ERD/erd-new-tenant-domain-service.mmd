@@ -1,0 +1,59 @@
+erDiagram
+
+%% ========================
+%% SERVICE TEMPLATES (GLOBAL / LANDLORD)
+%% ========================
+
+service_templates {
+    uuid id PK
+
+    string code UK
+    string name
+
+    string category "general | dental | aesthetic"
+
+    text description
+
+    boolean is_active
+
+    timestamp created_at
+    timestamp updated_at
+}
+
+%% ========================
+%% SERVICES (TENANT / CLINIC)
+%% ========================
+
+services {
+    uuid id PK
+    uuid clinic_id FK
+    uuid template_id FK "nullable"
+
+    string code
+    string name
+
+    decimal base_price
+    int duration_minutes
+
+    boolean is_active
+
+    timestamp created_at
+    timestamp updated_at
+}
+
+%% ========================
+%% POLYCLINIC ↔ SERVICE (CONTEXT)
+%% ========================
+
+polyclinic_services {
+    uuid polyclinic_id FK
+    uuid service_id FK
+}
+
+%% ========================
+%% RELATIONSHIPS
+%% ========================
+
+service_templates ||--o{ services : "derived into"
+
+services ||--o{ polyclinic_services : "assigned to"

@@ -1,0 +1,139 @@
+erDiagram
+
+%% ========================
+%% EMPLOYEES (TENANT)
+%% ========================
+
+employees {
+    uuid id PK
+    uuid clinic_id FK
+    uuid user_id FK "nullable (link to landlord users)"
+
+    string employee_code
+
+    string full_name
+    string gender
+    date birth_date
+
+    string phone
+    string email
+
+    date hire_date
+    string employment_type
+    string status
+
+    timestamp created_at
+    timestamp updated_at
+}
+
+%% ========================
+%% EMPLOYEE PROFILES
+%% ========================
+
+employee_profiles {
+    uuid employee_id PK, FK
+
+    string identity_number
+
+    string address
+    string city
+    string province
+    string postal_code
+    string country
+
+    string emergency_contact_name
+    string emergency_contact_phone
+
+    text notes
+}
+
+%% ========================
+%% POSITION TEMPLATES (LANDLORD)
+%% ========================
+
+position_templates {
+    uuid id PK
+
+    string key UK        "doctor, nurse, admin"
+    string name
+    text description
+
+    boolean is_active
+}
+
+%% ========================
+%% EMPLOYEE POSITIONS (TENANT)
+%% ========================
+
+employee_positions {
+    uuid id PK
+    uuid clinic_id FK
+
+    uuid template_id FK "nullable (from landlord)"
+
+    string key          "optional custom"
+    string name
+    text description
+
+    boolean is_active
+}
+
+employee_position_assignments {
+    uuid employee_id FK
+    uuid position_id FK
+
+    timestamp assigned_at
+}
+
+%% ========================
+%% SPECIALTY TEMPLATES (LANDLORD)
+%% ========================
+
+specialty_templates {
+    uuid id PK
+
+    string code UK
+    string name
+    text description
+
+    boolean is_active
+}
+
+%% ========================
+%% SPECIALTIES (TENANT)
+%% ========================
+
+specialties {
+    uuid id PK
+    uuid clinic_id FK
+
+    uuid template_id FK "nullable (from landlord)"
+
+    string code
+    string name
+    text description
+
+    boolean is_active
+}
+
+employee_specialties {
+    uuid employee_id FK
+    uuid specialty_id FK
+
+    boolean is_primary
+}
+
+%% ========================
+%% RELATIONSHIPS
+%% ========================
+
+employees ||--|| employee_profiles : "has"
+
+employees ||--o{ employee_position_assignments : "assigned"
+employee_positions ||--o{ employee_position_assignments : "mapped"
+
+employees ||--o{ employee_specialties : "has"
+specialties ||--o{ employee_specialties : "mapped"
+
+employee_positions }o--|| position_templates : "based_on"
+specialties }o--|| specialty_templates : "based_on"

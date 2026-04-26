@@ -1,0 +1,105 @@
+erDiagram
+
+%% ========================
+%% PATIENTS (CORE)
+%% ========================
+
+patients {
+    uuid id PK
+    uuid clinic_id FK
+
+    string medical_record_number "unique per clinic"
+
+    string full_name
+    string gender
+    date birth_date
+
+    boolean is_active
+
+    timestamp created_at
+    timestamp updated_at
+}
+
+%% ========================
+%% PATIENT PROFILES
+%% ========================
+
+patient_profiles {
+    uuid patient_id PK, FK
+
+    string identity_number
+
+    string address
+    string city
+    string province
+    string postal_code
+    string country
+
+    string blood_type
+    string marital_status
+
+    text notes
+}
+
+%% ========================
+%% PATIENT CONTACTS
+%% ========================
+
+patient_contacts {
+    uuid id PK
+    uuid patient_id FK
+
+    string type      "phone | email | whatsapp"
+    string value
+
+    boolean is_primary
+}
+
+%% ========================
+%% EMERGENCY CONTACTS
+%% ========================
+
+patient_emergency_contacts {
+    uuid id PK
+    uuid patient_id FK
+
+    string name
+    string relationship
+    string phone
+}
+
+%% ========================
+%% OPTIONAL (SCALABLE)
+%% ========================
+
+patient_identifiers {
+    uuid id PK
+    uuid patient_id FK
+
+    string type     "national_id | insurance | passport"
+    string value
+
+    boolean is_primary
+}
+
+patient_insurances {
+    uuid id PK
+    uuid patient_id FK
+
+    string provider_name
+    string policy_number
+
+    boolean is_active
+}
+
+%% ========================
+%% RELATIONSHIPS
+%% ========================
+
+patients ||--|| patient_profiles : "has"
+
+patients ||--o{ patient_contacts : "has"
+patients ||--o{ patient_emergency_contacts : "has"
+
+patients ||--o{ patient_identifiers : "has"
+patients ||--o{ patient_insurances : "has"

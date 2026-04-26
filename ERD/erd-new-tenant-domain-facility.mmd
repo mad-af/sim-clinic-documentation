@@ -1,0 +1,59 @@
+erDiagram
+
+%% ========================
+%% POLYCLINICS (POLI)
+%% ========================
+
+polyclinics {
+    uuid id PK
+    uuid clinic_id FK
+
+    string code
+    string name
+    text description
+
+    boolean is_active
+
+    timestamp created_at
+    timestamp updated_at
+}
+
+%% ========================
+%% ROOMS
+%% ========================
+
+rooms {
+    uuid id PK
+    uuid clinic_id FK
+    uuid polyclinic_id FK
+
+    string code
+    string name
+
+    string type        "consultation | treatment"
+    int capacity
+
+    boolean is_active
+
+    timestamp created_at
+    timestamp updated_at
+}
+
+%% ========================
+%% STAFF ASSIGNMENT
+%% ========================
+
+employee_polyclinics {
+    uuid employee_id FK
+    uuid polyclinic_id FK
+
+    boolean is_primary
+}
+
+%% ========================
+%% RELATIONSHIPS
+%% ========================
+
+polyclinics ||--o{ rooms : has
+
+polyclinics ||--o{ employee_polyclinics : assigned
