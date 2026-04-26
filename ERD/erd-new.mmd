@@ -341,7 +341,7 @@ search_aggregates {
 %% KFA DATA MASTER
 %% ========================
 
-kfa_drug_templates {
+kfa_templates {
     uuid id PK
 
     string kfa_code UK        "KFA template code (92xxxxxx)"
@@ -353,7 +353,7 @@ kfa_drug_templates {
     timestamp updated_at
 }
 
-kfa_drug_items {
+kfa_items {
     uuid id PK
 
     string kfa_code           "nullable, 93xxxxxx or '/'"
