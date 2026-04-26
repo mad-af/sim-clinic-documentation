@@ -1,7 +1,11 @@
 erDiagram
 
+%% ================================================================================
+%% LANDLORD (SHARED)
+%% ================================================================================
+
 %% ========================
-%% USERS
+%% USERS (LANDLORD)
 %% ========================
 users {
     uuid id PK
@@ -20,7 +24,6 @@ user_profiles {
     string phone
     date birth_date
     string identity_number
-
     string address
     string city
     string province
@@ -29,7 +32,7 @@ user_profiles {
 }
 
 %% ========================
-%% ACCOUNTS
+%% ACCOUNTS (LANDLORD)
 %% ========================
 accounts {
     uuid id PK
@@ -41,19 +44,15 @@ accounts {
 
 account_profiles {
     uuid account_id PK, FK
-
     string email
     string phone
-
     string address
     string city
     string province
     string postal_code
     string country
-
     string website
     text description
-
     string tax_id
     string legal_name
 }
@@ -66,7 +65,7 @@ account_users {
 }
 
 %% ========================
-%% CLINICS
+%% CLINICS (LANDLORD)
 %% ========================
 clinics {
     uuid id PK
@@ -82,22 +81,17 @@ clinics {
 
 clinic_profiles {
     uuid clinic_id PK, FK
-
     string category "general | aesthetic | dental"
     string timezone
-
     string email
     string phone
-
     string address
     string city
     string province
     string postal_code
     string country
-
     float latitude
     float longitude
-
     string website
     text description
 }
@@ -111,14 +105,12 @@ clinic_users {
 }
 
 %% ========================
-%% MEDIA
+%% MEDIA (LANDLORD)
 %% ========================
 media {
     uuid id PK
-
     string scope_type "account | clinic"
     uuid scope_id
-
     string disk "public | private"
     string path
     string file_name
@@ -126,18 +118,15 @@ media {
     bigint size
     string collection "default: default"
     text placeholder "nullable (base64 preview)"
-
     string mediable_type
     uuid mediable_id
-
     uuid uploaded_by FK "nullable -> users.id"
-
     timestamp created_at
     timestamp deleted_at
 }
 
 %% ========================
-%% BILLING
+%% BILLING PLANS (LANDLORD)
 %% ========================
 plans {
     uuid id PK
@@ -156,7 +145,6 @@ subscriptions {
     uuid id PK
     uuid account_id FK
     uuid plan_id FK
-
     string status
     timestamp started_at
     timestamp expired_at
@@ -164,11 +152,9 @@ subscriptions {
     timestamp cancelled_at
     timestamp suspended_at
     string suspend_reason
-
     timestamp billing_anchor_date
     timestamp next_billing_at
     timestamp plan_changed_at
-
     timestamp created_at
     timestamp updated_at
 }
@@ -190,12 +176,10 @@ subscription_extras {
     uuid id PK
     uuid subscription_id FK
     uuid extra_id FK
-
     int quantity
     decimal unit_price
     boolean is_active
     json metadata
-
     timestamp started_at
     timestamp ended_at
     timestamp created_at
@@ -204,13 +188,13 @@ subscription_extras {
 }
 
 %% ========================
-%% FEATURE / ENTITLEMENT SYSTEM
+%% FEATURES (LANDLORD)
 %% ========================
 features {
     uuid id PK
     string key UK
     string name
-    string type  "limit | boolean | config"
+    string type "limit | boolean | config"
     text description
 }
 
@@ -239,7 +223,7 @@ account_entitlements {
 }
 
 %% ========================
-%% BILLING TRANSACTION
+%% BILLING TRANSACTIONS (LANDLORD)
 %% ========================
 billing_invoices {
     uuid id PK
@@ -285,144 +269,376 @@ billing_payments {
 }
 
 %% ========================
-%% ICD DATA MASTER
+%% ICD CODES (LANDLORD)
 %% ========================
-
 icd_codes {
     uuid id PK
     string code UK
     string type "ICD10 | ICD9CM"
-
     string name_en
     string name_id
     text description
-
     boolean is_active
     timestamp created_at
     timestamp updated_at
 }
 
 %% ========================
-%% SEARCH
+%% SEARCH (LANDLORD)
 %% ========================
-
 search_logs {
     uuid id PK
-
     string query_text
-
-    string entity_type   "icd | patient | medicine | dll"
+    string entity_type "icd | patient | medicine | dll"
     uuid entity_id
-
     int result_count
     int click_rank
-
     timestamp created_at
 }
 
 search_aggregates {
     uuid id PK
-
     string query_text
-
     string entity_type
     uuid entity_id
-
     int total_search
     int total_selected
-
     float success_rate
-
     timestamp last_used_at
 }
 
-
 %% ========================
-%% KFA DATA MASTER
+%% KFA MASTER (LANDLORD)
 %% ========================
-
 kfa_templates {
     uuid id PK
-
-    string kfa_code UK        "KFA template code (92xxxxxx)"
+    string kfa_code UK "92xxxxxx"
     string name
-
     boolean is_active
-    string status             "valid | invalid"
-
+    string status "valid | invalid"
     timestamp updated_at
 }
 
 kfa_items {
     uuid id PK
-
-    string kfa_code           "nullable, 93xxxxxx or '/'"
+    string kfa_code "nullable, 93xxxxxx or '/'"
     string name
-
     uuid template_id FK
-
     string brand_name
-    string production_type    "local | import"
+    string production_type "local | import"
     string manufacturer
     string registrar
-
-    string type_code          "drug | device"
-    string type_group         "obat | alkes"
-
+    string type_code "drug | device"
+    string type_group "obat | alkes"
     boolean is_generic
-
     decimal dose_per_unit
-
     string unit_key
     string dosage_form_key
-
     decimal net_weight
     string net_weight_unit_key
-
     decimal volume
     string volume_unit_key
-
     decimal fixed_price
     decimal ceiling_price
-
     boolean is_listed_in_lkpp
     string lkpp_code
-
     string image_url
-
     boolean is_active
     string status
-
     timestamp updated_at
 }
 
 kfa_lookups {
-    string key PK             "mg, ml, tablet"
+    string key PK "mg, ml, tablet"
     string label
-    string type               "unit | dosage_form"
+    string type "unit | dosage_form"
     boolean is_active
 }
 
 kfa_drug_ingredients {
     uuid id PK
-
     uuid drug_item_id FK
-
-    string kfa_code        "91xxxxxx (BZA code)"
-    string name            "zat_aktif"
-
-    string strength        "300 mg (raw dari API)"
-
+    string kfa_code "91xxxxxx (BZA code)"
+    string name "zat_aktif"
+    string strength "300 mg (raw dari API)"
     boolean is_active
     string status
-
     timestamp updated_at
 }
 
 %% ========================
-%% RELATIONSHIPS
+%% SERVICE TEMPLATES (LANDLORD)
 %% ========================
+service_templates {
+    uuid id PK
+    string code UK
+    string name
+    string category "general | dental | aesthetic"
+    text description
+    boolean is_active
+    timestamp created_at
+    timestamp updated_at
+}
 
+%% ========================
+%% POSITION TEMPLATES (LANDLORD)
+%% ========================
+position_templates {
+    uuid id PK
+    string key UK "doctor, nurse, admin"
+    string name
+    text description
+    boolean is_active
+}
+
+%% ========================
+%% SPECIALTY TEMPLATES (LANDLORD)
+%% ========================
+specialty_templates {
+    uuid id PK
+    string code UK
+    string name
+    text description
+    boolean is_active
+}
+
+%% ================================================================================
+%% TENANT (PER CLINIC)
+%% ================================================================================
+
+%% ========================
+%% PATIENTS (TENANT)
+%% ========================
+patients {
+    uuid id PK
+    uuid clinic_id FK
+    string medical_record_number "unique per clinic"
+    string full_name
+    string gender
+    date birth_date
+    boolean is_active
+    timestamp created_at
+    timestamp updated_at
+}
+
+patient_profiles {
+    uuid patient_id PK, FK
+    string identity_number
+    string address
+    string city
+    string province
+    string postal_code
+    string country
+    string blood_type
+    string marital_status
+    text notes
+}
+
+patient_contacts {
+    uuid id PK
+    uuid patient_id FK
+    string type "phone | email | whatsapp"
+    string value
+    boolean is_primary
+}
+
+patient_emergency_contacts {
+    uuid id PK
+    uuid patient_id FK
+    string name
+    string relationship
+    string phone
+}
+
+patient_identifiers {
+    uuid id PK
+    uuid patient_id FK
+    string type "national_id | insurance | passport"
+    string value
+    boolean is_primary
+}
+
+patient_insurances {
+    uuid id PK
+    uuid patient_id FK
+    string provider_name
+    string policy_number
+    boolean is_active
+}
+
+%% ========================
+%% SERVICES (TENANT)
+%% ========================
+services {
+    uuid id PK
+    uuid clinic_id FK
+    uuid template_id FK "nullable"
+    string code
+    string name
+    decimal base_price
+    int duration_minutes
+    boolean is_active
+    timestamp created_at
+    timestamp updated_at
+}
+
+polyclinic_services {
+    uuid polyclinic_id FK
+    uuid service_id FK
+}
+
+%% ========================
+%% FACILITY (TENANT)
+%% ========================
+polyclinics {
+    uuid id PK
+    uuid clinic_id FK
+    string code
+    string name
+    text description
+    boolean is_active
+    timestamp created_at
+    timestamp updated_at
+}
+
+rooms {
+    uuid id PK
+    uuid clinic_id FK
+    uuid polyclinic_id FK
+    string code
+    string name
+    string type "consultation | treatment"
+    int capacity
+    boolean is_active
+    timestamp created_at
+    timestamp updated_at
+}
+
+employee_polyclinics {
+    uuid employee_id FK
+    uuid polyclinic_id FK
+    boolean is_primary
+}
+
+%% ========================
+%% INVENTORY (TENANT)
+%% ========================
+medical_items {
+    uuid id PK
+    uuid clinic_id FK
+    string code
+    string name
+    string type "drug | medical_supply | equipment"
+    string kfa_code "nullable (reference to landlord KFA)"
+    boolean is_kfa_linked
+    string unit "tablet | ml | pcs"
+    boolean is_batch_tracked
+    boolean is_active
+    timestamp created_at
+    timestamp updated_at
+}
+
+medical_stocks {
+    uuid id PK
+    uuid clinic_id FK
+    uuid item_id FK
+    decimal quantity
+    decimal min_stock
+    decimal max_stock
+}
+
+medical_batches {
+    uuid id PK
+    uuid clinic_id FK
+    uuid item_id FK
+    string batch_number
+    date expired_at
+    decimal quantity
+    decimal purchase_price
+}
+
+medical_movements {
+    uuid id PK
+    uuid clinic_id FK
+    uuid item_id FK
+    uuid batch_id FK "nullable"
+    string type "purchase | usage | adjustment | expired"
+    decimal quantity
+    string reference_type
+    uuid reference_id
+    timestamp created_at
+}
+
+%% ========================
+%% STAFF (TENANT)
+%% ========================
+employees {
+    uuid id PK
+    uuid clinic_id FK
+    uuid user_id FK "nullable (link to landlord users)"
+    string employee_code
+    string full_name
+    string gender
+    date birth_date
+    string phone
+    string email
+    date hire_date
+    string employment_type
+    string status
+    timestamp created_at
+    timestamp updated_at
+}
+
+employee_profiles {
+    uuid employee_id PK, FK
+    string identity_number
+    string address
+    string city
+    string province
+    string postal_code
+    string country
+    string emergency_contact_name
+    string emergency_contact_phone
+    text notes
+}
+
+employee_positions {
+    uuid id PK
+    uuid clinic_id FK
+    uuid template_id FK "nullable (from landlord)"
+    string key "optional custom"
+    string name
+    text description
+    boolean is_active
+}
+
+employee_position_assignments {
+    uuid employee_id FK
+    uuid position_id FK
+    timestamp assigned_at
+}
+
+specialties {
+    uuid id PK
+    uuid clinic_id FK
+    uuid template_id FK "nullable (from landlord)"
+    string code
+    string name
+    text description
+    boolean is_active
+}
+
+employee_specialties {
+    uuid employee_id FK
+    uuid specialty_id FK
+    boolean is_primary
+}
+
+%% ================================================================================
+%% RELATIONSHIPS
+%% ================================================================================
+
+%% LANDLORD - Core
 users ||--|| user_profiles : "has"
 accounts ||--|| account_profiles : "has"
 clinics ||--|| clinic_profiles : "has"
@@ -435,8 +651,17 @@ accounts ||--o{ clinics : "owns"
 clinics ||--o{ clinic_users : "has staff"
 users ||--o{ clinic_users : "assigned"
 
+%% TENANT - Clinic Relations
+clinics ||--o{ patients : "has"
+clinics ||--o{ services : "has"
+clinics ||--o{ polyclinics : "has"
+clinics ||--o{ rooms : "has"
+clinics ||--o{ employees : "has"
+clinics ||--o{ medical_items : "has"
+
 users ||--o{ media : "uploads"
 
+%% LANDLORD - Billing
 accounts ||--o{ subscriptions : "subscribes"
 plans ||--o{ subscriptions : "used by"
 
@@ -457,19 +682,56 @@ subscriptions ||--o{ billing_invoices : generates
 billing_invoices ||--o{ billing_invoice_items : contains
 billing_invoices ||--o{ billing_payments : paid_by
 
+%% LANDLORD - Master Data
 icd_codes ||--o{ search_logs : referenced
 icd_codes ||--o{ search_aggregates : ranked
 
-kfa_drug_templates ||--o{ kfa_drug_items : has
+kfa_templates ||--o{ kfa_items : has
 
-kfa_drug_items }o--|| kfa_lookups : "unit_key"
-kfa_drug_items }o--|| kfa_lookups : "dosage_form_key"
-kfa_drug_items }o--|| kfa_lookups : "net_weight_unit_key"
-kfa_drug_items }o--|| kfa_lookups : "volume_unit_key"
+kfa_items }o--|| kfa_lookups : "unit_key"
+kfa_items }o--|| kfa_lookups : "dosage_form_key"
+kfa_items }o--|| kfa_lookups : "net_weight_unit_key"
+kfa_items }o--|| kfa_lookups : "volume_unit_key"
 
-kfa_drug_items ||--o{ kfa_drug_ingredients : has
+kfa_items ||--o{ kfa_drug_ingredients : has
 
-kfa_drug_items ||--o{ search_logs : referenced
-kfa_drug_items ||--o{ search_aggregates : ranked
+kfa_items ||--o{ search_logs : referenced
+kfa_items ||--o{ search_aggregates : ranked
 
+%% LANDLORD - Templates
+service_templates ||--o{ services : "derived into"
 
+position_templates ||--o{ employee_positions : "based on"
+
+specialty_templates ||--o{ specialties : "based on"
+
+%% TENANT - Patients
+patients ||--|| patient_profiles : "has"
+patients ||--o{ patient_contacts : "has"
+patients ||--o{ patient_emergency_contacts : "has"
+patients ||--o{ patient_identifiers : "has"
+patients ||--o{ patient_insurances : "has"
+
+%% TENANT - Services
+polyclinics ||--o{ polyclinic_services : "provides"
+services ||--o{ polyclinic_services : "assigned to"
+
+%% TENANT - Facility
+polyclinics ||--o{ rooms : "has"
+rooms ||--o{ employee_polyclinics : "located at"
+polyclinics ||--o{ employee_polyclinics : "assigned"
+
+employees ||--o{ employee_polyclinics : "assigned to"
+
+%% TENANT - Inventory
+medical_items ||--|| medical_stocks : "has"
+medical_items ||--o{ medical_batches : "has"
+medical_items ||--o{ medical_movements : "logs"
+medical_batches ||--o{ medical_movements : "used in"
+
+%% TENANT - Staff
+employees ||--|| employee_profiles : "has"
+employees ||--o{ employee_position_assignments : "assigned"
+employee_positions ||--o{ employee_position_assignments : "mapped"
+employees ||--o{ employee_specialties : "has"
+specialties ||--o{ employee_specialties : "mapped"
