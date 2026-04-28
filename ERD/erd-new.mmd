@@ -223,9 +223,9 @@ account_entitlements {
 }
 
 %% ========================
-%% BILLING TRANSACTIONS (LANDLORD)
+%% CLINIC BILLING TRANSACTIONS (LANDLORD)
 %% ========================
-billing_invoices {
+clinic_invoices {
     uuid id PK
     uuid account_id FK
     uuid subscription_id FK
@@ -240,7 +240,7 @@ billing_invoices {
     timestamp paid_at
 }
 
-billing_invoice_items {
+clinic_invoice_items {
     uuid id PK
     uuid invoice_id FK
     string reference_type
@@ -251,7 +251,7 @@ billing_invoice_items {
     decimal total_price
 }
 
-billing_payments {
+clinic_payments {
     uuid id PK
     uuid invoice_id FK
     decimal amount
@@ -399,6 +399,18 @@ specialty_templates {
     string code UK
     string name
     text description
+    boolean is_active
+}
+
+%% ========================
+%% OBSERVATION TEMPLATES (LANDLORD)
+%% ========================
+observation_templates {
+    uuid id PK
+    string key UK
+    string name
+    string unit
+    string normal_range
     boolean is_active
 }
 
@@ -634,6 +646,291 @@ employee_specialties {
     boolean is_primary
 }
 
+%% ========================
+%% ENCOUNTER (TENANT)
+%% ========================
+encounters {
+    uuid id PK
+    uuid clinic_id FK
+    uuid patient_id FK
+    uuid patient_visit_id FK
+    uuid polyclinic_session_id FK
+    uuid doctor_id FK
+    datetime started_at
+    datetime ended_at
+    string status "in_progress | completed | cancelled"
+    timestamp created_at
+    timestamp updated_at
+}
+
+encounter_subjectives {
+    uuid id PK
+    uuid encounter_id FK
+    text chief_complaint
+    text history_of_present_illness
+    text notes
+}
+
+encounter_allergies {
+    uuid id PK
+    uuid encounter_id FK
+    string allergen
+    string reaction
+    string severity
+}
+
+encounter_medical_histories {
+    uuid id PK
+    uuid encounter_id FK
+    string condition
+    text notes
+}
+
+patient_allergies {
+    uuid id PK
+    uuid patient_id FK
+    string allergen
+    string reaction
+    string severity
+    timestamp created_at
+}
+
+patient_medical_histories {
+    uuid id PK
+    uuid patient_id FK
+    string condition
+    text notes
+    timestamp created_at
+}
+
+encounter_vitals {
+    uuid id PK
+    uuid encounter_id FK
+    decimal systolic
+    decimal diastolic
+    decimal heart_rate
+    decimal respiratory_rate
+    decimal temperature
+    decimal oxygen_saturation
+    decimal weight
+    decimal height
+    decimal bmi
+}
+
+encounter_examinations {
+    uuid id PK
+    uuid encounter_id FK
+    string system "ENUM: head, thorax, abdomen, etc"
+    text findings
+}
+
+encounter_observations {
+    uuid id PK
+    uuid encounter_id FK
+    uuid template_id FK
+    decimal value
+    text notes
+}
+
+encounter_media {
+    uuid id PK
+    uuid encounter_id FK
+    string file_url
+    string type "photo | lab | other"
+}
+
+encounter_diagnoses {
+    uuid id PK
+    uuid encounter_id FK
+    uuid icd_code_id FK
+    boolean is_primary
+    text notes
+}
+
+encounter_services {
+    uuid id PK
+    uuid encounter_id FK
+    uuid service_id FK
+    int quantity
+    decimal price
+    text notes
+}
+
+encounter_medications {
+    uuid id PK
+    uuid encounter_id FK
+    uuid medical_item_id FK
+    string kfa_code
+    decimal dose
+    string dose_unit
+    int frequency_per_day
+    int duration_days
+    int quantity
+    string administration_timing "before_meal | after_meal | with_meal | empty_stomach | bedtime | as_needed"
+    string route
+    string instructions
+    string status "pending | verified | partially_dispensed | dispensed | cancelled"
+    timestamp created_at
+}
+
+dispenses {
+    uuid id PK
+    uuid clinic_id FK
+    uuid patient_id FK
+    uuid encounter_id FK
+    string status "draft | completed | cancelled"
+    uuid dispensed_by FK
+    timestamp dispensed_at
+    timestamp created_at
+}
+
+dispense_items {
+    uuid id PK
+    uuid dispense_id FK
+    uuid encounter_medication_id FK
+    uuid batch_id FK
+    decimal quantity
+    timestamp created_at
+}
+
+encounter_dispositions {
+    uuid id PK
+    uuid encounter_id FK
+    string discharge_status
+    string discharge_method
+    string prognosis
+}
+
+encounter_lab_orders {
+    uuid id PK
+    uuid encounter_id FK
+    string test_name
+    string status "ordered | completed | cancelled"
+    text notes
+    timestamp ordered_at
+}
+
+encounter_lab_results {
+    uuid id PK
+    uuid lab_order_id FK
+    string result_value
+    string unit
+    string reference_range
+    text notes
+    string file_url
+    uuid uploaded_by
+    timestamp resulted_at
+}
+
+%% ========================
+%% FRONT OFFICE (TENANT)
+%% ========================
+polyclinic_sessions {
+    uuid id PK
+    uuid clinic_id FK
+    uuid polyclinic_id FK
+    uuid doctor_id FK
+    int day_of_week "0=Sunday"
+    time start_time
+    time end_time
+    int slot_duration_minutes "optional"
+    int max_patients "optional limit"
+    boolean is_active
+}
+
+appointments {
+    uuid id PK
+    uuid clinic_id FK
+    uuid patient_id FK
+    uuid polyclinic_session_id FK
+    datetime scheduled_at
+    string status "booked | confirmed | cancelled | completed"
+    timestamp created_at
+    timestamp updated_at
+}
+
+patient_visits {
+    uuid id PK
+    uuid clinic_id FK
+    uuid patient_id FK
+    uuid polyclinic_session_id FK
+    uuid appointment_id FK "nullable"
+    date visit_date
+    string source_type "walk_in | appointment"
+    string status "registered | waiting | in_progress | done | cancelled"
+    timestamp created_at
+    timestamp updated_at
+}
+
+patient_queues {
+    uuid id PK
+    uuid clinic_id FK
+    uuid visit_id FK
+    uuid polyclinic_session_id FK
+    string queue_number "A001, G012"
+    int queue_order
+    string status "waiting | called | skipped | done"
+    timestamp called_at
+    timestamp finished_at
+    timestamp created_at
+}
+
+frontdesk_queues {
+    uuid id PK
+    uuid clinic_id FK
+    string queue_number
+    int queue_order
+    string status "waiting | called | done"
+    timestamp called_at
+    timestamp finished_at
+    timestamp created_at
+}
+
+%% ========================
+%% CLINIC INVOICE (TENANT)
+%% ========================
+invoices {
+    uuid id PK
+    uuid clinic_id FK
+    uuid patient_id FK
+    uuid encounter_id FK
+    string invoice_number UK
+    decimal subtotal
+    decimal discount_amount
+    decimal tax_amount
+    decimal total_amount
+    string status "draft | issued | paid | cancelled"
+    timestamp issued_at
+    timestamp paid_at
+    uuid created_by FK
+    uuid issued_by FK
+    timestamp created_at
+    timestamp updated_at
+}
+
+invoice_items {
+    uuid id PK
+    uuid invoice_id FK
+    string source_type "service | medication | lab | admin"
+    uuid source_id "nullable"
+    string name
+    int quantity
+    decimal unit_price
+    decimal total_price
+}
+
+payments {
+    uuid id PK
+    uuid invoice_id FK
+    decimal amount
+    string method "cash | transfer | ewallet"
+    string status "pending | success | failed"
+    string reference_number
+    timestamp paid_at
+    uuid created_by FK
+    timestamp created_at
+}
+
 %% ================================================================================
 %% RELATIONSHIPS
 %% ================================================================================
@@ -676,11 +973,11 @@ features ||--o{ extra_features : mapped
 
 accounts ||--o{ account_entitlements : has
 
-accounts ||--o{ billing_invoices : owns
-subscriptions ||--o{ billing_invoices : generates
+accounts ||--o{ clinic_invoices : owns
+subscriptions ||--o{ clinic_invoices : generates
 
-billing_invoices ||--o{ billing_invoice_items : contains
-billing_invoices ||--o{ billing_payments : paid_by
+clinic_invoices ||--o{ clinic_invoice_items : contains
+clinic_invoices ||--o{ clinic_payments : paid_by
 
 %% LANDLORD - Master Data
 icd_codes ||--o{ search_logs : referenced
@@ -735,3 +1032,63 @@ employees ||--o{ employee_position_assignments : "assigned"
 employee_positions ||--o{ employee_position_assignments : "mapped"
 employees ||--o{ employee_specialties : "has"
 specialties ||--o{ employee_specialties : "mapped"
+
+%% TENANT - Clinic Relations (Extended)
+clinics ||--o{ encounters : "has"
+clinics ||--o{ dispenses : "has"
+clinics ||--o{ polyclinic_sessions : "has"
+clinics ||--o{ appointments : "has"
+clinics ||--o{ patient_visits : "has"
+clinics ||--o{ patient_queues : "has"
+clinics ||--o{ frontdesk_queues : "has"
+clinics ||--o{ invoices : "has"
+
+%% TENANT - Patient Long-Term Memory
+patients ||--o{ patient_allergies : "has"
+patients ||--o{ patient_medical_histories : "has"
+
+%% TENANT - Encounter
+patients ||--o{ encounters : "has"
+
+encounters ||--|| encounter_subjectives : "has"
+encounters ||--o{ encounter_allergies : "snapshot"
+encounters ||--o{ encounter_medical_histories : "snapshot"
+encounters ||--|| encounter_vitals : "has"
+encounters ||--o{ encounter_examinations : "has"
+encounters ||--o{ encounter_observations : "has"
+encounters ||--o{ encounter_media : "has"
+encounters ||--o{ encounter_diagnoses : "has"
+encounters ||--o{ encounter_services : "has"
+encounters ||--o{ encounter_medications : "prescribes"
+encounters ||--o{ encounter_dispositions : "has"
+encounters ||--o{ encounter_lab_orders : "orders"
+
+encounter_medications ||--o{ dispense_items : "fulfilled by"
+dispenses ||--o{ dispense_items : "contains"
+
+icd_codes ||--o{ encounter_diagnoses : "used"
+observation_templates ||--o{ encounter_observations : "used"
+
+medical_items ||--|| medical_stocks : "has"
+medical_batches ||--o{ dispense_items : "used in"
+dispense_items ||--o{ medical_movements : "creates (usage)"
+
+encounter_lab_orders ||--o{ encounter_lab_results : "has"
+
+%% TENANT - Front Office
+polyclinics ||--o{ polyclinic_sessions : "has"
+employees ||--o{ polyclinic_sessions : "doctor assigned"
+
+polyclinic_sessions ||--o{ appointments : "used for"
+polyclinic_sessions ||--o{ patient_visits : "used for"
+polyclinic_sessions ||--o{ patient_queues : "queue context"
+
+patients ||--o{ appointments : "books"
+patients ||--o{ patient_visits : "visits"
+
+appointments ||--o{ patient_visits : "converted to"
+patient_visits ||--|| patient_queues : "has queue"
+
+%% TENANT - Clinic Invoice
+invoices ||--o{ invoice_items : "has"
+invoices ||--o{ payments : "paid by"

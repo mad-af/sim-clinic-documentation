@@ -1,0 +1,125 @@
+erDiagram
+
+%% ========================
+%% POLYCLINIC SESSIONS (CORE SCHEDULE)
+%% ========================
+
+polyclinic_sessions {
+    uuid id PK
+    uuid clinic_id FK
+
+    uuid polyclinic_id FK
+    uuid doctor_id FK "employee_id"
+
+    int day_of_week "0=Sunday"
+
+    time start_time
+    time end_time
+
+    int slot_duration_minutes "optional"
+
+    int max_patients "optional limit"
+
+    boolean is_active
+}
+
+%% ========================
+%% APPOINTMENTS (ONLINE BOOKING)
+%% ========================
+
+appointments {
+    uuid id PK
+    uuid clinic_id FK
+    uuid patient_id FK
+
+    uuid polyclinic_session_id FK
+
+    datetime scheduled_at
+
+    string status "booked | confirmed | cancelled | completed"
+
+    timestamp created_at
+    timestamp updated_at
+}
+
+%% ========================
+%% PATIENT VISITS (CORE EVENT)
+%% ========================
+
+patient_visits {
+    uuid id PK
+    uuid clinic_id FK
+    uuid patient_id FK
+
+    uuid polyclinic_session_id FK
+
+    uuid appointment_id FK "nullable"
+
+    date visit_date
+
+    string source_type "walk_in | appointment"
+
+    string status "registered | waiting | in_progress | done | cancelled"
+
+    timestamp created_at
+    timestamp updated_at
+}
+
+%% ========================
+%% PATIENT QUEUES (MEDICAL QUEUE)
+%% ========================
+
+patient_queues {
+    uuid id PK
+    uuid clinic_id FK
+
+    uuid visit_id FK
+    uuid polyclinic_session_id FK
+
+    string queue_number "A001, G012"
+    int queue_order
+
+    string status "waiting | called | skipped | done"
+
+    timestamp called_at
+    timestamp finished_at
+
+    timestamp created_at
+}
+
+%% ========================
+%% FRONTDESK QUEUE (OPTIONAL)
+%% ========================
+
+frontdesk_queues {
+    uuid id PK
+    uuid clinic_id FK
+
+    string queue_number
+    int queue_order
+
+    string status "waiting | called | done"
+
+    timestamp called_at
+    timestamp finished_at
+
+    timestamp created_at
+}
+
+%% ========================
+%% RELATIONSHIPS
+%% ========================
+
+polyclinics ||--o{ polyclinic_sessions : "has"
+employees ||--o{ polyclinic_sessions : "doctor assigned"
+
+polyclinic_sessions ||--o{ appointments : "used for"
+polyclinic_sessions ||--o{ patient_visits : "used for"
+polyclinic_sessions ||--o{ patient_queues : "queue context"
+
+patients ||--o{ appointments : "books"
+patients ||--o{ patient_visits : "visits"
+
+appointments ||--o{ patient_visits : "converted to"
+
+patient_visits ||--|| patient_queues : "has queue"

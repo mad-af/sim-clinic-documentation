@@ -1,0 +1,78 @@
+erDiagram
+
+%% ========================
+%% INVOICES (HEADER)
+%% ========================
+
+invoices {
+    uuid id PK
+    uuid clinic_id FK
+    uuid patient_id FK
+
+    uuid encounter_id FK
+
+    string invoice_number UK
+
+    decimal subtotal
+    decimal discount_amount
+    decimal tax_amount
+    decimal total_amount
+
+    string status "draft | issued | paid | cancelled"
+
+    timestamp issued_at
+    timestamp paid_at
+
+    uuid created_by FK
+    uuid issued_by FK
+
+    timestamp created_at
+    timestamp updated_at
+}
+
+%% ========================
+%% INVOICE ITEMS (DETAIL)
+%% ========================
+
+invoice_items {
+    uuid id PK
+    uuid invoice_id FK
+
+    string source_type "service | medication | lab | admin"
+    uuid source_id "nullable"
+
+    string name
+
+    int quantity
+    decimal unit_price
+    decimal total_price
+}
+
+%% ========================
+%% PAYMENTS
+%% ========================
+
+payments {
+    uuid id PK
+    uuid invoice_id FK
+
+    decimal amount
+
+    string method "cash | transfer | ewallet"
+    string status "pending | success | failed"
+
+    string reference_number
+
+    timestamp paid_at
+
+    uuid created_by FK
+
+    timestamp created_at
+}
+
+%% ========================
+%% RELATIONSHIPS
+%% ========================
+
+invoices ||--o{ invoice_items : "has"
+invoices ||--o{ payments : "paid by"

@@ -63,8 +63,6 @@ Database memiliki batasan koneksi simultan. Makin banyak koneksi aktif, makin be
 | `clinic_profiles` | Detail klinik (category, timezone, koordinat) |
 | `clinic_users` | Mapping user ke clinic dengan role |
 
-Hubungan: Account owns many Clinics, Clinic has many Users
-
 ### 2.2 Subscription & Billing Module (Landlord)
 
 | Tabel | Deskripsi |
@@ -77,9 +75,9 @@ Hubungan: Account owns many Clinics, Clinic has many Users
 | `plan_features` | Fitur yang included dalam plan |
 | `extra_features` | Fitur yang included dalam extra |
 | `account_entitlements` | Effective feature value per account |
-| `billing_invoices` | Invoice ke account |
-| `billing_invoice_items` | Item-item dalam invoice |
-| `billing_payments` | Record pembayaran |
+| `clinic_invoices` | Invoice subscription (billing ke account) |
+| `clinic_invoice_items` | Item-item invoice subscription |
+| `clinic_payments` | Record pembayaran subscription |
 
 ### 2.3 Media Module (Landlord)
 
@@ -96,6 +94,7 @@ Hubungan: Account owns many Clinics, Clinic has many Users
 | `kfa_items` | Item obat dagang (kode 93xxxxxx) |
 | `kfa_lookups` | Lookup units dan dosage forms |
 | `kfa_drug_ingredients` | Zat aktif per obat |
+| `observation_templates` | Template observasi vital (template untuk encounter_vitals) |
 
 ### 2.5 Search Module (Landlord)
 
@@ -122,6 +121,8 @@ Hubungan: Account owns many Clinics, Clinic has many Users
 | `patient_emergency_contacts` | Kontak darurat |
 | `patient_identifiers` | Identifier lain (national_id, insurance, passport) |
 | `patient_insurances` | Data asuransi pasien |
+| `patient_allergies` | Riwayat alergi permanen pasien |
+| `patient_medical_histories` | Riwayat medis permanen pasien |
 
 ### 2.8 Service Domain (Tenant)
 
@@ -135,7 +136,7 @@ Hubungan: Account owns many Clinics, Clinic has many Users
 | Tabel | Deskripsi |
 |-------|-----------|
 | `polyclinics` | Poliklinik (kode, nama, deskripsi) |
-| `rooms` | Ruangan ( consultation/treatment, capacity) |
+| `rooms` | Ruangan (consultation/treatment, capacity) |
 | `employee_polyclinics` | Mapping employee ke polyclinic |
 
 ### 2.10 Inventory Domain (Tenant)
@@ -157,6 +158,45 @@ Hubungan: Account owns many Clinics, Clinic has many Users
 | `employee_position_assignments` | Assignment posisi ke employee |
 | `specialties` | Specialisasi (derived dari specialty_templates) |
 | `employee_specialties` | Mapping employee ke specialty |
+
+### 2.12 Encounter Domain (Tenant)
+
+| Tabel | Deskripsi |
+|-------|-----------|
+| `encounters` | Encounter/pemeriksaan (link ke patient_visit, polyclinic_session, doctor) |
+| `encounter_subjectives` | Data subjektif SOAP (chief_complaint, history_of_present_illness) |
+| `encounter_allergies` | Snapshot alergi saat encounter |
+| `encounter_medical_histories` | Snapshot riwayat medis saat encounter |
+| `encounter_vitals` | Vital signs (systolic, diastolic, heart_rate, temperature, dll) |
+| `encounter_examinations` | Pemeriksaan fisik semi-structured |
+| `encounter_observations` | Observasi terstruktur (dari observation_template) |
+| `encounter_media` | Media/foto pendukung |
+| `encounter_diagnoses` | Diagnosis (link ke ICD codes) |
+| `encounter_services` | Layanan yang diberikan saat encounter |
+| `encounter_medications` | Resep/medikasi (link ke medical_items) |
+| `encounter_dispositions` | Disposisi (discharge_status, prognosis) |
+| `encounter_lab_orders` | Order lab |
+| `encounter_lab_results` | Hasil lab |
+| `dispenses` | Penyerahan obat ( dispensing) |
+| `dispense_items` | Item dispense (link ke batch, medication) |
+
+### 2.13 Front Office Domain (Tenant)
+
+| Tabel | Deskripsi |
+|-------|-----------|
+| `polyclinic_sessions` | Jadwal poli (day_of_week, start/end_time, max_patients) |
+| `appointments` | Booking appointment online |
+| `patient_visits` | Kunjungan pasien (created dari walk-in atau appointment) |
+| `patient_queues` | Antrean poli (queue_number, status) |
+| `frontdesk_queues` | Antrean frontdesk (general) |
+
+### 2.14 Clinic Invoice Domain (Tenant)
+
+| Tabel | Deskripsi |
+|-------|-----------|
+| `invoices` | Invoice layanan klinik (link ke patient, encounter) |
+| `invoice_items` | Item invoice (service, medication, lab, admin) |
+| `payments` | Pembayaran invoice |
 
 ---
 
@@ -184,11 +224,12 @@ Tenant tables berfungsi sebagai **template database** yang di-copy saat membuat 
 **Subscription & Billing:**
 - `plans`, `subscriptions`, `subscription_extras`
 - `extras`, `features`, `plan_features`, `extra_features`, `account_entitlements`
-- `billing_invoices`, `billing_invoice_items`, `billing_payments`
+- `clinic_invoices`, `clinic_invoice_items`, `clinic_payments`
 
 **Master Data:**
 - `icd_codes`
 - `kfa_templates`, `kfa_items`, `kfa_lookups`, `kfa_drug_ingredients`
+- `observation_templates`
 
 **Search:**
 - `search_logs`, `search_aggregates`
@@ -200,6 +241,7 @@ Tenant tables berfungsi sebagai **template database** yang di-copy saat membuat 
 
 **Patient Domain:**
 - `patients`, `patient_profiles`, `patient_contacts`, `patient_emergency_contacts`, `patient_identifiers`, `patient_insurances`
+- `patient_allergies`, `patient_medical_histories`
 
 **Service Domain:**
 - `services`, `polyclinic_services`
@@ -213,11 +255,23 @@ Tenant tables berfungsi sebagai **template database** yang di-copy saat membuat 
 **Staff Domain:**
 - `employees`, `employee_profiles`, `employee_positions`, `employee_position_assignments`, `specialties`, `employee_specialties`
 
+**Encounter Domain:**
+- `encounters`, `encounter_subjectives`, `encounter_allergies`, `encounter_medical_histories`
+- `encounter_vitals`, `encounter_examinations`, `encounter_observations`, `encounter_media`
+- `encounter_diagnoses`, `encounter_services`, `encounter_medications`, `encounter_dispositions`
+- `encounter_lab_orders`, `encounter_lab_results`, `dispenses`, `dispense_items`
+
+**Front Office Domain:**
+- `polyclinic_sessions`, `appointments`, `patient_visits`, `patient_queues`, `frontdesk_queues`
+
+**Clinic Invoice Domain:**
+- `invoices`, `invoice_items`, `payments`
+
 ### 3.4 Ilustrasi Arsitektur
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
-│                      LANDLORD DATABASE                       │
+│                      LANDLORD DATABASE                         │
 │  Users │ Accounts │ Clinics │ Plans │ Features │ ICD │ KFA   │
 │  Service/Position/Specialty Templates │ Media │ Search       │
 └──────────────────────────────────────────────────────────────┘
@@ -238,26 +292,44 @@ Tenant tables berfungsi sebagai **template database** yang di-copy saat membuat 
 ```
 clinics
  ├── patients
- │    ├── patient_profiles
- │    ├── patient_contacts
- │    ├── patient_emergency_contacts
- │    ├── patient_identifiers
- │    └── patient_insurances
+ │    ├── patient_profiles, patient_contacts
+ │    ├── patient_emergency_contacts, patient_identifiers
+ │    ├── patient_insurances
+ │    ├── patient_allergies (long-term memory)
+ │    └── patient_medical_histories (long-term memory)
  ├── services
  │    └── polyclinic_services ↔ polyclinics
  ├── polyclinics
- │    └── rooms
- │         └── employee_polyclinics (employee ↔ polyclinic)
+ │    ├── rooms
+ │    │    └── employee_polyclinics (employee ↔ polyclinic)
+ │    └── polyclinic_sessions
  ├── employees
  │    ├── employee_profiles
  │    ├── employee_positions
  │    ├── specialties
  │    └── employee_specialties
- └── medical_items
-      ├── medical_stocks
-      ├── medical_batches
-      └── medical_movements
+ ├── medical_items
+ │    ├── medical_stocks
+ │    ├── medical_batches
+ │    └── medical_movements
+ ├── encounters (linked to patient_visits, polyclinic_sessions, doctor)
+ │    ├── encounter_subjectives, encounter_vitals
+ │    ├── encounter_allergies, encounter_medical_histories (snapshots)
+ │    ├── encounter_examinations, encounter_observations
+ │    ├── encounter_media, encounter_diagnoses (→ ICD)
+ │    ├── encounter_services, encounter_medications (→ medical_items)
+ │    ├── encounter_dispositions, encounter_lab_orders/-results
+ │    └── dispenses ↔ dispense_items
+ ├── patient_visits (→ appointments, → patient_queues)
+ └── invoices (→ payments)
 ```
+
+### 3.6 Two Billing Systems
+
+| Sistem | Tables | Purpose |
+|--------|--------|---------|
+| **Subscription Billing** (Landlord) | `clinic_invoices`, `clinic_invoice_items`, `clinic_payments` | Billing langganan ke account |
+| **Patient Invoice** (Tenant) | `invoices`, `invoice_items`, `payments` | Billing layanan ke patient |
 
 ---
 
@@ -290,6 +362,7 @@ Resource efficiency. Tidak semua clinic memerlukan database dedicated. Dengan me
 |------|---------|-------------|
 | 2026-04-25 | 1.0 | Initial documentation |
 | 2026-04-27 | 1.1 | Updated to merged ERD with complete tenant domains |
+| 2026-04-28 | 1.2 | Added Encounter, Front Office, Invoice domains; renamed billing_invoices → clinic_invoices |
 
 ---
 

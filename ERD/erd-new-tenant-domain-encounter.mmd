@@ -1,0 +1,311 @@
+erDiagram
+
+%% ========================
+%% ENCOUNTER (CORE)
+%% ========================
+
+encounters {
+    uuid id PK
+    uuid clinic_id FK
+
+    uuid patient_id FK
+    uuid patient_visit_id FK
+
+    uuid polyclinic_session_id FK
+    uuid doctor_id FK
+
+    datetime started_at
+    datetime ended_at
+
+    string status "in_progress | completed | cancelled"
+
+    timestamp created_at
+    timestamp updated_at
+}
+
+%% ========================
+%% SUBJECTIVE (SOAP - S)
+%% ========================
+
+encounter_subjectives {
+    uuid id PK
+    uuid encounter_id FK
+
+    text chief_complaint
+    text history_of_present_illness
+    text notes
+}
+
+encounter_allergies {
+    uuid id PK
+    uuid encounter_id FK
+
+    string allergen
+    string reaction
+    string severity
+}
+
+encounter_medical_histories {
+    uuid id PK
+    uuid encounter_id FK
+
+    string condition
+    text notes
+}
+
+%% ========================
+%% PATIENT LONG-TERM MEMORY
+%% ========================
+
+patient_allergies {
+    uuid id PK
+    uuid patient_id FK
+
+    string allergen
+    string reaction
+    string severity
+
+    timestamp created_at
+}
+
+patient_medical_histories {
+    uuid id PK
+    uuid patient_id FK
+
+    string condition
+    text notes
+
+    timestamp created_at
+}
+
+%% ========================
+%% OBJECTIVE (SOAP - O)
+%% ========================
+
+encounter_vitals {
+    uuid id PK
+    uuid encounter_id FK
+
+    decimal systolic
+    decimal diastolic
+    decimal heart_rate
+    decimal respiratory_rate
+    decimal temperature
+    decimal oxygen_saturation
+
+    decimal weight
+    decimal height
+    decimal bmi
+}
+
+%% Examination (semi-structured)
+encounter_examinations {
+    uuid id PK
+    uuid encounter_id FK
+
+    string system "ENUM: head, thorax, abdomen, etc"
+    text findings
+}
+
+%% Observation templates (structured)
+observation_templates {
+    uuid id PK
+
+    string key UK
+    string name
+
+    string unit
+    string normal_range
+
+    boolean is_active
+}
+
+encounter_observations {
+    uuid id PK
+    uuid encounter_id FK
+
+    uuid template_id FK
+
+    decimal value
+    text notes
+}
+
+%% Media (photo, supporting)
+encounter_media {
+    uuid id PK
+    uuid encounter_id FK
+
+    string file_url
+    string type "photo | lab | other"
+}
+
+%% ========================
+%% ASSESSMENT (SOAP - A)
+%% ========================
+
+encounter_diagnoses {
+    uuid id PK
+
+    uuid encounter_id FK
+    uuid icd_code_id FK
+
+    boolean is_primary
+    text notes
+}
+
+%% ========================
+%% PLAN (SOAP - P)
+%% ========================
+
+encounter_services {
+    uuid id PK
+
+    uuid encounter_id FK
+    uuid service_id FK
+
+    int quantity
+    decimal price
+
+    text notes
+}
+
+encounter_medications {
+    uuid id PK
+
+    uuid encounter_id FK
+    uuid medical_item_id FK
+
+    string kfa_code
+
+    decimal dose
+    string dose_unit
+
+    int frequency_per_day
+    int duration_days
+    int quantity
+
+    string administration_timing "before_meal | after_meal | with_meal | empty_stomach | bedtime | as_needed"
+    string route
+
+    string instructions
+
+    string status "pending | verified | partially_dispensed | dispensed | cancelled"
+
+    timestamp created_at
+}
+
+dispenses {
+    uuid id PK
+
+    uuid clinic_id FK
+    uuid patient_id FK
+    uuid encounter_id FK
+
+    string status "draft | completed | cancelled"
+
+    uuid dispensed_by FK
+
+    timestamp dispensed_at
+    timestamp created_at
+}
+
+dispense_items {
+    uuid id PK
+
+    uuid dispense_id FK
+    uuid encounter_medication_id FK
+
+    uuid batch_id FK
+
+    decimal quantity
+
+    timestamp created_at
+}
+
+encounter_dispositions {
+    uuid id PK
+    uuid encounter_id FK
+
+    string discharge_status
+    string discharge_method
+    string prognosis
+}
+
+%% ========================
+%% LAB (ASYNC)
+%% ========================
+
+encounter_lab_orders {
+    uuid id PK
+
+    uuid encounter_id FK
+
+    string test_name
+    string status "ordered | completed | cancelled"
+
+    text notes
+
+    timestamp ordered_at
+}
+
+encounter_lab_results {
+    uuid id PK
+
+    uuid lab_order_id FK
+
+    string result_value
+    string unit
+    string reference_range
+
+    text notes
+
+    string file_url
+    uuid uploaded_by
+
+    timestamp resulted_at
+}
+
+%% ========================
+%% RELATIONSHIPS
+%% ========================
+
+patients ||--o{ patient_allergies : "has"
+patients ||--o{ patient_medical_histories : "has"
+
+patients ||--o{ encounters : "has"
+
+encounters ||--|| encounter_subjectives : "has"
+encounters ||--o{ encounter_allergies : "snapshot"
+encounters ||--o{ encounter_medical_histories : "snapshot"
+
+encounters ||--|| encounter_vitals : "has"
+encounters ||--o{ encounter_examinations : "has"
+encounters ||--o{ encounter_observations : "has"
+observation_templates ||--o{ encounter_observations : "used"
+
+encounters ||--o{ encounter_media : "has"
+
+encounters ||--o{ encounter_diagnoses : "has"
+icd_codes ||--o{ encounter_diagnoses : "used"
+
+encounters ||--o{ encounter_services : "has"
+services ||--o{ encounter_services : "used"
+
+encounters ||--o{ encounter_medications : "prescribes"
+medical_items ||--o{ encounter_medications : "used"
+
+
+medical_items ||--|| medical_stocks : "has"
+
+encounter_medications ||--o{ dispense_items : "fulfilled by"
+
+dispenses ||--o{ dispense_items : "contains"
+
+medical_batches ||--o{ dispense_items : "used in"
+
+dispense_items ||--o{ medical_movements : "creates (usage)"
+
+encounters ||--o{ encounter_dispositions : "has"
+
+encounters ||--o{ encounter_lab_orders : "orders"
+encounter_lab_orders ||--o{ encounter_lab_results : "has"
