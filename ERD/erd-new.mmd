@@ -613,7 +613,7 @@ medical_movements {
     uuid batch_id FK "nullable"
     string type "purchase | usage | adjustment | expired"
     decimal quantity
-    string reference_type
+    string reference_type "dispense_item"
     uuid reference_id
     timestamp created_at
 }
@@ -807,6 +807,8 @@ encounter_medications {
     string route
     string instructions
     string status "pending | verified | partially_dispensed | dispensed | cancelled"
+    uuid verified_by FK
+    timestamp verified_at
     timestamp created_at
 }
 
@@ -827,6 +829,8 @@ dispense_items {
     uuid encounter_medication_id FK
     uuid batch_id FK
     decimal quantity
+    decimal unit_price
+    decimal total_price
     timestamp created_at
 }
 

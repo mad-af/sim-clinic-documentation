@@ -171,7 +171,6 @@ encounter_services {
 
 encounter_medications {
     uuid id PK
-
     uuid encounter_id FK
     uuid medical_item_id FK
 
@@ -186,10 +185,12 @@ encounter_medications {
 
     string administration_timing "before_meal | after_meal | with_meal | empty_stomach | bedtime | as_needed"
     string route
-
     string instructions
 
     string status "pending | verified | partially_dispensed | dispensed | cancelled"
+    
+    uuid verified_by FK
+    timestamp verified_at
 
     timestamp created_at
 }
@@ -204,20 +205,22 @@ dispenses {
     string status "draft | completed | cancelled"
 
     uuid dispensed_by FK
-
     timestamp dispensed_at
+    
     timestamp created_at
 }
 
 dispense_items {
     uuid id PK
-
     uuid dispense_id FK
     uuid encounter_medication_id FK
 
     uuid batch_id FK
 
     decimal quantity
+    
+    decimal unit_price
+    decimal total_price
 
     timestamp created_at
 }
