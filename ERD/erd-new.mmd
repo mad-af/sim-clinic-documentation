@@ -414,6 +414,33 @@ observation_templates {
     boolean is_active
 }
 
+%% ========================
+%% QUEUE TEMPLATES (LANDLORD)
+%% ========================
+queue_templates {
+    uuid id PK
+    string key UK "frontdesk | consultation | treatment"
+    string name
+    string code "A | D | T"
+    boolean is_active
+}
+
+%% ========================
+%% TREATMENT TEMPLATES (LANDLORD)
+%% ========================
+treatment_templates {
+    uuid id PK
+    string code UK
+    string name
+    string category "medical | aesthetic | dental"
+    string control_level "free | conditional | doctor_required"
+    int default_duration_minutes
+    boolean requires_therapist
+    boolean is_active
+    timestamp created_at
+    timestamp updated_at
+}
+
 %% ================================================================================
 %% TENANT (PER CLINIC)
 %% ================================================================================
@@ -485,6 +512,7 @@ services {
     uuid id PK
     uuid clinic_id FK
     uuid template_id FK "nullable"
+    uuid treatment_id FK "nullable"
     string code
     string name
     decimal base_price
@@ -492,6 +520,15 @@ services {
     boolean is_active
     timestamp created_at
     timestamp updated_at
+}
+
+treatment_material_defaults {
+    uuid id PK
+    uuid treatment_id FK
+    uuid medical_item_id FK
+    decimal quantity
+    string unit
+    timestamp created_at
 }
 
 polyclinic_services {
@@ -855,6 +892,7 @@ patient_visits {
     uuid patient_id FK
     uuid polyclinic_session_id FK
     uuid appointment_id FK "nullable"
+    string visit_number "V0001 (global number)"
     date visit_date
     string source_type "walk_in | appointment"
     string status "registered | waiting | in_progress | done | cancelled"
@@ -862,26 +900,63 @@ patient_visits {
     timestamp updated_at
 }
 
-patient_queues {
+%% ========================
+%% POLYCLINIC SESSIONS (TENANT)
+%% ========================
+polyclinic_sessions {
     uuid id PK
     uuid clinic_id FK
-    uuid visit_id FK
+    uuid polyclinic_id FK
+    uuid doctor_id FK "employee_id"
+    int day_of_week "0=Sunday"
+    time start_time
+    time end_time
+    int slot_duration_minutes "optional"
+    int max_patients "optional limit"
+    boolean is_active
+}
+
+%% ========================
+%% APPOINTMENTS (TENANT)
+%% ========================
+appointments {
+    uuid id PK
+    uuid clinic_id FK
+    uuid patient_id FK
     uuid polyclinic_session_id FK
-    string queue_number "A001, G012"
-    int queue_order
-    string status "waiting | called | skipped | done"
-    timestamp called_at
-    timestamp finished_at
+    datetime scheduled_at
+    string status "booked | confirmed | cancelled | completed"
+    text notes
+    timestamp created_at
+    timestamp updated_at
+}
+
+%% ========================
+%% QUEUES (TENANT)
+%% ========================
+queues {
+    uuid id PK
+    uuid clinic_id FK
+    uuid template_id FK "nullable (from landlord)"
+    string key "optional override"
+    string name
+    string code
+    int sort_order
+    boolean is_active
     timestamp created_at
 }
 
-frontdesk_queues {
+patient_queues {
     uuid id PK
     uuid clinic_id FK
-    string queue_number
+    uuid queue_id FK
+    uuid visit_id FK
+    string queue_number "A001, G012"
     int queue_order
-    string status "waiting | called | done"
+    int position
+    string status "waiting | called | skipped | done"
     timestamp called_at
+    timestamp started_at
     timestamp finished_at
     timestamp created_at
 }
@@ -928,6 +1003,73 @@ payments {
     string reference_number
     timestamp paid_at
     uuid created_by FK
+    timestamp created_at
+}
+
+%% ========================
+%% TREATMENTS (TENANT)
+%% ========================
+treatments {
+    uuid id PK
+    uuid clinic_id FK
+    uuid template_id FK "nullable"
+    string code
+    string name
+    string category "medical | aesthetic | dental"
+    string control_level "free | conditional | doctor_required"
+    uuid icd_code_id FK "nullable"
+    int default_duration_minutes
+    boolean requires_therapist
+    boolean is_active
+    timestamp created_at
+    timestamp updated_at
+}
+
+encounter_treatments {
+    uuid id PK
+    uuid encounter_id FK
+    uuid treatment_id FK
+    int quantity
+    text notes
+    string status "planned | approved | rejected | cancelled"
+    boolean is_repeatable
+    int max_repeat_count "nullable"
+    timestamp created_at
+    timestamp updated_at
+}
+
+treatment_sessions {
+    uuid id PK
+    uuid visit_id FK
+    uuid encounter_treatment_id FK "nullable"
+    uuid treatment_id FK
+    uuid therapist_id FK
+    uuid room_id FK "nullable"
+    string source_type "doctor_plan | direct | package"
+    datetime scheduled_at
+    datetime started_at
+    datetime finished_at
+    string status "waiting | in_progress | done | cancelled"
+    text execution_notes
+    timestamp created_at
+    timestamp updated_at
+}
+
+treatment_material_usages {
+    uuid id PK
+    uuid treatment_session_id FK
+    uuid medical_item_id FK
+    uuid batch_id FK "nullable"
+    decimal quantity
+    string unit
+    timestamp created_at
+}
+
+visit_photos {
+    uuid id PK
+    uuid visit_id FK
+    string type "before | after | progress"
+    string area "optional (face, teeth, dll)"
     timestamp created_at
 }
 
@@ -1039,9 +1181,10 @@ clinics ||--o{ dispenses : "has"
 clinics ||--o{ polyclinic_sessions : "has"
 clinics ||--o{ appointments : "has"
 clinics ||--o{ patient_visits : "has"
+clinics ||--o{ queues : "has"
 clinics ||--o{ patient_queues : "has"
-clinics ||--o{ frontdesk_queues : "has"
 clinics ||--o{ invoices : "has"
+clinics ||--o{ treatments : "has"
 
 %% TENANT - Patient Long-Term Memory
 patients ||--o{ patient_allergies : "has"
@@ -1081,14 +1224,38 @@ employees ||--o{ polyclinic_sessions : "doctor assigned"
 
 polyclinic_sessions ||--o{ appointments : "used for"
 polyclinic_sessions ||--o{ patient_visits : "used for"
-polyclinic_sessions ||--o{ patient_queues : "queue context"
+polyclinic_sessions ||--o{ queues : "queue context"
 
 patients ||--o{ appointments : "books"
 patients ||--o{ patient_visits : "visits"
 
 appointments ||--o{ patient_visits : "converted to"
-patient_visits ||--|| patient_queues : "has queue"
+patient_visits ||--o{ patient_queues : "has"
+
+queues ||--o{ patient_queues : "handles"
+queue_templates ||--o{ queues : "cloned into"
 
 %% TENANT - Clinic Invoice
 invoices ||--o{ invoice_items : "has"
 invoices ||--o{ payments : "paid by"
+
+%% TENANT - Treatment
+treatments ||--o{ services : "mapped to"
+treatments ||--o{ treatment_material_defaults : "defines"
+treatment_templates ||--o{ treatments : "used as base"
+
+encounters ||--o{ encounter_treatments : "plans"
+treatments ||--o{ encounter_treatments : "used in"
+
+encounter_treatments ||--o{ treatment_sessions : "planned execution"
+treatments ||--o{ treatment_sessions : "direct execution"
+
+patient_visits ||--o{ treatment_sessions : "has"
+employees ||--o{ treatment_sessions : "therapist"
+rooms ||--o{ treatment_sessions : "performed in"
+
+treatment_sessions ||--o{ treatment_material_usages : "uses"
+medical_items ||--o{ treatment_material_usages : "consumed"
+medical_batches ||--o{ treatment_material_usages : "from"
+
+patient_visits ||--o{ visit_photos : "has"

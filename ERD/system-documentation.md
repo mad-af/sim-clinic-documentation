@@ -184,10 +184,11 @@ Database memiliki batasan koneksi simultan. Makin banyak koneksi aktif, makin be
 
 | Tabel | Deskripsi |
 |-------|-----------|
-| `polyclinic_sessions` | Jadwal poli (day_of_week, start/end_time, max_patients) |
-| `appointments` | Booking appointment online |
-| `patient_visits` | Kunjungan pasien (created dari walk-in atau appointment) |
-| `patient_queues` | Antrean poli (queue_number, status) |
+| `polyclinic_sessions` | Jadwal poli (day_of_week, start/end_time, max_patients, slot_duration) |
+| `appointments` | Booking appointment online (scheduled_at, status) |
+| `patient_visits` | Kunjungan pasien (visit_number, source_type, created dari walk-in atau appointment) |
+| `queues` | Template antrean per poli (derived dari queue_templates) |
+| `patient_queues` | Antrean poli (queue_number, position, called_at, started_at) |
 | `frontdesk_queues` | Antrean frontdesk (general) |
 
 ### 2.14 Clinic Invoice Domain (Tenant)
@@ -197,6 +198,16 @@ Database memiliki batasan koneksi simultan. Makin banyak koneksi aktif, makin be
 | `invoices` | Invoice layanan klinik (link ke patient, encounter) |
 | `invoice_items` | Item invoice (service, medication, lab, admin) |
 | `payments` | Pembayaran invoice |
+
+### 2.15 Treatment Domain (Tenant)
+
+| Tabel | Deskripsi |
+|-------|-----------|
+| `treatments` | Master treatment/procedure (derived dari treatment_templates) |
+| `encounter_treatments` | Treatment yang direncanakan saat encounter |
+| `treatment_sessions` | Eksekusi treatment session (therapist, room, scheduled_at, started_at, finished_at) |
+| `treatment_material_usages` | Penggunaan material/inventory saat treatment |
+| `visit_photos` | Foto sebelum/sesudah/progress treatment |
 
 ---
 
@@ -236,6 +247,7 @@ Tenant tables berfungsi sebagai **template database** yang di-copy saat membuat 
 
 **Templates:**
 - `service_templates`, `position_templates`, `specialty_templates`
+- `queue_templates`, `treatment_templates`
 
 ### 3.3 Tenant Tables (Template)
 
@@ -262,10 +274,15 @@ Tenant tables berfungsi sebagai **template database** yang di-copy saat membuat 
 - `encounter_lab_orders`, `encounter_lab_results`, `dispenses`, `dispense_items`
 
 **Front Office Domain:**
-- `polyclinic_sessions`, `appointments`, `patient_visits`, `patient_queues`, `frontdesk_queues`
+- `polyclinic_sessions`, `appointments`, `patient_visits`
+- `queues`, `patient_queues`, `frontdesk_queues`
 
 **Clinic Invoice Domain:**
 - `invoices`, `invoice_items`, `payments`
+
+**Treatment Domain:**
+- `treatments`, `encounter_treatments`, `treatment_sessions`
+- `treatment_material_usages`, `visit_photos`
 
 ### 3.4 Ilustrasi Arsitektur
 
@@ -299,10 +316,12 @@ clinics
  │    └── patient_medical_histories (long-term memory)
  ├── services
  │    └── polyclinic_services ↔ polyclinics
+ ├── treatments
+ │    └── treatment_material_defaults (→ medical_items)
  ├── polyclinics
  │    ├── rooms
  │    │    └── employee_polyclinics (employee ↔ polyclinic)
- │    └── polyclinic_sessions
+ │    └── polyclinic_sessions (→ doctor, → queues)
  ├── employees
  │    ├── employee_profiles
  │    ├── employee_positions
@@ -318,9 +337,12 @@ clinics
  │    ├── encounter_examinations, encounter_observations
  │    ├── encounter_media, encounter_diagnoses (→ ICD)
  │    ├── encounter_services, encounter_medications (→ medical_items)
+ │    ├── encounter_treatments (→ treatments)
  │    ├── encounter_dispositions, encounter_lab_orders/-results
  │    └── dispenses ↔ dispense_items
- ├── patient_visits (→ appointments, → patient_queues)
+ ├── patient_visits (→ appointments, → patient_queues, → treatment_sessions)
+ │    └── visit_photos
+ ├── queues (→ queue_templates, → patient_queues)
  └── invoices (→ payments)
 ```
 
@@ -363,6 +385,7 @@ Resource efficiency. Tidak semua clinic memerlukan database dedicated. Dengan me
 | 2026-04-25 | 1.0 | Initial documentation |
 | 2026-04-27 | 1.1 | Updated to merged ERD with complete tenant domains |
 | 2026-04-28 | 1.2 | Added Encounter, Front Office, Invoice domains; renamed billing_invoices → clinic_invoices |
+| 2026-04-30 | 1.3 | Added queue_templates, treatment_templates, polyclinic_sessions, queues, treatments, treatment_sessions domains |
 
 ---
 

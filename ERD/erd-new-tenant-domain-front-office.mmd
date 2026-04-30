@@ -12,12 +12,10 @@ polyclinic_sessions {
     uuid doctor_id FK "employee_id"
 
     int day_of_week "0=Sunday"
-
     time start_time
     time end_time
 
     int slot_duration_minutes "optional"
-
     int max_patients "optional limit"
 
     boolean is_active
@@ -38,6 +36,8 @@ appointments {
 
     string status "booked | confirmed | cancelled | completed"
 
+    text notes
+
     timestamp created_at
     timestamp updated_at
 }
@@ -52,8 +52,9 @@ patient_visits {
     uuid patient_id FK
 
     uuid polyclinic_session_id FK
-
     uuid appointment_id FK "nullable"
+
+    string visit_number "V0001 (global number)"
 
     date visit_date
 
@@ -65,42 +66,56 @@ patient_visits {
     timestamp updated_at
 }
 
+%% ================================================================================
+%% QUEUE TEMPLATES (LANDLORD)
+%% ================================================================================
+
+queue_templates {
+    uuid id PK
+
+    string key UK "frontdesk | consultation | treatment"
+    string name
+    string code "A | D | T"
+
+    boolean is_active
+}
+
 %% ========================
 %% PATIENT QUEUES (MEDICAL QUEUE)
 %% ========================
+
+queues {
+    uuid id PK
+    uuid clinic_id FK
+
+    uuid template_id FK "nullable (from landlord)"
+
+    string key "optional override"
+    string name
+    string code
+
+    int sort_order
+
+    boolean is_active
+
+    timestamp created_at
+}
 
 patient_queues {
     uuid id PK
     uuid clinic_id FK
 
+    uuid queue_id FK
     uuid visit_id FK
-    uuid polyclinic_session_id FK
 
     string queue_number "A001, G012"
     int queue_order
+    int position
 
     string status "waiting | called | skipped | done"
 
     timestamp called_at
-    timestamp finished_at
-
-    timestamp created_at
-}
-
-%% ========================
-%% FRONTDESK QUEUE (OPTIONAL)
-%% ========================
-
-frontdesk_queues {
-    uuid id PK
-    uuid clinic_id FK
-
-    string queue_number
-    int queue_order
-
-    string status "waiting | called | done"
-
-    timestamp called_at
+    timestamp started_at
     timestamp finished_at
 
     timestamp created_at
@@ -114,12 +129,15 @@ polyclinics ||--o{ polyclinic_sessions : "has"
 employees ||--o{ polyclinic_sessions : "doctor assigned"
 
 polyclinic_sessions ||--o{ appointments : "used for"
-polyclinic_sessions ||--o{ patient_visits : "used for"
-polyclinic_sessions ||--o{ patient_queues : "queue context"
+polyclinic_sessions ||--o{ patient_visits : "context"
 
 patients ||--o{ appointments : "books"
 patients ||--o{ patient_visits : "visits"
 
 appointments ||--o{ patient_visits : "converted to"
 
-patient_visits ||--|| patient_queues : "has queue"
+queue_templates ||--o{ queues : "cloned into"
+
+queues ||--o{ patient_queues : "handles"
+
+patient_visits ||--o{ patient_queues : "flows through"

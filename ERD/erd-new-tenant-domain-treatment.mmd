@@ -1,0 +1,218 @@
+erDiagram
+
+%% ========================
+%% LANDLORD (TEMPLATES)
+%% ========================
+
+treatment_templates {
+    uuid id PK
+
+    string code UK
+    string name
+    string category "medical | aesthetic | dental"
+
+    string control_level "free | conditional | doctor_required"
+
+    int default_duration_minutes
+
+    boolean requires_therapist
+    boolean is_active
+
+    timestamp created_at
+    timestamp updated_at
+}
+
+treatment_material_defaults {
+    uuid id PK
+
+    uuid template_id FK
+
+    uuid medical_item_id FK
+
+    decimal default_quantity
+    string unit
+
+    timestamp created_at
+}
+
+
+%% ========================
+%% TREATMENT MASTER (OPERATIONAL)
+%% ========================
+
+treatments {
+    uuid id PK
+    uuid clinic_id FK
+    
+    uuid template_id FK "nullable"
+
+    string code
+    string name
+
+    string category "medical | aesthetic | dental"
+    string control_level "free | conditional | doctor_required"
+
+    uuid icd_code_id FK "nullable"
+
+    int default_duration_minutes
+
+    boolean requires_therapist
+    boolean is_active
+
+    timestamp created_at
+    timestamp updated_at
+}
+
+treatment_material_defaults {
+    uuid id PK
+
+    uuid treatment_id FK
+    uuid medical_item_id FK
+
+    decimal quantity
+    string unit
+
+    timestamp created_at
+}
+
+%% ========================
+%% SERVICE (BILLING)
+%% ========================
+
+services {
+    uuid id PK
+    uuid clinic_id FK
+    uuid template_id FK "nullable"
+    uuid treatment_id FK "nullable"
+
+    string code
+    string name
+
+    decimal base_price
+    int duration_minutes
+
+    boolean is_active
+
+    timestamp created_at
+    timestamp updated_at
+}
+
+%% ========================
+%% ENCOUNTER TREATMENTS (PLAN)
+%% ========================
+
+encounter_treatments {
+    uuid id PK
+
+    uuid encounter_id FK
+    uuid treatment_id FK
+
+    int quantity
+
+    text notes
+
+    string status "planned | approved | rejected | cancelled"
+
+    boolean is_repeatable
+    int max_repeat_count "nullable"
+
+    timestamp created_at
+    timestamp updated_at
+}
+
+%% ========================
+%% TREATMENT SESSIONS (EXECUTION)
+%% ========================
+
+treatment_sessions {
+    uuid id PK
+
+    uuid visit_id FK
+
+    uuid encounter_treatment_id FK "nullable"
+
+    uuid treatment_id FK
+
+    uuid therapist_id FK
+    uuid room_id FK "nullable"
+
+    string source_type "doctor_plan | direct | package"
+
+    datetime scheduled_at
+    datetime started_at
+    datetime finished_at
+
+    string status "waiting | in_progress | done | cancelled"
+
+    text execution_notes
+
+    timestamp created_at
+    timestamp updated_at
+}
+
+%% ========================
+%% MATERIAL USAGE (INVENTORY)
+%% ========================
+
+treatment_material_usages {
+    uuid id PK
+
+    uuid treatment_session_id FK
+    uuid medical_item_id FK
+
+    uuid batch_id FK "nullable"
+
+    decimal quantity
+    string unit
+
+    timestamp created_at
+}
+
+%% ========================
+%% VISIT PHOTOS (BEFORE / AFTER)
+%% ========================
+
+visit_photos {
+    uuid id PK
+
+    uuid visit_id FK
+
+    string type "before | after | progress"
+    string area "optional (face, teeth, dll)"
+
+    timestamp created_at
+}
+
+%% ========================
+%% RELATIONSHIPS
+%% ========================
+
+treatment_templates ||--o{ treatments : "used as base"
+treatment_templates ||--o{ treatment_template_materials : "defines"
+
+icd_codes ||--o{ treatments : "referenced by"
+
+treatments ||--o{ services : "mapped to"
+treatments ||--o{ treatment_material_defaults : "defines"
+
+encounters ||--o{ encounter_treatments : "plans"
+
+treatments ||--o{ encounter_treatments : "used in"
+
+encounter_treatments ||--o{ treatment_sessions : "planned execution"
+
+treatments ||--o{ treatment_sessions : "direct execution"
+
+patient_visits ||--o{ treatment_sessions : "has"
+
+employees ||--o{ treatment_sessions : "therapist"
+
+rooms ||--o{ treatment_sessions : "performed in"
+
+treatment_sessions ||--o{ treatment_material_usages : "uses"
+
+medical_items ||--o{ treatment_template_materials : "used in template"
+medical_items ||--o{ treatment_material_usages : "consumed"
+medical_batches ||--o{ treatment_material_usages : "from"
+
+patient_visits ||--o{ visit_photos : "has"
