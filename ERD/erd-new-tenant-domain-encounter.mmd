@@ -169,62 +169,6 @@ encounter_services {
     text notes
 }
 
-encounter_medications {
-    uuid id PK
-    uuid encounter_id FK
-    uuid medical_item_id FK
-
-    string kfa_code
-
-    decimal dose
-    string dose_unit
-
-    int frequency_per_day
-    int duration_days
-    int quantity
-
-    string administration_timing "before_meal | after_meal | with_meal | empty_stomach | bedtime | as_needed"
-    string route
-    string instructions
-
-    string status "pending | verified | partially_dispensed | dispensed | cancelled"
-    
-    uuid verified_by FK
-    timestamp verified_at
-
-    timestamp created_at
-}
-
-dispenses {
-    uuid id PK
-
-    uuid clinic_id FK
-    uuid patient_id FK
-    uuid encounter_id FK
-
-    string status "draft | completed | cancelled"
-
-    uuid dispensed_by FK
-    timestamp dispensed_at
-    
-    timestamp created_at
-}
-
-dispense_items {
-    uuid id PK
-    uuid dispense_id FK
-    uuid encounter_medication_id FK
-
-    uuid batch_id FK
-
-    decimal quantity
-    
-    decimal unit_price
-    decimal total_price
-
-    timestamp created_at
-}
-
 encounter_dispositions {
     uuid id PK
     uuid encounter_id FK
@@ -294,21 +238,17 @@ icd_codes ||--o{ encounter_diagnoses : "used"
 encounters ||--o{ encounter_services : "has"
 services ||--o{ encounter_services : "used"
 
-encounters ||--o{ encounter_medications : "prescribes"
-medical_items ||--o{ encounter_medications : "used"
-
-
-medical_items ||--|| medical_stocks : "has"
-
-encounter_medications ||--o{ dispense_items : "fulfilled by"
-
-dispenses ||--o{ dispense_items : "contains"
-
-medical_batches ||--o{ dispense_items : "used in"
-
-dispense_items ||--o{ medical_movements : "creates (usage)"
+encounters ||--o{ encounter_services : "has"
+services ||--o{ encounter_services : "used"
 
 encounters ||--o{ encounter_dispositions : "has"
 
 encounters ||--o{ encounter_lab_orders : "orders"
 encounter_lab_orders ||--o{ encounter_lab_results : "has"
+
+%% ================================================================================
+%% INTEGRATION - PHARMACY DOMAIN
+%% ================================================================================
+%% medication_requests and medication_request_items are managed in
+%% erd-new-tenant-domain-pharmacy.mmd
+%% encounters ||--o{ medication_requests : "prescribes" (via pharmacy domain)

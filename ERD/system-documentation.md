@@ -90,10 +90,12 @@ Database memiliki batasan koneksi simultan. Makin banyak koneksi aktif, makin be
 | Tabel | Deskripsi |
 |-------|-----------|
 | `icd_codes` | Master kode ICD-10 dan ICD-9-CM |
-| `kfa_templates` | Template obat KFA (kode 92xxxxxx) |
-| `kfa_items` | Item obat dagang (kode 93xxxxxx) |
+| `kfa_active_substances` | Zat aktif KFA (kode 91xxxxxx - BZA) |
+| `kfa_medication_templates` | Template obat KFA (kode 92xxxxxx - POV) |
+| `kfa_medication_template_ingredients` | Zat aktif per template obat |
+| `kfa_products` | Item obat dagang (kode 93xxxxxx - POA) |
+| `kfa_product_packages` | Packaging obat dagang (kode 94xxxxxx - POAK) |
 | `kfa_lookups` | Lookup units dan dosage forms |
-| `kfa_drug_ingredients` | Zat aktif per obat |
 | `observation_templates` | Template observasi vital (template untuk encounter_vitals) |
 
 ### 2.5 Search Module (Landlord)
@@ -139,14 +141,20 @@ Database memiliki batasan koneksi simultan. Makin banyak koneksi aktif, makin be
 | `rooms` | Ruangan (consultation/treatment, capacity) |
 | `employee_polyclinics` | Mapping employee ke polyclinic |
 
-### 2.10 Inventory Domain (Tenant)
+### 2.10 Pharmacy Domain (Tenant)
 
 | Tabel | Deskripsi |
 |-------|-----------|
-| `medical_items` | Item inventaris (drug, medical_supply, equipment) |
-| `medical_stocks` | Stock item (quantity, min/max) |
-| `medical_batches` | Batch barang (batch_number, expired_at, purchase_price) |
-| `medical_movements` | Log pergerakan stock (purchase, usage, adjustment, expired) |
+| `medication_catalogs` | Katalog obat (link ke KFA templates/products/packages) |
+| `inventory_locations` | Lokasi penyimpanan (warehouse, rack, refrigerator) |
+| `inventory_lots` | Batch barang (batch_number, expired_at, purchase_price) |
+| `inventory_movements` | Log pergerakan stock (IN, OUT, ADJUSTMENT, RESERVE, RELEASE) |
+| `medication_requests` | Resep dokter (for encounter, is_compound) |
+| `medication_request_items` | Item resep (dose_amount, frequency, route, timing) |
+| `compound_prescriptions` | Header resep racikan |
+| `compound_prescription_items` | Item racikan (zat aktif, amount, unit) |
+| `medication_dispenses` | Penyerahan obat (dispensing) |
+| `medication_dispense_items` | Item dispense (quantity, unit_price, lot_id) |
 
 ### 2.11 Staff Domain (Tenant)
 
@@ -173,12 +181,11 @@ Database memiliki batasan koneksi simultan. Makin banyak koneksi aktif, makin be
 | `encounter_media` | Media/foto pendukung |
 | `encounter_diagnoses` | Diagnosis (link ke ICD codes) |
 | `encounter_services` | Layanan yang diberikan saat encounter |
-| `encounter_medications` | Resep/medikasi (link ke medical_items) |
 | `encounter_dispositions` | Disposisi (discharge_status, prognosis) |
 | `encounter_lab_orders` | Order lab |
 | `encounter_lab_results` | Hasil lab |
-| `dispenses` | Penyerahan obat ( dispensing) |
-| `dispense_items` | Item dispense (link ke batch, medication) |
+| `patient_allergies` | Riwayat alergi permanen (snapshot ke encounter_allergies) |
+| `patient_medical_histories` | Riwayat medis permanen (snapshot ke encounter_medical_histories) |
 
 ### 2.13 Front Office Domain (Tenant)
 
@@ -204,9 +211,10 @@ Database memiliki batasan koneksi simultan. Makin banyak koneksi aktif, makin be
 | Tabel | Deskripsi |
 |-------|-----------|
 | `treatments` | Master treatment/procedure (derived dari treatment_templates) |
+| `treatment_material_defaults` | Default material untuk treatment (medication_catalog_id) |
 | `encounter_treatments` | Treatment yang direncanakan saat encounter |
 | `treatment_sessions` | Eksekusi treatment session (therapist, room, scheduled_at, started_at, finished_at) |
-| `treatment_material_usages` | Penggunaan material/inventory saat treatment |
+| `treatment_material_usages` | Penggunaan material/inventory saat treatment (medication_catalog_id, lot_id) |
 | `visit_photos` | Foto sebelum/sesudah/progress treatment |
 
 ---
@@ -239,7 +247,8 @@ Tenant tables berfungsi sebagai **template database** yang di-copy saat membuat 
 
 **Master Data:**
 - `icd_codes`
-- `kfa_templates`, `kfa_items`, `kfa_lookups`, `kfa_drug_ingredients`
+- `kfa_active_substances`, `kfa_medication_templates`, `kfa_medication_template_ingredients`
+- `kfa_products`, `kfa_product_packages`, `kfa_lookups`
 - `observation_templates`
 
 **Search:**
@@ -261,8 +270,11 @@ Tenant tables berfungsi sebagai **template database** yang di-copy saat membuat 
 **Facility Domain:**
 - `polyclinics`, `rooms`, `employee_polyclinics`
 
-**Inventory Domain:**
-- `medical_items`, `medical_stocks`, `medical_batches`, `medical_movements`
+**Pharmacy Domain:**
+- `medication_catalogs`, `inventory_locations`, `inventory_lots`, `inventory_movements`
+- `medication_requests`, `medication_request_items`
+- `compound_prescriptions`, `compound_prescription_items`
+- `medication_dispenses`, `medication_dispense_items`
 
 **Staff Domain:**
 - `employees`, `employee_profiles`, `employee_positions`, `employee_position_assignments`, `specialties`, `employee_specialties`
@@ -270,8 +282,9 @@ Tenant tables berfungsi sebagai **template database** yang di-copy saat membuat 
 **Encounter Domain:**
 - `encounters`, `encounter_subjectives`, `encounter_allergies`, `encounter_medical_histories`
 - `encounter_vitals`, `encounter_examinations`, `encounter_observations`, `encounter_media`
-- `encounter_diagnoses`, `encounter_services`, `encounter_medications`, `encounter_dispositions`
-- `encounter_lab_orders`, `encounter_lab_results`, `dispenses`, `dispense_items`
+- `encounter_diagnoses`, `encounter_services`, `encounter_dispositions`
+- `encounter_lab_orders`, `encounter_lab_results`
+- `patient_allergies`, `patient_medical_histories` (snapshot references)
 
 **Front Office Domain:**
 - `polyclinic_sessions`, `appointments`, `patient_visits`
@@ -317,7 +330,7 @@ clinics
  ├── services
  │    └── polyclinic_services ↔ polyclinics
  ├── treatments
- │    └── treatment_material_defaults (→ medical_items)
+ │    └── treatment_material_defaults (→ medication_catalogs)
  ├── polyclinics
  │    ├── rooms
  │    │    └── employee_polyclinics (employee ↔ polyclinic)
@@ -327,19 +340,19 @@ clinics
  │    ├── employee_positions
  │    ├── specialties
  │    └── employee_specialties
- ├── medical_items
- │    ├── medical_stocks
- │    ├── medical_batches
- │    └── medical_movements
+ ├── medication_catalogs
+ │    ├── inventory_locations
+ │    ├── inventory_lots
+ │    └── inventory_movements
  ├── encounters (linked to patient_visits, polyclinic_sessions, doctor)
  │    ├── encounter_subjectives, encounter_vitals
  │    ├── encounter_allergies, encounter_medical_histories (snapshots)
  │    ├── encounter_examinations, encounter_observations
  │    ├── encounter_media, encounter_diagnoses (→ ICD)
- │    ├── encounter_services, encounter_medications (→ medical_items)
+ │    ├── encounter_services
  │    ├── encounter_treatments (→ treatments)
  │    ├── encounter_dispositions, encounter_lab_orders/-results
- │    └── dispenses ↔ dispense_items
+ │    └── medication_requests ↔ medication_dispenses
  ├── patient_visits (→ appointments, → patient_queues, → treatment_sessions)
  │    └── visit_photos
  ├── queues (→ queue_templates, → patient_queues)
@@ -385,7 +398,7 @@ Resource efficiency. Tidak semua clinic memerlukan database dedicated. Dengan me
 | 2026-04-25 | 1.0 | Initial documentation |
 | 2026-04-27 | 1.1 | Updated to merged ERD with complete tenant domains |
 | 2026-04-28 | 1.2 | Added Encounter, Front Office, Invoice domains; renamed billing_invoices → clinic_invoices |
-| 2026-04-30 | 1.3 | Added queue_templates, treatment_templates, polyclinic_sessions, queues, treatments, treatment_sessions domains |
+| 2026-05-04 | 1.4 | Updated pharmacy domain (KFA naming), removed encounter_medications/dispenses, updated treatment references |
 
 ---
 

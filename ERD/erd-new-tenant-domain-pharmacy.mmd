@@ -1,0 +1,265 @@
+erDiagram
+
+%% ================================================================================
+%% PHARMACY DOMAIN - KFA BASED
+%% ================================================================================
+
+%% ================================================================================
+%% LANDLORD - KFA (GLOBAL MASTER)
+%% ================================================================================
+
+kfa_active_substances {
+    uuid id PK
+    string kfa_code UK "91xxxxxx (BZA)"
+    string name
+    string status
+    boolean is_active
+    timestamp created_at
+    timestamp updated_at
+}
+
+kfa_medication_templates {
+    uuid id PK
+    string kfa_code UK "92xxxxxx (POV)"
+    string name
+    string dosage_form
+    string strength_text
+    string route
+    string status
+    boolean is_active
+    timestamp created_at
+    timestamp updated_at
+}
+
+kfa_medication_template_ingredients {
+    uuid id PK
+    uuid medication_template_id FK
+    uuid active_substance_id FK
+    decimal amount
+    string unit
+    string note
+    boolean is_active
+    timestamp created_at
+    timestamp updated_at
+}
+
+kfa_products {
+    uuid id PK
+    string kfa_code UK "93xxxxxx (POA)"
+    uuid medication_template_id FK
+    string brand_name
+    string manufacturer_name
+    string dosage_form
+    string strength_text
+    string status
+    boolean is_active
+    timestamp created_at
+    timestamp updated_at
+}
+
+kfa_product_packages {
+    uuid id PK
+    string kfa_code UK "94xxxxxx (POAK)"
+    uuid product_id FK
+    string package_name
+    string package_type
+    decimal package_quantity
+    string package_unit
+    string status
+    boolean is_active
+    timestamp created_at
+    timestamp updated_at
+}
+
+%% ================================================================================
+%% TENANT - PHARMACY OPERATIONS (PER CLINIC)
+%% ================================================================================
+
+medication_catalogs {
+    uuid id PK
+    uuid clinic_id FK
+    uuid kfa_medication_template_id FK "nullable"
+    uuid kfa_product_id FK "nullable"
+    uuid kfa_product_package_id FK "nullable"
+    string display_name
+    string unit
+    decimal selling_price
+    boolean is_active
+    timestamp created_at
+    timestamp updated_at
+}
+
+inventory_locations {
+    uuid id PK
+    uuid clinic_id FK
+    string code
+    string name
+    string location_type "warehouse | rack | refrigerator"
+    boolean is_active
+    timestamp created_at
+    timestamp updated_at
+}
+
+inventory_lots {
+    uuid id PK
+    uuid clinic_id FK
+    uuid kfa_product_package_id FK
+    uuid location_id FK "nullable"
+    string batch_number
+    date expired_at
+    decimal quantity_on_hand
+    decimal quantity_reserved
+    decimal quantity_available
+    decimal purchase_price
+    timestamp created_at
+    timestamp updated_at
+}
+
+inventory_movements {
+    uuid id PK
+    uuid clinic_id FK
+    uuid lot_id FK
+    string movement_type "IN | OUT | ADJUSTMENT | RESERVE | RELEASE"
+    decimal quantity
+    string reference_type "medication_dispense | adjustment | expired | purchase"
+    uuid reference_id
+    string note
+    timestamp created_at
+}
+
+medication_requests {
+    uuid id PK
+    uuid clinic_id FK
+    uuid patient_id FK
+    uuid doctor_id FK
+    uuid encounter_id FK
+    boolean is_compound
+    string status "draft | signed | cancelled"
+    text notes
+    timestamp created_at
+    timestamp updated_at
+}
+
+medication_request_items {
+    uuid id PK
+    uuid medication_request_id FK
+    string item_type "generic | brand | compound_component"
+    uuid kfa_medication_template_id FK "nullable"
+    uuid kfa_product_id FK "nullable"
+    uuid kfa_active_substance_id FK "nullable"
+    decimal dose_amount
+    string dose_unit
+    int frequency_per_day
+    int duration_days
+    string administration_timing "before_meal | after_meal | with_meal | empty_stomach | bedtime | as_needed"
+    string route
+    string instructions
+    string status "pending | verified | partially_dispensed | dispensed | cancelled"
+    uuid verified_by FK "nullable"
+    timestamp verified_at
+    timestamp created_at
+}
+
+compound_prescriptions {
+    uuid id PK
+    uuid medication_request_item_id FK
+    string compound_name
+    text preparation_note
+    timestamp created_at
+    timestamp updated_at
+}
+
+compound_prescription_items {
+    uuid id PK
+    uuid compound_prescription_id FK
+    uuid kfa_active_substance_id FK
+    uuid kfa_medication_template_id FK "nullable"
+    uuid kfa_product_id FK "nullable"
+    decimal amount
+    string unit
+    string note
+    timestamp created_at
+}
+
+medication_dispenses {
+    uuid id PK
+    uuid clinic_id FK
+    uuid medication_request_id FK
+    uuid pharmacist_id FK
+    string status "draft | dispensed | void"
+    text notes
+    timestamp dispensed_at
+    timestamp created_at
+    timestamp updated_at
+}
+
+medication_dispense_items {
+    uuid id PK
+    uuid medication_dispense_id FK
+    uuid medication_request_item_id FK
+    uuid kfa_product_id FK
+    uuid kfa_product_package_id FK "nullable"
+    uuid lot_id FK "nullable"
+    decimal quantity
+    string unit
+    decimal unit_price
+    decimal total_price
+    string substitution_note
+    timestamp created_at
+}
+
+%% ================================================================================
+%% RELATIONSHIPS - LANDLORD KFA
+%% ================================================================================
+
+kfa_active_substances ||--o{ kfa_medication_template_ingredients : "used_in"
+kfa_medication_templates ||--o{ kfa_medication_template_ingredients : "has_ingredient"
+kfa_medication_templates ||--o{ kfa_products : "parent_template"
+kfa_products ||--o{ kfa_product_packages : "packaged_as"
+
+%% ================================================================================
+%% RELATIONSHIPS - TENANT CLINIC
+%% ================================================================================
+
+clinics ||--o{ medication_catalogs : "owns"
+clinics ||--o{ inventory_locations : "owns"
+clinics ||--o{ inventory_lots : "owns"
+clinics ||--o{ inventory_movements : "owns"
+clinics ||--o{ medication_requests : "owns"
+clinics ||--o{ medication_dispenses : "owns"
+
+medication_catalogs }o--|| kfa_medication_templates : "maps_to_template"
+medication_catalogs }o--|| kfa_products : "maps_to_product"
+medication_catalogs }o--|| kfa_product_packages : "maps_to_package"
+
+inventory_locations ||--o{ inventory_lots : "stores"
+kfa_product_packages ||--o{ inventory_lots : "stocked_as"
+inventory_lots ||--o{ inventory_movements : "moved_by"
+
+medication_requests ||--o{ medication_request_items : "contains"
+medication_requests }o--|| encounters : "for_encounter"
+medication_requests }o--|| patients : "for_patient"
+medication_requests }o--|| employees : "prescribed_by"
+
+medication_request_items ||--o| compound_prescriptions : "compound_header"
+compound_prescriptions ||--o{ compound_prescription_items : "contains"
+
+medication_request_items }o--|| kfa_medication_templates : "requested_template"
+medication_request_items }o--|| kfa_products : "requested_product"
+medication_request_items }o--|| kfa_active_substances : "requested_substance"
+
+compound_prescription_items }o--|| kfa_active_substances : "compound_substance"
+compound_prescription_items }o--|| kfa_medication_templates : "compound_template"
+compound_prescription_items }o--|| kfa_products : "compound_product"
+
+medication_requests ||--o{ medication_dispenses : "fulfilled_by"
+medication_dispenses ||--o{ medication_dispense_items : "contains"
+medication_dispense_items }o--|| medication_request_items : "fulfilled_as"
+
+medication_dispenses }o--|| employees : "dispensed_by"
+
+medication_dispense_items }o--|| kfa_products : "dispensed_product"
+medication_dispense_items }o--|| kfa_product_packages : "dispensed_package"
+medication_dispense_items }o--o| inventory_lots : "sourced_from"
+
+inventory_movements ||--o{ inventory_lots : "references"

@@ -308,43 +308,69 @@ search_aggregates {
 }
 
 %% ========================
-%% KFA MASTER (LANDLORD)
+%% KFA MASTER (LANDLORD) - PHARMACY DOMAIN
 %% ========================
-kfa_templates {
+
+kfa_active_substances {
     uuid id PK
-    string kfa_code UK "92xxxxxx"
+    string kfa_code UK "91xxxxxx (BZA)"
     string name
+    string status
     boolean is_active
-    string status "valid | invalid"
+    timestamp created_at
     timestamp updated_at
 }
 
-kfa_items {
+kfa_medication_templates {
     uuid id PK
-    string kfa_code "nullable, 93xxxxxx or '/'"
+    string kfa_code UK "92xxxxxx (POV)"
     string name
-    uuid template_id FK
-    string brand_name
-    string production_type "local | import"
-    string manufacturer
-    string registrar
-    string type_code "drug | device"
-    string type_group "obat | alkes"
-    boolean is_generic
-    decimal dose_per_unit
-    string unit_key
-    string dosage_form_key
-    decimal net_weight
-    string net_weight_unit_key
-    decimal volume
-    string volume_unit_key
-    decimal fixed_price
-    decimal ceiling_price
-    boolean is_listed_in_lkpp
-    string lkpp_code
-    string image_url
-    boolean is_active
+    string dosage_form
+    string strength_text
+    string route
     string status
+    boolean is_active
+    timestamp created_at
+    timestamp updated_at
+}
+
+kfa_medication_template_ingredients {
+    uuid id PK
+    uuid medication_template_id FK
+    uuid active_substance_id FK
+    decimal amount
+    string unit
+    string note
+    boolean is_active
+    timestamp created_at
+    timestamp updated_at
+}
+
+kfa_products {
+    uuid id PK
+    string kfa_code UK "93xxxxxx (POA)"
+    uuid medication_template_id FK
+    string brand_name
+    string manufacturer_name
+    string dosage_form
+    string strength_text
+    string status
+    boolean is_active
+    timestamp created_at
+    timestamp updated_at
+}
+
+kfa_product_packages {
+    uuid id PK
+    string kfa_code UK "94xxxxxx (POAK)"
+    uuid product_id FK
+    string package_name
+    string package_type
+    decimal package_quantity
+    string package_unit
+    string status
+    boolean is_active
+    timestamp created_at
     timestamp updated_at
 }
 
@@ -353,17 +379,6 @@ kfa_lookups {
     string label
     string type "unit | dosage_form"
     boolean is_active
-}
-
-kfa_drug_ingredients {
-    uuid id PK
-    uuid drug_item_id FK
-    string kfa_code "91xxxxxx (BZA code)"
-    string name "zat_aktif"
-    string strength "300 mg (raw dari API)"
-    boolean is_active
-    string status
-    timestamp updated_at
 }
 
 %% ========================
@@ -485,17 +500,16 @@ clinic_invoices ||--o{ clinic_payments : paid_by
 icd_codes ||--o{ search_logs : referenced
 icd_codes ||--o{ search_aggregates : ranked
 
-kfa_templates ||--o{ kfa_items : has
+%% LANDLORD - KFA (Pharmacy Domain)
+kfa_active_substances ||--o{ kfa_medication_template_ingredients : "used_in"
+kfa_medication_templates ||--o{ kfa_medication_template_ingredients : "has_ingredient"
+kfa_medication_templates ||--o{ kfa_products : "parent_template"
+kfa_products ||--o{ kfa_product_packages : "packaged_as"
 
-kfa_items }o--|| kfa_lookups : "unit_key"
-kfa_items }o--|| kfa_lookups : "dosage_form_key"
-kfa_items }o--|| kfa_lookups : "net_weight_unit_key"
-kfa_items }o--|| kfa_lookups : "volume_unit_key"
+kfa_products ||--o{ search_logs : referenced
+kfa_products ||--o{ search_aggregates : ranked
 
-kfa_items ||--o{ kfa_drug_ingredients : has
-
-kfa_items ||--o{ search_logs : referenced
-kfa_items ||--o{ search_aggregates : ranked
+kfa_lookups }o--|| kfa_medication_templates : "dosage_form_key"
 
 %% LANDLORD - Templates
 service_templates ||--o{ services : "derived into"

@@ -27,7 +27,7 @@ treatment_material_defaults {
 
     uuid template_id FK
 
-    uuid medical_item_id FK
+    uuid medication_catalog_id FK
 
     decimal default_quantity
     string unit
@@ -67,7 +67,7 @@ treatment_material_defaults {
     uuid id PK
 
     uuid treatment_id FK
-    uuid medical_item_id FK
+    uuid medication_catalog_id FK
 
     decimal quantity
     string unit
@@ -158,9 +158,9 @@ treatment_material_usages {
     uuid id PK
 
     uuid treatment_session_id FK
-    uuid medical_item_id FK
+    uuid medication_catalog_id FK
 
-    uuid batch_id FK "nullable"
+    uuid lot_id FK "nullable"
 
     decimal quantity
     string unit
@@ -188,7 +188,7 @@ visit_photos {
 %% ========================
 
 treatment_templates ||--o{ treatments : "used as base"
-treatment_templates ||--o{ treatment_template_materials : "defines"
+treatment_templates ||--o{ treatment_material_defaults : "defines"
 
 icd_codes ||--o{ treatments : "referenced by"
 
@@ -211,8 +211,8 @@ rooms ||--o{ treatment_sessions : "performed in"
 
 treatment_sessions ||--o{ treatment_material_usages : "uses"
 
-medical_items ||--o{ treatment_template_materials : "used in template"
-medical_items ||--o{ treatment_material_usages : "consumed"
-medical_batches ||--o{ treatment_material_usages : "from"
+medication_catalogs ||--o{ treatment_material_defaults : "default material"
+medication_catalogs ||--o{ treatment_material_usages : "consumed"
+inventory_lots ||--o{ treatment_material_usages : "from"
 
 patient_visits ||--o{ visit_photos : "has"

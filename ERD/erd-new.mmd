@@ -307,44 +307,70 @@ search_aggregates {
     timestamp last_used_at
 }
 
-%% ========================
-%% KFA MASTER (LANDLORD)
-%% ========================
-kfa_templates {
+%% ================================================================================
+%% LANDLORD - KFA (GLOBAL MASTER) - PHARMACY DOMAIN
+%% ================================================================================
+
+kfa_active_substances {
     uuid id PK
-    string kfa_code UK "92xxxxxx"
+    string kfa_code UK "91xxxxxx (BZA)"
     string name
+    string status
     boolean is_active
-    string status "valid | invalid"
+    timestamp created_at
     timestamp updated_at
 }
 
-kfa_items {
+kfa_medication_templates {
     uuid id PK
-    string kfa_code "nullable, 93xxxxxx or '/'"
+    string kfa_code UK "92xxxxxx (POV)"
     string name
-    uuid template_id FK
-    string brand_name
-    string production_type "local | import"
-    string manufacturer
-    string registrar
-    string type_code "drug | device"
-    string type_group "obat | alkes"
-    boolean is_generic
-    decimal dose_per_unit
-    string unit_key
-    string dosage_form_key
-    decimal net_weight
-    string net_weight_unit_key
-    decimal volume
-    string volume_unit_key
-    decimal fixed_price
-    decimal ceiling_price
-    boolean is_listed_in_lkpp
-    string lkpp_code
-    string image_url
-    boolean is_active
+    string dosage_form
+    string strength_text
+    string route
     string status
+    boolean is_active
+    timestamp created_at
+    timestamp updated_at
+}
+
+kfa_medication_template_ingredients {
+    uuid id PK
+    uuid medication_template_id FK
+    uuid active_substance_id FK
+    decimal amount
+    string unit
+    string note
+    boolean is_active
+    timestamp created_at
+    timestamp updated_at
+}
+
+kfa_products {
+    uuid id PK
+    string kfa_code UK "93xxxxxx (POA)"
+    uuid medication_template_id FK
+    string brand_name
+    string manufacturer_name
+    string dosage_form
+    string strength_text
+    string status
+    boolean is_active
+    timestamp created_at
+    timestamp updated_at
+}
+
+kfa_product_packages {
+    uuid id PK
+    string kfa_code UK "94xxxxxx (POAK)"
+    uuid product_id FK
+    string package_name
+    string package_type
+    decimal package_quantity
+    string package_unit
+    string status
+    boolean is_active
+    timestamp created_at
     timestamp updated_at
 }
 
@@ -353,17 +379,6 @@ kfa_lookups {
     string label
     string type "unit | dosage_form"
     boolean is_active
-}
-
-kfa_drug_ingredients {
-    uuid id PK
-    uuid drug_item_id FK
-    string kfa_code "91xxxxxx (BZA code)"
-    string name "zat_aktif"
-    string strength "300 mg (raw dari API)"
-    boolean is_active
-    string status
-    timestamp updated_at
 }
 
 %% ========================
@@ -525,7 +540,7 @@ services {
 treatment_material_defaults {
     uuid id PK
     uuid treatment_id FK
-    uuid medical_item_id FK
+    uuid medication_catalog_id FK
     decimal quantity
     string unit
     timestamp created_at
@@ -567,55 +582,6 @@ employee_polyclinics {
     uuid employee_id FK
     uuid polyclinic_id FK
     boolean is_primary
-}
-
-%% ========================
-%% INVENTORY (TENANT)
-%% ========================
-medical_items {
-    uuid id PK
-    uuid clinic_id FK
-    string code
-    string name
-    string type "drug | medical_supply | equipment"
-    string kfa_code "nullable (reference to landlord KFA)"
-    boolean is_kfa_linked
-    string unit "tablet | ml | pcs"
-    boolean is_batch_tracked
-    boolean is_active
-    timestamp created_at
-    timestamp updated_at
-}
-
-medical_stocks {
-    uuid id PK
-    uuid clinic_id FK
-    uuid item_id FK
-    decimal quantity
-    decimal min_stock
-    decimal max_stock
-}
-
-medical_batches {
-    uuid id PK
-    uuid clinic_id FK
-    uuid item_id FK
-    string batch_number
-    date expired_at
-    decimal quantity
-    decimal purchase_price
-}
-
-medical_movements {
-    uuid id PK
-    uuid clinic_id FK
-    uuid item_id FK
-    uuid batch_id FK "nullable"
-    string type "purchase | usage | adjustment | expired"
-    decimal quantity
-    string reference_type "dispense_item"
-    uuid reference_id
-    timestamp created_at
 }
 
 %% ========================
@@ -793,47 +759,6 @@ encounter_services {
     text notes
 }
 
-encounter_medications {
-    uuid id PK
-    uuid encounter_id FK
-    uuid medical_item_id FK
-    string kfa_code
-    decimal dose
-    string dose_unit
-    int frequency_per_day
-    int duration_days
-    int quantity
-    string administration_timing "before_meal | after_meal | with_meal | empty_stomach | bedtime | as_needed"
-    string route
-    string instructions
-    string status "pending | verified | partially_dispensed | dispensed | cancelled"
-    uuid verified_by FK
-    timestamp verified_at
-    timestamp created_at
-}
-
-dispenses {
-    uuid id PK
-    uuid clinic_id FK
-    uuid patient_id FK
-    uuid encounter_id FK
-    string status "draft | completed | cancelled"
-    uuid dispensed_by FK
-    timestamp dispensed_at
-    timestamp created_at
-}
-
-dispense_items {
-    uuid id PK
-    uuid dispense_id FK
-    uuid encounter_medication_id FK
-    uuid batch_id FK
-    decimal quantity
-    decimal unit_price
-    decimal total_price
-    timestamp created_at
-}
-
 encounter_dispositions {
     uuid id PK
     uuid encounter_id FK
@@ -864,13 +789,149 @@ encounter_lab_results {
 }
 
 %% ========================
+%% PHARMACY (TENANT) - MEDICATION DOMAIN
+%% ========================
+medication_catalogs {
+    uuid id PK
+    uuid clinic_id FK
+    uuid kfa_medication_template_id FK "nullable"
+    uuid kfa_product_id FK "nullable"
+    uuid kfa_product_package_id FK "nullable"
+    string display_name
+    string unit
+    decimal selling_price
+    boolean is_active
+    timestamp created_at
+    timestamp updated_at
+}
+
+inventory_locations {
+    uuid id PK
+    uuid clinic_id FK
+    string code
+    string name
+    string location_type "warehouse | rack | refrigerator"
+    boolean is_active
+    timestamp created_at
+    timestamp updated_at
+}
+
+inventory_lots {
+    uuid id PK
+    uuid clinic_id FK
+    uuid kfa_product_package_id FK
+    uuid location_id FK "nullable"
+    string batch_number
+    date expired_at
+    decimal quantity_on_hand
+    decimal quantity_reserved
+    decimal quantity_available
+    decimal purchase_price
+    timestamp created_at
+    timestamp updated_at
+}
+
+inventory_movements {
+    uuid id PK
+    uuid clinic_id FK
+    uuid lot_id FK
+    string movement_type "IN | OUT | ADJUSTMENT | RESERVE | RELEASE"
+    decimal quantity
+    string reference_type "medication_dispense | adjustment | expired | purchase"
+    uuid reference_id
+    string note
+    timestamp created_at
+}
+
+medication_requests {
+    uuid id PK
+    uuid clinic_id FK
+    uuid patient_id FK
+    uuid doctor_id FK
+    uuid encounter_id FK
+    boolean is_compound
+    string status "draft | signed | cancelled"
+    text notes
+    timestamp created_at
+    timestamp updated_at
+}
+
+medication_request_items {
+    uuid id PK
+    uuid medication_request_id FK
+    string item_type "generic | brand | compound_component"
+    uuid kfa_medication_template_id FK "nullable"
+    uuid kfa_product_id FK "nullable"
+    uuid kfa_active_substance_id FK "nullable"
+    decimal dose_amount
+    string dose_unit
+    int frequency_per_day
+    int duration_days
+    string administration_timing "before_meal | after_meal | with_meal | empty_stomach | bedtime | as_needed"
+    string route
+    string instructions
+    string status "pending | verified | partially_dispensed | dispensed | cancelled"
+    uuid verified_by FK "nullable"
+    timestamp verified_at
+    timestamp created_at
+}
+
+compound_prescriptions {
+    uuid id PK
+    uuid medication_request_item_id FK
+    string compound_name
+    text preparation_note
+    timestamp created_at
+    timestamp updated_at
+}
+
+compound_prescription_items {
+    uuid id PK
+    uuid compound_prescription_id FK
+    uuid kfa_active_substance_id FK
+    uuid kfa_medication_template_id FK "nullable"
+    uuid kfa_product_id FK "nullable"
+    decimal amount
+    string unit
+    string note
+    timestamp created_at
+}
+
+medication_dispenses {
+    uuid id PK
+    uuid clinic_id FK
+    uuid medication_request_id FK
+    uuid pharmacist_id FK
+    string status "draft | dispensed | void"
+    text notes
+    timestamp dispensed_at
+    timestamp created_at
+    timestamp updated_at
+}
+
+medication_dispense_items {
+    uuid id PK
+    uuid medication_dispense_id FK
+    uuid medication_request_item_id FK
+    uuid kfa_product_id FK
+    uuid kfa_product_package_id FK "nullable"
+    uuid lot_id FK "nullable"
+    decimal quantity
+    string unit
+    decimal unit_price
+    decimal total_price
+    string substitution_note
+    timestamp created_at
+}
+
+%% ========================
 %% FRONT OFFICE (TENANT)
 %% ========================
 polyclinic_sessions {
     uuid id PK
     uuid clinic_id FK
     uuid polyclinic_id FK
-    uuid doctor_id FK
+    uuid doctor_id FK "employee_id"
     int day_of_week "0=Sunday"
     time start_time
     time end_time
@@ -886,6 +947,7 @@ appointments {
     uuid polyclinic_session_id FK
     datetime scheduled_at
     string status "booked | confirmed | cancelled | completed"
+    text notes
     timestamp created_at
     timestamp updated_at
 }
@@ -904,40 +966,6 @@ patient_visits {
     timestamp updated_at
 }
 
-%% ========================
-%% POLYCLINIC SESSIONS (TENANT)
-%% ========================
-polyclinic_sessions {
-    uuid id PK
-    uuid clinic_id FK
-    uuid polyclinic_id FK
-    uuid doctor_id FK "employee_id"
-    int day_of_week "0=Sunday"
-    time start_time
-    time end_time
-    int slot_duration_minutes "optional"
-    int max_patients "optional limit"
-    boolean is_active
-}
-
-%% ========================
-%% APPOINTMENTS (TENANT)
-%% ========================
-appointments {
-    uuid id PK
-    uuid clinic_id FK
-    uuid patient_id FK
-    uuid polyclinic_session_id FK
-    datetime scheduled_at
-    string status "booked | confirmed | cancelled | completed"
-    text notes
-    timestamp created_at
-    timestamp updated_at
-}
-
-%% ========================
-%% QUEUES (TENANT)
-%% ========================
 queues {
     uuid id PK
     uuid clinic_id FK
@@ -1062,8 +1090,8 @@ treatment_sessions {
 treatment_material_usages {
     uuid id PK
     uuid treatment_session_id FK
-    uuid medical_item_id FK
-    uuid batch_id FK "nullable"
+    uuid medication_catalog_id FK
+    uuid lot_id FK "nullable"
     decimal quantity
     string unit
     timestamp created_at
@@ -1094,14 +1122,6 @@ accounts ||--o{ clinics : "owns"
 clinics ||--o{ clinic_users : "has staff"
 users ||--o{ clinic_users : "assigned"
 
-%% TENANT - Clinic Relations
-clinics ||--o{ patients : "has"
-clinics ||--o{ services : "has"
-clinics ||--o{ polyclinics : "has"
-clinics ||--o{ rooms : "has"
-clinics ||--o{ employees : "has"
-clinics ||--o{ medical_items : "has"
-
 users ||--o{ media : "uploads"
 
 %% LANDLORD - Billing
@@ -1112,10 +1132,10 @@ subscriptions ||--o{ subscription_extras : "has"
 extras ||--o{ subscription_extras : "used"
 
 plans ||--o{ plan_features : defines
-features ||--o{ plan_features : mapped
+features ||--o{ plan_features : "mapped"
 
 extras ||--o{ extra_features : defines
-features ||--o{ extra_features : mapped
+features ||--o{ extra_features : "mapped"
 
 accounts ||--o{ account_entitlements : has
 
@@ -1129,17 +1149,16 @@ clinic_invoices ||--o{ clinic_payments : paid_by
 icd_codes ||--o{ search_logs : referenced
 icd_codes ||--o{ search_aggregates : ranked
 
-kfa_templates ||--o{ kfa_items : has
+%% LANDLORD - KFA (Pharmacy)
+kfa_active_substances ||--o{ kfa_medication_template_ingredients : "used_in"
+kfa_medication_templates ||--o{ kfa_medication_template_ingredients : "has_ingredient"
+kfa_medication_templates ||--o{ kfa_products : "parent_template"
+kfa_products ||--o{ kfa_product_packages : "packaged_as"
 
-kfa_items }o--|| kfa_lookups : "unit_key"
-kfa_items }o--|| kfa_lookups : "dosage_form_key"
-kfa_items }o--|| kfa_lookups : "net_weight_unit_key"
-kfa_items }o--|| kfa_lookups : "volume_unit_key"
+kfa_products ||--o{ search_logs : referenced
+kfa_products ||--o{ search_aggregates : ranked
 
-kfa_items ||--o{ kfa_drug_ingredients : has
-
-kfa_items ||--o{ search_logs : referenced
-kfa_items ||--o{ search_aggregates : ranked
+kfa_lookups }o--|| kfa_medication_templates : "dosage_form_key"
 
 %% LANDLORD - Templates
 service_templates ||--o{ services : "derived into"
@@ -1148,12 +1167,34 @@ position_templates ||--o{ employee_positions : "based on"
 
 specialty_templates ||--o{ specialties : "based on"
 
+observation_templates ||--o{ encounter_observations : "used"
+
+queue_templates ||--o{ queues : "cloned into"
+
+treatment_templates ||--o{ treatments : "used as base"
+
+%% TENANT - Clinic Relations
+clinics ||--o{ patients : "has"
+clinics ||--o{ services : "has"
+clinics ||--o{ polyclinics : "has"
+clinics ||--o{ rooms : "has"
+clinics ||--o{ employees : "has"
+clinics ||--o{ medication_catalogs : "has"
+clinics ||--o{ inventory_locations : "has"
+clinics ||--o{ inventory_lots : "has"
+clinics ||--o{ inventory_movements : "has"
+clinics ||--o{ medication_requests : "has"
+clinics ||--o{ medication_dispenses : "has"
+
 %% TENANT - Patients
 patients ||--|| patient_profiles : "has"
 patients ||--o{ patient_contacts : "has"
 patients ||--o{ patient_emergency_contacts : "has"
 patients ||--o{ patient_identifiers : "has"
 patients ||--o{ patient_insurances : "has"
+
+patients ||--o{ patient_allergies : "has"
+patients ||--o{ patient_medical_histories : "has"
 
 %% TENANT - Services
 polyclinics ||--o{ polyclinic_services : "provides"
@@ -1163,14 +1204,7 @@ services ||--o{ polyclinic_services : "assigned to"
 polyclinics ||--o{ rooms : "has"
 rooms ||--o{ employee_polyclinics : "located at"
 polyclinics ||--o{ employee_polyclinics : "assigned"
-
 employees ||--o{ employee_polyclinics : "assigned to"
-
-%% TENANT - Inventory
-medical_items ||--|| medical_stocks : "has"
-medical_items ||--o{ medical_batches : "has"
-medical_items ||--o{ medical_movements : "logs"
-medical_batches ||--o{ medical_movements : "used in"
 
 %% TENANT - Staff
 employees ||--|| employee_profiles : "has"
@@ -1179,23 +1213,13 @@ employee_positions ||--o{ employee_position_assignments : "mapped"
 employees ||--o{ employee_specialties : "has"
 specialties ||--o{ employee_specialties : "mapped"
 
-%% TENANT - Clinic Relations (Extended)
-clinics ||--o{ encounters : "has"
-clinics ||--o{ dispenses : "has"
-clinics ||--o{ polyclinic_sessions : "has"
-clinics ||--o{ appointments : "has"
-clinics ||--o{ patient_visits : "has"
-clinics ||--o{ queues : "has"
-clinics ||--o{ patient_queues : "has"
-clinics ||--o{ invoices : "has"
-clinics ||--o{ treatments : "has"
-
-%% TENANT - Patient Long-Term Memory
-patients ||--o{ patient_allergies : "has"
-patients ||--o{ patient_medical_histories : "has"
+employee_positions }o--|| position_templates : "based_on"
+specialties }o--|| specialty_templates : "based_on"
 
 %% TENANT - Encounter
 patients ||--o{ encounters : "has"
+
+clinics ||--o{ encounters : "has"
 
 encounters ||--|| encounter_subjectives : "has"
 encounters ||--o{ encounter_allergies : "snapshot"
@@ -1206,21 +1230,49 @@ encounters ||--o{ encounter_observations : "has"
 encounters ||--o{ encounter_media : "has"
 encounters ||--o{ encounter_diagnoses : "has"
 encounters ||--o{ encounter_services : "has"
-encounters ||--o{ encounter_medications : "prescribes"
 encounters ||--o{ encounter_dispositions : "has"
 encounters ||--o{ encounter_lab_orders : "orders"
 
-encounter_medications ||--o{ dispense_items : "fulfilled by"
-dispenses ||--o{ dispense_items : "contains"
-
 icd_codes ||--o{ encounter_diagnoses : "used"
-observation_templates ||--o{ encounter_observations : "used"
-
-medical_items ||--|| medical_stocks : "has"
-medical_batches ||--o{ dispense_items : "used in"
-dispense_items ||--o{ medical_movements : "creates (usage)"
 
 encounter_lab_orders ||--o{ encounter_lab_results : "has"
+
+%% TENANT - Pharmacy (Medication Domain)
+medication_catalogs }o--|| kfa_medication_templates : "maps_to_template"
+medication_catalogs }o--|| kfa_products : "maps_to_product"
+medication_catalogs }o--|| kfa_product_packages : "maps_to_package"
+
+inventory_locations ||--o{ inventory_lots : "stores"
+kfa_product_packages ||--o{ inventory_lots : "stocked_as"
+inventory_lots ||--o{ inventory_movements : "moved_by"
+
+medication_requests ||--o{ medication_request_items : "contains"
+medication_requests }o--|| encounters : "for_encounter"
+medication_requests }o--|| patients : "for_patient"
+medication_requests }o--|| employees : "prescribed_by"
+
+medication_request_items ||--o| compound_prescriptions : "compound_header"
+compound_prescriptions ||--o{ compound_prescription_items : "contains"
+
+medication_request_items }o--|| kfa_medication_templates : "requested_template"
+medication_request_items }o--|| kfa_products : "requested_product"
+medication_request_items }o--|| kfa_active_substances : "requested_substance"
+
+compound_prescription_items }o--|| kfa_active_substances : "compound_substance"
+compound_prescription_items }o--|| kfa_medication_templates : "compound_template"
+compound_prescription_items }o--|| kfa_products : "compound_product"
+
+medication_requests ||--o{ medication_dispenses : "fulfilled_by"
+medication_dispenses ||--o{ medication_dispense_items : "contains"
+medication_dispense_items }o--|| medication_request_items : "fulfilled_as"
+
+medication_dispenses }o--|| employees : "dispensed_by"
+
+medication_dispense_items }o--|| kfa_products : "dispensed_product"
+medication_dispense_items }o--|| kfa_product_packages : "dispensed_package"
+medication_dispense_items }o--o| inventory_lots : "sourced_from"
+
+inventory_movements ||--o{ inventory_lots : "references"
 
 %% TENANT - Front Office
 polyclinics ||--o{ polyclinic_sessions : "has"
@@ -1239,14 +1291,21 @@ patient_visits ||--o{ patient_queues : "has"
 queues ||--o{ patient_queues : "handles"
 queue_templates ||--o{ queues : "cloned into"
 
+clinics ||--o{ polyclinic_sessions : "has"
+clinics ||--o{ appointments : "has"
+clinics ||--o{ patient_visits : "has"
+clinics ||--o{ queues : "has"
+clinics ||--o{ patient_queues : "has"
+
 %% TENANT - Clinic Invoice
 invoices ||--o{ invoice_items : "has"
 invoices ||--o{ payments : "paid by"
 
+clinics ||--o{ invoices : "has"
+
 %% TENANT - Treatment
 treatments ||--o{ services : "mapped to"
 treatments ||--o{ treatment_material_defaults : "defines"
-treatment_templates ||--o{ treatments : "used as base"
 
 encounters ||--o{ encounter_treatments : "plans"
 treatments ||--o{ encounter_treatments : "used in"
@@ -1259,7 +1318,9 @@ employees ||--o{ treatment_sessions : "therapist"
 rooms ||--o{ treatment_sessions : "performed in"
 
 treatment_sessions ||--o{ treatment_material_usages : "uses"
-medical_items ||--o{ treatment_material_usages : "consumed"
-medical_batches ||--o{ treatment_material_usages : "from"
+medication_catalogs ||--o{ treatment_material_usages : "consumed"
+inventory_lots ||--o{ treatment_material_usages : "from"
 
 patient_visits ||--o{ visit_photos : "has"
+
+clinics ||--o{ treatments : "has"
